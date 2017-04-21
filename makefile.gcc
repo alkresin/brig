@@ -1,0 +1,68 @@
+# $Id$
+# makefile for MINGW compiler
+
+INC_DIR = include
+ifeq ($(UNICODE),)
+OBJ_DIR = obj\w32
+else
+OBJ_DIR = obj\w32\uni
+endif
+LIB_DIR = lib
+WINAPI_DIR = source\winapi
+COMMON_DIR = source\common
+
+CFLAG = -Wall $(CFLAGS)
+
+ifeq ($(UNICODE),)
+all: \
+   $(LIB_DIR)/libbrig_ansi.a
+
+$(LIB_DIR)/libbrig_ansi.a : \
+   $(OBJ_DIR)/window.o \
+   $(OBJ_DIR)/brig_app.o \
+   $(OBJ_DIR)/brig_base.o \
+   $(OBJ_DIR)/brig_menu.o \
+   $(OBJ_DIR)/brig_style.o \
+   $(OBJ_DIR)/brig_table.o \
+   $(OBJ_DIR)/brig_widgets.o \
+   $(OBJ_DIR)/commond.o \
+   $(OBJ_DIR)/control.o \
+   $(OBJ_DIR)/draw.o \
+   $(OBJ_DIR)/menu.o \
+   $(OBJ_DIR)/message.o \
+   $(OBJ_DIR)/strings.o \
+   $(OBJ_DIR)/table.o
+	ar rc $@ $^
+
+else
+all: \
+   $(LIB_DIR)/libbrig.a
+
+$(LIB_DIR)/libbrig.a : \
+   $(OBJ_DIR)/window.o \
+   $(OBJ_DIR)/brig_app.o \
+   $(OBJ_DIR)/brig_base.o \
+   $(OBJ_DIR)/brig_menu.o \
+   $(OBJ_DIR)/brig_style.o \
+   $(OBJ_DIR)/brig_table.o \
+   $(OBJ_DIR)/brig_widgets.o \
+   $(OBJ_DIR)/commond.o \
+   $(OBJ_DIR)/control.o \
+   $(OBJ_DIR)/draw.o \
+   $(OBJ_DIR)/menu.o \
+   $(OBJ_DIR)/message.o \
+   $(OBJ_DIR)/strings.o \
+   $(OBJ_DIR)/table.o
+	ar rc $@ $^
+
+endif
+
+
+.cpp.o:
+	g++ $(CFLAG) -c -I$(INC_DIR) -o $@ $^
+
+$(OBJ_DIR)/%.o : $(WINAPI_DIR)/%.cpp
+	g++ $(CFLAG) -c -I$(INC_DIR) -o $@ $^
+
+$(OBJ_DIR)/%.o : $(COMMON_DIR)/%.cpp
+	g++ $(CFLAG) -c -I$(INC_DIR) -o $@ $^

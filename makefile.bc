@@ -1,0 +1,116 @@
+#  $Id$
+# makefile for Borland C/C++ 32 bits
+# 
+
+.AUTODEPEND
+
+!if !$d(ECHO)
+   ECHO = echo.
+!endif
+!if !$d(DEL)
+   DEL = del
+!endif
+
+INCLUDE_DIR = include;$(HRB_DIR)\include
+
+CC = bcc32
+LINKER = TLIB
+
+!if $d(UNICODE)
+OBJ_DIR = obj\b32\uni
+!else
+OBJ_DIR = obj\b32
+!endif
+LIB_DIR = lib
+
+# This is needed, otherwise the libs may overflow when
+# debug info is requested with -v -y
+# if debug info is requested, set ARFLAGS to /P64 in your environment
+!if !$d(ARFLAGS)
+    ARFLAGS = /0
+!endif
+
+#
+# Directory macros. These should never have to change.
+#
+WINAPI_DIR = source\winapi
+COMMON_DIR = source\common
+
+#
+# C compiler definition and C flags. These should never have to change.
+#
+
+CFLAGS               = -I$(INCLUDE_DIR) -d $(C_USR) $(CFLAGS) -tWM -D__WIN32__
+CLIBFLAGS            = -c $(CFLAGS) $(CLIBFLAGS)
+CLIBFLAGSDEBUG       = -v $(CLIBFLAGS)
+LDFLAGS              = $(LDFLAGS)
+
+CC_CMD = $(CC) $(CLIBFLAGS) -o$@ $**
+HB_CMD = $(HARBOUR_EXE) $(HARBOURFLAGS) $** -o$@
+
+#
+# Macros to access our library names
+#
+
+!if $d(UNICODE)
+BRIG_LIB = $(LIB_DIR)\brig.lib
+!else
+BRIG_LIB = $(LIB_DIR)\brig_ansi.lib
+!endif
+
+#
+# Rules
+#
+
+#
+# LETO.LIB rules
+#
+
+BRIG_LIB_OBJS = \
+   $(OBJ_DIR)\window.obj \
+   $(OBJ_DIR)\brig_app.obj \
+   $(OBJ_DIR)\brig_base.obj \
+   $(OBJ_DIR)\brig_menu.obj \
+   $(OBJ_DIR)\brig_style.obj \
+   $(OBJ_DIR)\brig_table.obj \
+   $(OBJ_DIR)\brig_widgets.obj \
+   $(OBJ_DIR)\commond.obj \
+   $(OBJ_DIR)\control.obj \
+   $(OBJ_DIR)\draw.obj \
+   $(OBJ_DIR)\menu.obj \
+   $(OBJ_DIR)\message.obj \
+   $(OBJ_DIR)\strings.obj \
+   $(OBJ_DIR)\table.obj
+
+#
+# Our default target
+#
+
+PROJECT = \
+   $(BRIG_LIB)
+
+ALL: $(PROJECT)
+
+#
+# Library dependencies and build rules
+#
+
+$(BRIG_LIB) : $(BRIG_LIB_OBJS)
+    IF EXIST "$(BRIG_LIB)" $(DEL) "$(BRIG_LIB)" > NUL
+    $(LINKER) "$(BRIG_LIB)" $(ARFLAGS) @&&!
++$(**: = &^
++)
+
+!
+
+
+# BRIG.LIB Dependencies
+
+.cpp.obj:
+    $(CC_CMD)
+
+{$(WINAPI_DIR)}.cpp{$(OBJ_DIR)}.obj:
+    $(CC_CMD)
+
+{$(COMMON_DIR)}.cpp{$(OBJ_DIR)}.obj:
+    $(CC_CMD)
