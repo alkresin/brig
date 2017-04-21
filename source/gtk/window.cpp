@@ -31,11 +31,11 @@ void brig_writelog( const char * sFile, const char * sTraceMsg, ... )
 
    if( sFile == NULL )
    {
-      hFile = hb_fopen( "ac.log", "a" );
+      hFile = fopen( "ac.log", "a" );
    }
    else
    {
-      hFile = hb_fopen( sFile, "a" );
+      hFile = fopen( sFile, "a" );
    }
 
    if( hFile )
@@ -95,167 +95,167 @@ static long ToKey( long a, long b )
    if ( a == GDK_asciitilde || a == GDK_dead_tilde)
    {
       if ( b== GDK_A) 
-         return (HB_LONG)GDK_Atilde;
+         return (long)GDK_Atilde;
       else if ( b == GDK_a )      
-         return (HB_LONG)GDK_atilde;
+         return (long)GDK_atilde;
       else if ( b== GDK_N) 
-         return (HB_LONG)GDK_Ntilde;
+         return (long)GDK_Ntilde;
       else if ( b == GDK_n )      
-         return (HB_LONG)GDK_ntilde;
+         return (long)GDK_ntilde;
       else if ( b== GDK_O) 
-         return (HB_LONG)GDK_Otilde;
+         return (long)GDK_Otilde;
       else if ( b == GDK_o )      
-         return (HB_LONG)GDK_otilde;                   
+         return (long)GDK_otilde;                   
    }      
    if  ( a == GDK_asciicircum || a ==GDK_dead_circumflex) 
    {
       if ( b== GDK_A) 
-         return (HB_LONG)GDK_Acircumflex;
+         return (long)GDK_Acircumflex;
       else if ( b == GDK_a )      
-         return (HB_LONG)GDK_acircumflex;
+         return (long)GDK_acircumflex;
       else if ( b== GDK_E) 
-         return (HB_LONG)GDK_Ecircumflex;
+         return (long)GDK_Ecircumflex;
       else if ( b == GDK_e )      
-         return (HB_LONG)GDK_ecircumflex;      
+         return (long)GDK_ecircumflex;      
       else if ( b== GDK_I) 
-         return (HB_LONG)GDK_Icircumflex;
+         return (long)GDK_Icircumflex;
       else if ( b == GDK_i )      
-         return (HB_LONG)GDK_icircumflex;      
+         return (long)GDK_icircumflex;      
       else if ( b== GDK_O) 
-         return (HB_LONG)GDK_Ocircumflex;
+         return (long)GDK_Ocircumflex;
       else if ( b == GDK_o )      
-         return (HB_LONG)GDK_ocircumflex;      
+         return (long)GDK_ocircumflex;      
       else if ( b== GDK_U) 
-         return (HB_LONG)GDK_Ucircumflex;
+         return (long)GDK_Ucircumflex;
       else if ( b == GDK_u )      
-         return (HB_LONG)GDK_ucircumflex;      
+         return (long)GDK_ucircumflex;      
       else if ( b== GDK_C) 
-         return (HB_LONG)GDK_Ccircumflex;
+         return (long)GDK_Ccircumflex;
       else if ( b == GDK_C )      
-         return (HB_LONG)GDK_Ccircumflex;
+         return (long)GDK_Ccircumflex;
       else if ( b== GDK_H) 
-         return (HB_LONG)GDK_Hcircumflex;
+         return (long)GDK_Hcircumflex;
       else if ( b == GDK_h )      
-         return (HB_LONG)GDK_hcircumflex;      
+         return (long)GDK_hcircumflex;      
       else if ( b== GDK_J) 
-         return (HB_LONG)GDK_Jcircumflex;
+         return (long)GDK_Jcircumflex;
       else if ( b == GDK_j )      
-         return (HB_LONG)GDK_jcircumflex;      
+         return (long)GDK_jcircumflex;      
       else if ( b== GDK_G) 
-         return (HB_LONG)GDK_Gcircumflex;
+         return (long)GDK_Gcircumflex;
       else if ( b == GDK_g )      
-         return (HB_LONG)GDK_gcircumflex;      
+         return (long)GDK_gcircumflex;      
       else if ( b== GDK_S) 
-         return (HB_LONG)GDK_Scircumflex;
+         return (long)GDK_Scircumflex;
       else if ( b == GDK_s )      
-         return (HB_LONG)GDK_scircumflex;            
+         return (long)GDK_scircumflex;            
    }
    	
    if ( a == GDK_grave  || a==GDK_dead_grave ) 
    {
       if ( b== GDK_A) 
-         return (HB_LONG)GDK_Agrave;
+         return (long)GDK_Agrave;
       else if ( b == GDK_a )      
-         return (HB_LONG)GDK_agrave;
+         return (long)GDK_agrave;
       else if ( b== GDK_E) 
-         return (HB_LONG)GDK_Egrave;
+         return (long)GDK_Egrave;
       else if ( b == GDK_e )      
-         return (HB_LONG)GDK_egrave;      
+         return (long)GDK_egrave;      
       else if ( b== GDK_I) 
-         return (HB_LONG)GDK_Igrave;
+         return (long)GDK_Igrave;
       else if ( b == GDK_i )      
-         return (HB_LONG)GDK_igrave;      
+         return (long)GDK_igrave;      
       else if ( b== GDK_O) 
-         return (HB_LONG)GDK_Ograve;
+         return (long)GDK_Ograve;
       else if ( b == GDK_o )      
-         return (HB_LONG)GDK_ograve;      
+         return (long)GDK_ograve;      
       else if ( b== GDK_U) 
-         return (HB_LONG)GDK_Ugrave;
+         return (long)GDK_Ugrave;
       else if ( b == GDK_u )      
-         return (HB_LONG)GDK_ugrave;      
+         return (long)GDK_ugrave;      
       else if ( b== GDK_C) 
-         return (HB_LONG)GDK_Ccedilla;
+         return (long)GDK_Ccedilla;
       else if ( b == GDK_c )      
-         return (HB_LONG)GDK_ccedilla ;                 
+         return (long)GDK_ccedilla ;                 
    }
 
    if ( a == GDK_acute  ||  a == GDK_dead_acute)
    {
      if ( b== GDK_A) 
-         return (HB_LONG)GDK_Aacute;
+         return (long)GDK_Aacute;
       else if ( b == GDK_a )      
-         return (HB_LONG)GDK_aacute;
+         return (long)GDK_aacute;
       else if ( b== GDK_E) 
-         return (HB_LONG)GDK_Eacute;
+         return (long)GDK_Eacute;
       else if ( b == GDK_e )      
-         return (HB_LONG)GDK_eacute;      
+         return (long)GDK_eacute;      
       else if ( b== GDK_I) 
-         return (HB_LONG)GDK_Iacute;
+         return (long)GDK_Iacute;
       else if ( b == GDK_i )      
-         return (HB_LONG)GDK_iacute;      
+         return (long)GDK_iacute;      
       else if ( b== GDK_O) 
-         return (HB_LONG)GDK_Oacute;
+         return (long)GDK_Oacute;
       else if ( b == GDK_o )      
-         return (HB_LONG)GDK_oacute;      
+         return (long)GDK_oacute;      
       else if ( b== GDK_U) 
-         return (HB_LONG)GDK_Uacute;
+         return (long)GDK_Uacute;
       else if ( b == GDK_u )      
-         return (HB_LONG)GDK_uacute;      
+         return (long)GDK_uacute;      
       else if ( b== GDK_Y) 
-         return (HB_LONG)GDK_Yacute;
+         return (long)GDK_Yacute;
       else if ( b == GDK_y )      
-         return (HB_LONG)GDK_yacute;            
+         return (long)GDK_yacute;            
       else if ( b== GDK_C) 
-         return (HB_LONG)GDK_Cacute;
+         return (long)GDK_Cacute;
       else if ( b == GDK_c )      
-         return (HB_LONG)GDK_cacute;
+         return (long)GDK_cacute;
       else if ( b== GDK_L) 
-         return (HB_LONG)GDK_Lacute;
+         return (long)GDK_Lacute;
       else if ( b == GDK_l )      
-         return (HB_LONG)GDK_lacute;      
+         return (long)GDK_lacute;      
       else if ( b== GDK_N) 
-         return (HB_LONG)GDK_Nacute;
+         return (long)GDK_Nacute;
       else if ( b == GDK_n )      
-         return (HB_LONG)GDK_nacute;      
+         return (long)GDK_nacute;      
       else if ( b== GDK_R) 
-         return (HB_LONG)GDK_Racute;
+         return (long)GDK_Racute;
       else if ( b == GDK_r )      
-         return (HB_LONG)GDK_racute;      
+         return (long)GDK_racute;      
       else if ( b== GDK_S) 
-         return (HB_LONG)GDK_Sacute;
+         return (long)GDK_Sacute;
       else if ( b == GDK_s )      
-         return (HB_LONG)GDK_sacute;      
+         return (long)GDK_sacute;      
       else if ( b== GDK_Z) 
-         return (HB_LONG)GDK_Zacute;
+         return (long)GDK_Zacute;
       else if ( b == GDK_z )      
-         return (HB_LONG)GDK_zacute;                  
+         return (long)GDK_zacute;                  
    }
    if ( a == GDK_diaeresis|| a==GDK_dead_diaeresis)	
    {
      if ( b== GDK_A) 
-         return (HB_LONG)GDK_Adiaeresis;
+         return (long)GDK_Adiaeresis;
       else if ( b == GDK_a )      
-         return (HB_LONG)GDK_adiaeresis;
+         return (long)GDK_adiaeresis;
       else if ( b== GDK_E) 
-         return (HB_LONG)GDK_Ediaeresis;
+         return (long)GDK_Ediaeresis;
       else if ( b == GDK_e )      
-         return (HB_LONG)GDK_ediaeresis;      
+         return (long)GDK_ediaeresis;      
       else if ( b== GDK_I) 
-         return (HB_LONG)GDK_Idiaeresis;
+         return (long)GDK_Idiaeresis;
       else if ( b == GDK_i )      
-         return (HB_LONG)GDK_idiaeresis;      
+         return (long)GDK_idiaeresis;      
       else if ( b== GDK_O) 
-         return (HB_LONG)GDK_Odiaeresis;
+         return (long)GDK_Odiaeresis;
       else if ( b == GDK_o )      
-         return (HB_LONG)GDK_odiaeresis;      
+         return (long)GDK_odiaeresis;      
       else if ( b== GDK_U) 
-         return (HB_LONG)GDK_Udiaeresis;
+         return (long)GDK_Udiaeresis;
       else if ( b == GDK_u )      
-         return (HB_LONG)GDK_udiaeresis;      
+         return (long)GDK_udiaeresis;      
       else if ( b== GDK_Y) 
-         return (HB_LONG)GDK_Ydiaeresis;
+         return (long)GDK_Ydiaeresis;
       else if ( b == GDK_y )      
-         return (HB_LONG)GDK_ydiaeresis;       	
+         return (long)GDK_ydiaeresis;       	
    }
 
    return b;      

@@ -26,7 +26,7 @@ static void brig__setcolor( cairo_t * cr, long int nColor )
 PBRIG_PPS brig_BeginPaint( BRIG_HANDLE handle )
 {
    PBRIG_PPS pps = ( PBRIG_PPS ) malloc( sizeof( BRIG_PPS ) );
-   PBRIG_HDC hDC = (PBRIG_HDC) hb_xgrab( sizeof(PBRIG_HDC) );   
+   PBRIG_HDC hDC = (PBRIG_HDC) malloc( sizeof(PBRIG_HDC) );   
 
    memset( hDC, 0, sizeof(PBRIG_HDC) );
    hDC->widget = handle;
@@ -48,8 +48,8 @@ void brig_EndPaint( BRIG_HANDLE handle, PBRIG_PPS pps )
 
    if( pps->hDC->layout )
       g_object_unref( (GObject*) pps->hDC->layout );
-   hb_xfree( pps->hDC );
-   hb_xfree( pps );
+   free( pps->hDC );
+   free( pps );
 
 }
 
@@ -163,7 +163,7 @@ PBRIG_FONT brig_SelectObject( PBRIG_DC hDC, PBRIG_FONT pFont )
 PBRIG_BRUSH brig_CreateBrush( long int lColor )
 {
       
-   PBRIG_BRUSH hbrush = (PBRIG_BRUSH) hb_xgrab( sizeof(BRIG_BRUSH) );
+   PBRIG_BRUSH hbrush = (PBRIG_BRUSH) malloc( sizeof(BRIG_BRUSH) );
 
    hbrush->type = BRIG_OBJECT_BRUSH;
    hbrush->color = lColor;
@@ -181,79 +181,102 @@ bool brig_CompareBrush( PBRIG_BRUSH pBrush, long int lColor )
 PBRIG_PEN brig_CreatePen( int iWidth, long int lColor, int iStyle )
 {
 
-   return CreatePen( iStyle, iWidth, lColor );
+   PBRIG_PEN hpen = (PBRIG_PEN) malloc( sizeof(BRIG_PEN) );
+
+   hpen->type = BRIG_OBJECT_PEN;
+   hpen->style = iStyle;
+   hpen->width = iWidth;
+   hpen->color = lColor;
+   return hPen;
 
 }
 
 bool brig_ComparePen( PBRIG_PEN pPen, int iWidth, long int lColor, int iStyle )
 {
-   LOGPEN lp = { 0 };
-
-   GetObject( pPen, sizeof( lp ), &lp );
-
-   return ( iWidth == (int)(lp.lopnWidth.x) && lColor == (long int)(lp.lopnColor) && iStyle == (int)(lp.lopnStyle) );
+   return ( iWidth == pPen->width && lColor == pPen->color && iStyle == pPen->style );
 
 }
 
 PBRIG_FONT brig_CreateFont( PBRIG_CHAR fontName, int fnWidth, int fnHeight, int fnWeight,
                DWORD fdwCharSet, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut  )
 {
-   PBRIG_FONT hFont;
-   PBRIG_WCHAR wcName = brig_str2WC( fontName );
+   PBRIG_FONT pFont = (PBRIG_FONT) malloc( sizeof(BRIG_FONT) );
+   PangoFontDescription *  hFont;
 
-   hFont = CreateFont( fnHeight,// logical height of font
-         fnWidth,               // logical average character width
-         0,                     // angle of escapement
-         0,                     // base-line orientation angle
-         fnWeight,              // font weight
-         fdwItalic,             // italic attribute flag
-         fdwUnderline,          // underline attribute flag
-         fdwStrikeOut,          // strikeout attribute flag
-         fdwCharSet,            // character set identifier
-         0,                     // output precision
-         0,                     // clipping precision
-         0,                     // output quality
-         0,                     // pitch and family
-         wcName                 // pointer to typeface name string
-          );
+   hFont = pango_font_description_new();
+   pango_font_description_set_family( hFont, fontname );
+   pango_font_description_set_style( hFont, (fdwItalic)? PANGO_STYLE_ITALIC : PANGO_STYLE_NORMAL );
+   pango_font_description_set_size( hFont, fnHeight );
+   pango_font_description_set_weight( hFont, fnWeight, );
 
-   brig_free( wcName );
+   pFont->type = BRIG_OBJECT_FONT;
+   pFont->hFont = hFont;
+   if( fdwUnderline || fdwStrikeOut )
+   {
+      pFont->attrs = pango_attr_list_new();
+      if( fdwUnderline )
+         pango_attr_list_insert( pFont->attrs, pango_attr_underline_new( PANGO_UNDERLINE_SINGLE) );
+      if( fdwStrikeOut )
+         pango_attr_list_insert( pFont->attrs, pango_attr_strikethrough_new( 1 ) );
+   }
+   else
+      pFont->attrs = NULL;
 
-   return hFont;
+   return pFont;
 }
 
 long int brig_SetTextColor( PBRIG_DC hDC, long int lColor )
 {
 
-   return (long int) SetTextColor( hDC, lColor );
+   long int lColorPrev = hDC->fcolor;
+   hDC->fcolor = lColor;
+   return lColorPrev;
 }
 
 long int brig_SetBkColor( PBRIG_DC hDC, long int lColor )
 {
 
-   return (long int) SetBkColor( hDC, lColor );
+   long int lColorPrev = hDC->bcolor;
+   hDC->bcolor = lColor;
+   return lColorPrev;
 }
 
 void brig_SetTransparentMode( PBRIG_DC hDC, bool bTransp )
 {
-   SetBkMode( hDC, ( bTransp ) ? TRANSPARENT : OPAQUE );
+   SYMBOL_UNUSED( hDC );
+   SYMBOL_UNUSED( bTransp );
 }
 
 int brig_DrawText( PBRIG_DC hDC, PBRIG_CHAR lpText, int x1, int y1, int x2, int y2, unsigned int uiFormat )
 {
-   PBRIG_WCHAR wcText = brig_str2WC( lpText );
-   RECT rc;
-   int height;
+   PangoRectangle rc;
+   int iWidth = x2 - x1;
 
-   rc.left = x1;
-   rc.top  = y1;
-   rc.right  = x2;
-   rc.bottom = y2;
+   SYMBOL_UNUSED( y2 );
 
-   height = DrawText( hDC, wcText, -1, &rc, uiFormat );
+   if( lpText && strlen( lpText ) > 0 )
+   {
+      pango_layout_set_text( hDC->layout, lpText, -1 );
 
-   brig_free( wcText );
-   return height;
+      pango_layout_get_pixel_extents( hDC->layout, &rc, NULL );
+      pango_layout_set_width( hDC->layout, -1 );
+
+      if( ( uiFormat & ( DT_CENTER | DT_RIGHT ) ) &&
+            ( rc.width < ( iWidth-10 ) ) )
+      {
+         pango_layout_set_width( hDC->layout, iWidth*PANGO_SCALE );
+         pango_layout_set_alignment( hDC->layout, 
+             (uiFormat & DT_CENTER)? PANGO_ALIGN_CENTER : PANGO_ALIGN_RIGHT );
+      }
+      else
+         pango_layout_set_alignment( hDC->layout, PANGO_ALIGN_LEFT );
+
+      brig__setcolor( hDC->cr, (hDC->fcolor != -1)? hDC->fcolor : 0 );
+      cairo_move_to( hDC->cr, (gdouble)x1, (gdouble)y1 );
+      pango_cairo_show_layout( hDC->cr, hDC->layout );
+   }
+
+   return 0;
 }
 
 void brig_DrawGradient( PBRIG_DC hDC, int x1, int y1, int x2, int y2, int type,
