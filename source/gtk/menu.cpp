@@ -1,6 +1,7 @@
 /*
  * Brig - a ligthweight C++ GUI framework
- *
+ * GTK version
+ * Menu basic functions
  *
  * Copyright 2017 Alexander S.Kresin <alex@kresin.ru>
  * www - http://www.kresin.ru

@@ -1,7 +1,7 @@
 /*
  * Brig - a ligthweight C++ GUI framework
- *
  * WinAPI version
+ * Strings manipulation functions
  *
  * Copyright 2017 Alexander S.Kresin <alex@kresin.ru>
  * www - http://www.kresin.ru

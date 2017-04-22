@@ -1,5 +1,6 @@
 /*
  * Brig - a ligthweight C++ GUI framework
+ * WinAPI version
  * brig_Table implementation
  *
  * Copyright 2017 Alexander S.Kresin <alex@kresin.ru>

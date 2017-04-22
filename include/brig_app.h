@@ -8,9 +8,16 @@
 #ifndef BRIG_APP_H_
 #define BRIG_APP_H_
 
+#define BRIGAPP_FONT_LIMIT      20
 #define BRIGAPP_PEN_LIMIT       50
 #define BRIGAPP_BRUSH_LIMIT     50
 #define BRIGAPP_STYLE_LIMIT     50
+
+struct BRIGAPP_FONT
+{
+   PBRIG_FONT  pFont;
+   int        iCount;
+};
 
 struct BRIGAPP_PEN
 {
@@ -37,6 +44,7 @@ public:
    brig_Application();
    ~brig_Application();
 
+   vector<BRIGAPP_FONT> avFonts;
    vector<BRIGAPP_PEN> avPens;
    vector<BRIGAPP_BRUSH> avBrushes;
    vector<BRIGAPP_STYLE> avStyles;
