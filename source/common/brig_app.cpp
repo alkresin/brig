@@ -22,6 +22,67 @@ brig_Application::~brig_Application()
 
    for( i = 0; i < brigApp.avBrushes.size(); i++ )
       brig_DeleteObject( brigApp.avBrushes[i].pBrush );
+
+   for( i = 0; i < brigApp.avFonts.size(); i++ )
+      brig_DeleteObject( brigApp.avFonts[i].pFont );
+
+}
+
+PBRIG_FONT brigAddFont( PBRIG_CHAR fontName, int fnHeight, int fnWeight,
+               DWORD fdwCharSet, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut )
+{
+   unsigned int i, iFirst = 0;
+   BRIGAPP_FONT pbf;
+
+   for( i = 0; i < brigApp.avFonts.size(); i++ )
+   {
+      pbf = brigApp.avFonts[i];
+      if( pbf.pName == fontName && pbf.iHeight == (int) fnHeight &&
+            pbf.iWeight == (int)fnWeight && pbf.iCharSet == (int)fdwCharSet &&
+            pbf.iItalic == (int)fdwItalic && pbf.iUnderline == (int)fdwUnderline &&
+            pbf.iStrikeOut == (int)fdwStrikeOut )
+         break;
+      if( brigApp.avFonts[i].iCount == 0 && !iFirst )
+         iFirst = i;
+   }
+   if( i >= brigApp.avFonts.size() )
+   {
+      BRIGAPP_FONT bf;
+      bf.pFont = brig_CreateFont( fontName, fnHeight, fnWeight,
+               fdwCharSet, fdwItalic, fdwUnderline, fdwStrikeOut );
+      bf.iCount = 1;
+      bf.pName = fontName;
+      bf.iHeight  = (int) fnHeight;
+      bf.iWeight  = (int)fnWeight;
+      bf.iCharSet = (int)fdwCharSet;
+      bf.iItalic  = (int)fdwItalic;
+      bf.iUnderline  = (int)fdwUnderline;
+      pbf.iStrikeOut = (int)fdwStrikeOut;
+      if( brigApp.avFonts.size() > BRIGAPP_FONT_LIMIT && iFirst )
+      {
+         brig_DeleteObject( brigApp.avFonts[iFirst].pFont );
+         brigApp.avFonts.erase( brigApp.avFonts.begin()+iFirst );
+      }
+      brigApp.avFonts.push_back( bf );
+      return bf.pFont;
+   }
+   else
+   {
+      brigApp.avFonts[i].iCount ++;
+      return brigApp.avFonts[i].pFont;
+   }
+}
+
+void brigDelFont( PBRIG_FONT pFont )
+{
+   unsigned int i;
+
+   for( i = 0; i < brigApp.avFonts.size(); i++ )
+      if( brigApp.avFonts[i].pFont == pFont && brigApp.avFonts[i].iCount )
+      {
+         brigApp.avFonts[i].iCount --;
+         break;
+      }
 }
 
 PBRIG_PEN brigAddPen( int iWidth, long int lColor, int iStyle )

@@ -148,14 +148,14 @@ bool brig_ComparePen( PBRIG_PEN pPen, int iWidth, long int lColor, int iStyle )
 
 }
 
-PBRIG_FONT brig_CreateFont( PBRIG_CHAR fontName, int fnWidth, int fnHeight, int fnWeight,
+PBRIG_FONT brig_CreateFont( PBRIG_CHAR fontName, int fnHeight, int fnWeight,
                DWORD fdwCharSet, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut  )
 {
    PBRIG_FONT hFont;
    PBRIG_WCHAR wcName = brig_str2WC( fontName );
 
    hFont = CreateFont( fnHeight,// logical height of font
-         fnWidth,               // logical average character width
+         0,                     // logical average character width
          0,                     // angle of escapement
          0,                     // base-line orientation angle
          fnWeight,              // font weight

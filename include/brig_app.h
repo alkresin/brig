@@ -16,6 +16,13 @@
 struct BRIGAPP_FONT
 {
    PBRIG_FONT  pFont;
+   PBRIG_CHAR  pName;
+   int  iHeight;
+   int  iWeight;
+   int  iCharSet;
+   int  iItalic;
+   int  iUnderline;
+   int  iStrikeOut;
    int        iCount;
 };
 
