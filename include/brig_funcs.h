@@ -39,6 +39,10 @@ extern PBRIG_CHAR brig_GetWindowText( BRIG_HANDLE handle );
 extern void brig_MoveWindow( BRIG_HANDLE handle, int iLeft, int iTop, int iWidth, int iHeight );
 extern void brig_EnableWindow( BRIG_HANDLE handle, bool bEnable );
 extern void brig_ShowWindow( BRIG_HANDLE handle, bool bShow );
+extern BRIG_HANDLE brig_SetFocus( BRIG_HANDLE handle );
+extern BRIG_HANDLE brig_GetFocus( void );
+extern void brig_SetTopmost( BRIG_HANDLE handle );
+extern void brig_RemoveTopmost( BRIG_HANDLE handle );
 
 extern void brig_RedrawWindow( BRIG_HANDLE handle );
 extern void brig_DeleteObject( PBRIG_BRUSH pBrush );

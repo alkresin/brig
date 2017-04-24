@@ -89,6 +89,33 @@ void brig_ShowWindow( BRIG_HANDLE handle, bool bShow )
       gtk_widget_hide( handle );
 }
 
+BRIG_HANDLE brig_SetFocus( BRIG_HANDLE handle )
+{
+   GtkWidget * oldhandle = gtk_window_get_focus( gtk_window_list_toplevels()->data );
+
+   if( g_object_get_data( ( GObject * ) handle, "window" ) )
+      gtk_window_present( (GtkWindow*) handle );
+   else
+      gtk_widget_grab_focus( (GtkWidget*) handle );
+
+   return oldhandle;
+}
+
+BRIG_HANDLE brig_GetFocus( void )
+{
+   return gtk_window_get_focus( gtk_window_list_toplevels()->data );
+}
+
+void brig_SetTopmost( BRIG_HANDLE handle )
+{
+   gtk_window_set_keep_above( (GtkWindow*) handle, TRUE );
+}
+
+void brig_RemoveTopmost( BRIG_HANDLE handle )
+{
+   gtk_window_set_keep_above( (GtkWindow*) handle, FALSE );
+}
+
 static long ToKey( long a, long b )
 {
 

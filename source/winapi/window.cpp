@@ -111,6 +111,25 @@ void brig_ShowWindow( BRIG_HANDLE handle, bool bShow )
    ShowWindow( handle, (bShow)? SW_SHOWNORMAL:SW_HIDE );
 }
 
+BRIG_HANDLE brig_SetFocus( BRIG_HANDLE handle )
+{
+   return SetFocus( handle );
+}
+
+BRIG_HANDLE brig_GetFocus( void )
+{
+   return GetFocus();
+}
+
+void brig_SetTopmost( BRIG_HANDLE handle )
+{
+   SetWindowPos( ( HWND ) handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+}
+
+void brig_RemoveTopmost( BRIG_HANDLE handle )
+{
+   SetWindowPos( ( HWND ) handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+}
 
 static LRESULT CALLBACK s_MainWndProc( BRIG_HANDLE handle, UINT message,
       WPARAM wParam, LPARAM lParam )
