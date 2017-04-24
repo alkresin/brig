@@ -22,6 +22,8 @@ BRIG_HANDLE brig_Table::New( brig_Container *pParent,
    handle = brig_CreateTable( pParent->Handle(), iWidgId,
              x, y, nWidth, nHeight, ulStyle );
 
+   if( !hFont )
+      hFont = pParent->hFont;
    brig_SetWidgetData( this );
 
    return handle;
@@ -29,12 +31,14 @@ BRIG_HANDLE brig_Table::New( brig_Container *pParent,
 
 static void paint_head( brig_Table *pTable, PBRIG_DC hDC )
 {
+   SYMBOL_UNUSED( hDC );
    if( !pTable->uiHeadRows )
       return;
 }
 
 static void paint_foot( brig_Table *pTable, PBRIG_DC hDC )
 {
+   SYMBOL_UNUSED( hDC );
    if( !pTable->uiFootRows )
       return;
 

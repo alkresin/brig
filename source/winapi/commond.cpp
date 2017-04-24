@@ -7,7 +7,7 @@
  * www - http://www.kresin.ru
  */
 
-#include "brig_funcs.h"
+#include "brig.h"
 
 long int brig_ChooseColor( long int lDefColor )
 {
@@ -33,7 +33,7 @@ long int brig_ChooseColor( long int lDefColor )
       return -1;
 }
 
-PBRIG_FONT brig_ChooseFont( PBRIG_FONT hFontPrev )
+PBRIG_FONT brig_ChooseFont( PBRIG_FONT hFontPrev, BRIGAPP_FONT *pbf )
 {
    CHOOSEFONT cf;
    LOGFONT lf = { 0 };
@@ -63,6 +63,16 @@ PBRIG_FONT brig_ChooseFont( PBRIG_FONT hFontPrev )
    if( !ChooseFont( &cf ) )
       return NULL;
 
+   if( pbf )
+   {
+      pbf->pName = brig_WC2str( lf.lfFaceName, -1 );
+      pbf->iHeight  = lf.lfHeight;
+      pbf->iWeight  = lf.lfWeight;
+      pbf->iCharSet = lf.lfCharSet;
+      pbf->iItalic  = lf.lfItalic;
+      pbf->iUnderline = lf.lfUnderline;
+      pbf->iStrikeOut = lf.lfStrikeOut;
+   }
    /* Create a logical font based on the user's   */
    /* selection and return a handle identifying   */
    /* that font.                                  */

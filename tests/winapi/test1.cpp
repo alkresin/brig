@@ -19,6 +19,7 @@ bool fncOnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
    SYMBOL_UNUSED( wParam );
    SYMBOL_UNUSED( lParam );
 
+   oEdit.SetFont( brigAddFont( "Georgia", 20, 700 ) );
    oEdit.SetTextColor( 255, 0 );
    oEdit.SetBackColor( 11184810, 1 );
    pText = oEdit.GetText();
@@ -142,6 +143,7 @@ int brig_Main( int argc, char *argv[] )
 
    oQBtn.New( &oMain, 20, 100, 48, 32, "Ok" );
    oQBtn.lBackColor = oQBtn.lBackClr1 = 0xcccccc;
+   oQBtn.SetFont( brigAddFont( "Georgia", 18, 400, 0, 1 ) );
 
    oBtn.New( &oMain, 100, 100, 100, 32, (PBRIG_CHAR) "Помощь" );
    oBtn.pfOnClick = fncOnClick;

@@ -20,6 +20,8 @@ BRIG_HANDLE brig_Label::New( brig_Container *pParent,
    
    handle = brig_CreateLabel( pParent->Handle(), iWidgId,
              x, y, nWidth, nHeight, ulStyle, lpCaption, ulExStyle );
+   if( !hFont && pParent->hFont )
+      SetFont( pParent->hFont );
 
    return handle;
 }
@@ -36,6 +38,8 @@ BRIG_HANDLE brig_Edit::New( brig_Container * pParent,
    handle = brig_CreateEdit( pParent->Handle(), iWidgId,
              x, y, nWidth, nHeight, ulStyle, lpCaption, ulExStyle );
 
+   if( !hFont && pParent->hFont )
+      SetFont( pParent->hFont );
    brig_SetWidgetData( this );
 
    return handle;
@@ -65,6 +69,8 @@ BRIG_HANDLE brig_Button::New( brig_Container *pParent,
    handle = brig_CreateButton( pParent->Handle(), iWidgId,
              x, y, nWidth, nHeight, ulStyle, lpCaption );
 
+   if( !hFont && pParent->hFont )
+      SetFont( pParent->hFont );
    brig_SetWidgetData( this );
 
    return handle;
@@ -102,6 +108,8 @@ BRIG_HANDLE brig_CheckButton::New( brig_Container *pParent,
    handle = brig_CreateButton( pParent->Handle(), iWidgId,
              x, y, nWidth, nHeight, ulStyle | BS_AUTOCHECKBOX, lpCaption );
 
+   if( !hFont && pParent->hFont )
+      SetFont( pParent->hFont );
    brig_SetWidgetData( this );
 
    return handle;
@@ -148,6 +156,8 @@ BRIG_HANDLE brig_RadioButton::New( brig_Container *pParent,
    handle = brig_CreateButton( pParent->Handle(), iWidgId,
              x, y, nWidth, nHeight, ulStyle | BS_AUTORADIOBUTTON, lpCaption );
 
+   if( !hFont && pParent->hFont )
+      SetFont( pParent->hFont );
    brig_SetWidgetData( this );
 
    return handle;
@@ -194,6 +204,8 @@ BRIG_HANDLE brig_GroupBox::New( brig_Container *pParent,
    handle = brig_CreateButton( pParent->Handle(), iWidgId,
              x, y, nWidth, nHeight, BS_GROUPBOX, lpCaption );
 
+   if( !hFont && pParent->hFont )
+      SetFont( pParent->hFont );
    return handle;
 }
 
@@ -215,6 +227,8 @@ BRIG_HANDLE brig_Panel::New( brig_Container *pParent,
    handle = brig_CreatePanel( pParent->Handle(), iWidgId, x, y, nWidth, nHeight );
 
    pStyle = ps;
+   if( !hFont )
+      hFont = pParent->hFont;
    brig_SetWidgetData( this );
 
    return handle;
@@ -296,6 +310,8 @@ BRIG_HANDLE brig_QButton::New( brig_Container *pParent,
    pStyleOver = psOver;
    pStylePress = psPress;
 
+   if( !hFont )
+      hFont = pParent->hFont;
    brig_SetWidgetData( this );
 
    return handle;

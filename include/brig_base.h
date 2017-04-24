@@ -44,6 +44,7 @@ public:
    BRIG_HANDLE Handle( void ) const;
 
    void New( brig_Container *pParent, int x, int y, int width, int height );
+   void SetFont( PBRIG_FONT hFontNew );
    long int SetTextColor( long int lColor = -1, bool bRepaint = 1 );
    long int SetBackColor( long int lColor = -1, bool bRepaint = 1 );
    void Move( int iLeft, int iTop, int iWidth = -1, int iHeight = -1 );

@@ -24,7 +24,11 @@ brig_Application::~brig_Application()
       brig_DeleteObject( brigApp.avBrushes[i].pBrush );
 
    for( i = 0; i < brigApp.avFonts.size(); i++ )
+   {
       brig_DeleteObject( brigApp.avFonts[i].pFont );
+      if( brigApp.avFonts[i].bNeedToFree )
+         free( brigApp.avFonts[i].pName );
+   }
 
 }
 
@@ -32,22 +36,22 @@ PBRIG_FONT brigAddFont( PBRIG_CHAR fontName, int fnHeight, int fnWeight,
                DWORD fdwCharSet, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut )
 {
    unsigned int i, iFirst = 0;
-   BRIGAPP_FONT pbf;
+   BRIGAPP_FONT bfold;
 
    for( i = 0; i < brigApp.avFonts.size(); i++ )
    {
-      pbf = brigApp.avFonts[i];
-      if( pbf.pName == fontName && pbf.iHeight == (int) fnHeight &&
-            pbf.iWeight == (int)fnWeight && pbf.iCharSet == (int)fdwCharSet &&
-            pbf.iItalic == (int)fdwItalic && pbf.iUnderline == (int)fdwUnderline &&
-            pbf.iStrikeOut == (int)fdwStrikeOut )
+      bfold = brigApp.avFonts[i];
+      if( bfold.pName == fontName && bfold.iHeight == (int) fnHeight &&
+            bfold.iWeight == (int)fnWeight && bfold.iCharSet == (int)fdwCharSet &&
+            bfold.iItalic == (int)fdwItalic && bfold.iUnderline == (int)fdwUnderline &&
+            bfold.iStrikeOut == (int)fdwStrikeOut )
          break;
       if( brigApp.avFonts[i].iCount == 0 && !iFirst )
          iFirst = i;
    }
    if( i >= brigApp.avFonts.size() )
    {
-      BRIGAPP_FONT bf;
+      BRIGAPP_FONT bf = {0};
       bf.pFont = brig_CreateFont( fontName, fnHeight, fnWeight,
                fdwCharSet, fdwItalic, fdwUnderline, fdwStrikeOut );
       bf.iCount = 1;
@@ -57,7 +61,7 @@ PBRIG_FONT brigAddFont( PBRIG_CHAR fontName, int fnHeight, int fnWeight,
       bf.iCharSet = (int)fdwCharSet;
       bf.iItalic  = (int)fdwItalic;
       bf.iUnderline  = (int)fdwUnderline;
-      pbf.iStrikeOut = (int)fdwStrikeOut;
+      bf.iStrikeOut = (int)fdwStrikeOut;
       if( brigApp.avFonts.size() > BRIGAPP_FONT_LIMIT && iFirst )
       {
          brig_DeleteObject( brigApp.avFonts[iFirst].pFont );
@@ -71,6 +75,52 @@ PBRIG_FONT brigAddFont( PBRIG_CHAR fontName, int fnHeight, int fnWeight,
       brigApp.avFonts[i].iCount ++;
       return brigApp.avFonts[i].pFont;
    }
+}
+
+PBRIG_FONT brigAddFont( PBRIG_FONT pFontBase )
+{
+   unsigned int i, iFirst = 0;
+   BRIGAPP_FONT bf = { 0 };
+   PBRIG_FONT pFont = brig_ChooseFont( pFontBase, &bf );
+
+   if( pFont )
+   {
+      BRIGAPP_FONT bfold;
+      for( i = 0; i < brigApp.avFonts.size(); i++ )
+      {
+         bfold = brigApp.avFonts[i];
+         if( bfold.pName == bf.pName && bfold.iHeight == bf.iHeight &&
+               bfold.iWeight == bf.iWeight && bfold.iCharSet == bf.iCharSet &&
+               bfold.iItalic == bf.iItalic && bfold.iUnderline == bf.iUnderline &&
+               bfold.iStrikeOut == bf.iStrikeOut )
+            break;
+         if( brigApp.avFonts[i].iCount == 0 && !iFirst )
+            iFirst = i;
+      }
+      if( i >= brigApp.avFonts.size() )
+      {
+         bf.pFont = pFont;
+         bf.iCount = 1;
+         #if defined( UNICODE )
+         bf.bNeedToFree = 1;
+         #endif
+         if( brigApp.avFonts.size() > BRIGAPP_FONT_LIMIT && iFirst )
+         {
+            brig_DeleteObject( brigApp.avFonts[iFirst].pFont );
+            brigApp.avFonts.erase( brigApp.avFonts.begin()+iFirst );
+         }
+         brigApp.avFonts.push_back( bf );
+         return bf.pFont;
+      }
+      else
+      {
+         brigApp.avFonts[i].iCount ++;
+         brig_DeleteObject( pFont );
+         free( bf.pName );
+         return brigApp.avFonts[i].pFont;
+      }
+   }
+   return NULL;
 }
 
 void brigDelFont( PBRIG_FONT pFont )

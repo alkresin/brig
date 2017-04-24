@@ -175,6 +175,12 @@ PBRIG_FONT brig_CreateFont( PBRIG_CHAR fontName, int fnHeight, int fnWeight,
    return hFont;
 }
 
+void brig_SetFont( BRIG_HANDLE handle, PBRIG_FONT pFont )
+{
+   SendMessage( handle, WM_SETFONT, ( WPARAM ) pFont, 0L );
+
+}
+
 long int brig_SetTextColor( PBRIG_DC hDC, long int lColor )
 {
 

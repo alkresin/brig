@@ -17,6 +17,7 @@ struct BRIGAPP_FONT
 {
    PBRIG_FONT  pFont;
    PBRIG_CHAR  pName;
+   bool  bNeedToFree;
    int  iHeight;
    int  iWeight;
    int  iCharSet;
@@ -57,12 +58,17 @@ public:
    vector<BRIGAPP_STYLE> avStyles;
 };
 
-extern PBRIG_PEN brigAddPen( int iWidth = 1, long int lColor = 0, int iStyle  = 0 );
+extern PBRIG_FONT brigAddFont( PBRIG_CHAR fontName, int fnHeight, int fnWeight = 400,
+               DWORD fdwCharSet = 0, DWORD fdwItalic = 0, DWORD fdwUnderline = 0, DWORD fdwStrikeOut = 0);
+extern PBRIG_FONT brigAddFont( PBRIG_FONT pFontBase );
+extern PBRIG_PEN brigAddPen( int iWidth = 1, long int lColor = 0, int iStyle = 0 );
 extern void brigDelPen( PBRIG_PEN pPen );
 extern PBRIG_BRUSH brigAddBrush( long int lColor );
 extern void brigDelBrush( PBRIG_BRUSH pBrush );
 extern brig_Style * brigAddStyle( int iColors, long * pColors, int iType = 1,
       long lBorderColor = -1, int iBorder = 1, int iCorners = 0, long * pCorners = NULL );
 extern void brigDelStyle( brig_Style * pStyle );
+
+extern PBRIG_FONT brig_ChooseFont( PBRIG_FONT hFontPrev, BRIGAPP_FONT *pbf = NULL );
 
 #endif // BRIG_APP_H_

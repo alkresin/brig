@@ -226,6 +226,21 @@ PBRIG_FONT brig_CreateFont( PBRIG_CHAR fontName, int fnWidth, int fnHeight, int 
    return pFont;
 }
 
+void brig_SetFont( BRIG_HANDLE handle, PBRIG_FONT pFont )
+{
+   GtkWidget * hLabel = (GtkWidget*) g_object_get_data( (GObject*) handle,"label" );   
+
+   if( GTK_IS_BUTTON( hCtrl ) )
+      handle = gtk_bin_get_child( GTK_BIN( handle ) );
+   else if( GTK_IS_EVENT_BOX( hCtrl ) )
+      handle = gtk_bin_get_child( GTK_BIN( handle ) );
+   else if( hLabel )
+      handle = (GtkWidget*) hLabel;
+      
+   gtk_widget_modify_font( handle, pFont->hFont );
+
+}
+
 long int brig_SetTextColor( PBRIG_DC hDC, long int lColor )
 {
 

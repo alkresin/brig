@@ -57,7 +57,12 @@ void brig_Widget::New( brig_Container *pParent, int x, int y, int width, int hei
    this->pParent = pParent;
    pParent->AddWidget( this );
    iWidgId = pParent->NewId();
-   hFont = pParent->hFont;
+}
+
+void brig_Widget::SetFont( PBRIG_FONT hFontNew )
+{
+   hFont = hFontNew;
+   brig_SetFont( handle, hFontNew );
 }
 
 long int brig_Widget::SetTextColor( long int lColor, bool bRepaint )
