@@ -10,6 +10,7 @@
 #define BRIG_H_
 
 #include "brig_defs.h"
+#include "brig_xml.h"
 #include "brig_funcs.h"
 
 #include "brig_style.h"

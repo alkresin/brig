@@ -25,6 +25,7 @@ $(LIB_DIR)/libbrig_ansi.a : \
    $(OBJ_DIR)/brig_style.o \
    $(OBJ_DIR)/brig_table.o \
    $(OBJ_DIR)/brig_widgets.o \
+   $(OBJ_DIR)/brig_xml.o \
    $(OBJ_DIR)/commond.o \
    $(OBJ_DIR)/control.o \
    $(OBJ_DIR)/draw.o \
@@ -46,6 +47,7 @@ $(LIB_DIR)/libbrig.a : \
    $(OBJ_DIR)/brig_style.o \
    $(OBJ_DIR)/brig_table.o \
    $(OBJ_DIR)/brig_widgets.o \
+   $(OBJ_DIR)/brig_xml.o \
    $(OBJ_DIR)/commond.o \
    $(OBJ_DIR)/control.o \
    $(OBJ_DIR)/draw.o \

@@ -18,12 +18,12 @@ struct BRIGAPP_FONT
    PBRIG_FONT  pFont;
    PBRIG_CHAR  pName;
    bool  bNeedToFree;
-   int  iHeight;
-   int  iWeight;
-   int  iCharSet;
-   int  iItalic;
-   int  iUnderline;
-   int  iStrikeOut;
+   int       iHeight;
+   int       iWeight;
+   int      iCharSet;
+   int       iItalic;
+   int    iUnderline;
+   int    iStrikeOut;
    int        iCount;
 };
 

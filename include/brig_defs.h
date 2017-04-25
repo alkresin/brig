@@ -15,6 +15,7 @@
 
 #include <vector>
 #include <string>
+#include <map>
 using std::vector;
 
 #if defined( WINNT ) || defined( _Windows ) || defined( __NT__ ) || defined( _WIN32 ) || defined( _WINDOWS_ ) || defined( __WINDOWS_386__ ) || defined( __WIN32__ )
