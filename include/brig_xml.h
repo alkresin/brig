@@ -9,6 +9,7 @@
 #define BRIG_XML_H_
 
 #include "brig_defs.h"
+#include "brig_funcs.h"
 
 typedef struct BRIG_XMLITEM_STRU
 {
@@ -21,5 +22,8 @@ typedef struct BRIG_XMLITEM_STRU
    std::map<std::string,char*>amAttr;
 
 } BRIG_XMLITEM, *PBRIG_XMLITEM;
+
+extern int brigxml_Error( void );
+extern PBRIG_XMLITEM brigxml_GetDoc( PBRIG_CHAR szSource, bool bFile = 1 );
 
 #endif // BRIG_XML_H_

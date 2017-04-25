@@ -27,6 +27,7 @@
 #define XML_ERROR_WRONG_ENTITY  5
 #define XML_ERROR_NOT_QUOTE     6
 #define XML_ERROR_TERMINATION   7
+#define XML_ERROR_FILE         10
 
 #define XML_TYPE_TAG            0
 #define XML_TYPE_SINGLE         1
@@ -37,7 +38,7 @@
 #define ATTR_KEY_LEN           50
 #define ATTR_VAL_LEN          100
 
-static unsigned char *cBuffer;
+static unsigned char *pStart;
 static int nParseError;
 static unsigned long ulOffset;
 
@@ -53,10 +54,15 @@ static unsigned char *predefinedEntity2 = ( unsigned char * ) "<>&\"\' ";
 static unsigned char **pEntity1 = NULL;
 static unsigned char *pEntity2 = NULL;
 
-void brigxml_error( int nError, unsigned char *ptr )
+int brigxml_Error( void )
+{
+   return nParseError;
+}
+
+static void brigxml_error( int nError, unsigned char *ptr )
 {
    nParseError = nError;
-   ulOffset = ptr - cBuffer;
+   ulOffset = ptr - pStart;
 }
 
 /*
@@ -180,6 +186,7 @@ std::map<std::string,char*> brigxml_getattr( unsigned char **pBuffer, bool * lSi
             memcpy( pKey, ptr, iLen );
             pKey[iLen] = '\0';
          }
+         brig_writelog( NULL, "getattr-1 %s\r\n", (pKey)? pKey:szKey );
 
          SKIPTABSPACES( *pBuffer );  // go till '='
          if( **pBuffer == '=' )
@@ -215,11 +222,13 @@ std::map<std::string,char*> brigxml_getattr( unsigned char **pBuffer, bool * lSi
                memcpy( pVal, ptr, iLen );
                pVal[iLen] = '\0';
             }
+            brig_writelog( NULL, "getattr-2 %s\r\n", (pVal)? pVal:szVal );
             amAttr[ (char*) ((pKey)? pKey : szKey) ] = (char*) ((pVal)? pVal : szVal);
             if( pKey )
                free( pKey );
             if( pVal )
                free( pVal );
+            pKey = pVal = NULL;
             ( *pBuffer )++;
          }
          SKIPTABSPACES( *pBuffer );
@@ -227,6 +236,7 @@ std::map<std::string,char*> brigxml_getattr( unsigned char **pBuffer, bool * lSi
       if( **pBuffer == '>' )
          ( *pBuffer )++;
    }
+   brig_writelog( NULL, "getattr-5\r\n" );
    return amAttr;
 }
 
@@ -416,19 +426,22 @@ bool brigxml_readElement( PBRIG_XMLITEM pParent, unsigned char **pBuffer )
 
 static unsigned char * brig_ReadFile( PBRIG_CHAR szName )
 {
-   unsigned char * pBuffer;
+   unsigned char * pBuffer = NULL;
    FILE *f = fopen( szName, "rb" );
    long lSize;
 
-   fseek( f, 0, SEEK_END );
-   lSize = ftell( f );
-   fseek(f, 0, SEEK_SET);
+   if( f )
+   {
+      fseek( f, 0, SEEK_END );
+      lSize = ftell( f );
+      fseek(f, 0, SEEK_SET);
 
-   pBuffer = (unsigned char *) malloc( lSize + 1 );
-   fread( pBuffer, lSize, 1, f );
-   fclose( f );
+      pBuffer = (unsigned char *) malloc( lSize + 1 );
+      fread( pBuffer, lSize, 1, f );
+      fclose( f );
 
-   pBuffer[lSize] = 0;
+      pBuffer[lSize] = 0;
+   }
    return pBuffer;
 }
 
@@ -444,10 +457,16 @@ PBRIG_XMLITEM brigxml_GetDoc( PBRIG_CHAR szSource, bool bFile )
       pEntity2 = predefinedEntity2;
    }
    if( bFile )
-      ptr = szSource;
-   else
       ptr = pBuffer = brig_ReadFile( szSource );
+   else
+      ptr = szSource;
+   pStart = ptr;
 
+   if( !ptr )
+   {
+      nParseError = XML_ERROR_FILE;
+      return NULL;
+   }
    nParseError = 0;
    SKIPTABSPACES( ptr );
    if( *ptr != '<' )
@@ -457,7 +476,10 @@ PBRIG_XMLITEM brigxml_GetDoc( PBRIG_CHAR szSource, bool bFile )
       if( !memcmp( ptr + 1, "?xml", 4 ) )
       {
          bool bSingle;
-         pDoc->amAttr = brigxml_getattr( &ptr, &bSingle );
+         brig_writelog( NULL, "gt-1 %d\r\n", (pDoc)? 1:0 );
+         //pDoc->amAttr = brigxml_getattr( &ptr, &bSingle );
+         brigxml_getattr( &ptr, &bSingle );
+         brig_writelog( NULL, "gt-2\r\n" );
          if( pDoc->amAttr.empty() || nParseError )
          {
             if( bFile )

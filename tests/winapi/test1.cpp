@@ -98,6 +98,7 @@ int brig_Main( int argc, char *argv[] )
    brig_CheckButton oCheck;
    long pColors1[2] = {0x333333, 0xcccccc};
    PBRIG_PEN pPen2;
+   PBRIG_XMLITEM pXmlDoc;
 
    SYMBOL_UNUSED( argc );
    SYMBOL_UNUSED( argv );
@@ -117,6 +118,12 @@ int brig_Main( int argc, char *argv[] )
    brigDelPen( pPen2 );
    brig_writelog( NULL, "size: %d\r\n", brigApp.avPens.size() );
    */
+
+   pXmlDoc = brigxml_GetDoc( "test1.xml" );
+   if( pXmlDoc )
+      brig_writelog( NULL, "size: %d %d\r\n", pXmlDoc->avItems.size(), brigxml_Error() );
+   else
+      brig_writelog( NULL, "Error %d \r\n", brigxml_Error() );
 
    oMain.New( 100, 100, 500, 300, (PBRIG_CHAR) "First Brig Window" );
    oMain.pfOnClose = fncOnClose;
