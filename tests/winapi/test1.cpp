@@ -120,8 +120,8 @@ int brig_Main( int argc, char *argv[] )
    */
 
    pXmlDoc = brigxml_GetDoc( "test1.xml" );
-   if( pXmlDoc )
-      brig_writelog( NULL, "size: %d %d\r\n", pXmlDoc->avItems.size(), brigxml_Error() );
+   if( pXmlDoc && pXmlDoc->avItems.size() == 1 )
+      brig_writelog( NULL, "size: %d %d\r\n", pXmlDoc->avItems[0]->avItems.size(), brigxml_Error() );
    else
       brig_writelog( NULL, "Error %d \r\n", brigxml_Error() );
 
@@ -159,6 +159,8 @@ int brig_Main( int argc, char *argv[] )
    //brig_writelog( NULL, "button id: %d\r\n", oBtn.iControlId );
 
    oMain.Activate();
+
+   brigxml_Release( pXmlDoc );
 
    return 0;
 }

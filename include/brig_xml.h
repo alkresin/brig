@@ -25,5 +25,6 @@ typedef struct BRIG_XMLITEM_STRU
 
 extern int brigxml_Error( void );
 extern PBRIG_XMLITEM brigxml_GetDoc( PBRIG_CHAR szSource, bool bFile = 1 );
+extern void brigxml_Release( PBRIG_XMLITEM pItem );
 
 #endif // BRIG_XML_H_

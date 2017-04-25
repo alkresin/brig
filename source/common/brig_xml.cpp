@@ -69,7 +69,7 @@ static void brigxml_error( int nError, unsigned char *ptr )
  * brigxml_pp( unsigned char * ptr, unsigned long ulLen )
  * Translation of the predefined entities ( &lt;, etc. )
  */
-unsigned char* brigxml_pp( unsigned char *ptr, unsigned long ulLen )
+static unsigned char* brigxml_pp( unsigned char *ptr, unsigned long ulLen )
 {
    unsigned char *ptrStart = ptr, *pResult;
    int i, nlen;
@@ -132,7 +132,7 @@ unsigned char* brigxml_pp( unsigned char *ptr, unsigned long ulLen )
    return pResult;
 }
 
-std::map<std::string,char*> brigxml_getattr( unsigned char **pBuffer, bool * lSingle )
+static std::map<std::string,char*> brigxml_getattr( unsigned char **pBuffer, bool * lSingle )
 {
 
    std::map<std::string,char*> amAttr;
@@ -186,7 +186,7 @@ std::map<std::string,char*> brigxml_getattr( unsigned char **pBuffer, bool * lSi
             memcpy( pKey, ptr, iLen );
             pKey[iLen] = '\0';
          }
-         brig_writelog( NULL, "getattr-1 %s\r\n", (pKey)? pKey:szKey );
+         //brig_writelog( NULL, "getattr-1 %s\r\n", (pKey)? pKey:szKey );
 
          SKIPTABSPACES( *pBuffer );  // go till '='
          if( **pBuffer == '=' )
@@ -222,7 +222,7 @@ std::map<std::string,char*> brigxml_getattr( unsigned char **pBuffer, bool * lSi
                memcpy( pVal, ptr, iLen );
                pVal[iLen] = '\0';
             }
-            brig_writelog( NULL, "getattr-2 %s\r\n", (pVal)? pVal:szVal );
+            //brig_writelog( NULL, "getattr-2 %s\r\n", (pVal)? pVal:szVal );
             amAttr[ (char*) ((pKey)? pKey : szKey) ] = (char*) ((pVal)? pVal : szVal);
             if( pKey )
                free( pKey );
@@ -236,13 +236,12 @@ std::map<std::string,char*> brigxml_getattr( unsigned char **pBuffer, bool * lSi
       if( **pBuffer == '>' )
          ( *pBuffer )++;
    }
-   brig_writelog( NULL, "getattr-5\r\n" );
    return amAttr;
 }
 
-PBRIG_XMLITEM brigxml_addnode( PBRIG_XMLITEM pParent )
+static PBRIG_XMLITEM brigxml_addnode( PBRIG_XMLITEM pParent )
 {
-   PBRIG_XMLITEM pItem = (PBRIG_XMLITEM) malloc( sizeof(BRIG_XMLITEM) );
+   PBRIG_XMLITEM pItem = new BRIG_XMLITEM;
 
    pItem->szTitle = NULL;
    pItem->szText  = NULL;
@@ -252,12 +251,9 @@ PBRIG_XMLITEM brigxml_addnode( PBRIG_XMLITEM pParent )
    return pItem;
 }
 
-bool brigxml_readComment( PBRIG_XMLITEM pParent, unsigned char **pBuffer )
+static bool brigxml_readComment( PBRIG_XMLITEM pParent, unsigned char **pBuffer )
 {
    unsigned char *ptr;
-   PBRIG_XMLITEM pNode = brigxml_addnode( pParent );
-
-   pNode->iType = XML_TYPE_COMMENT;
 
    ( *pBuffer ) += 4;
    ptr = *pBuffer;
@@ -268,11 +264,15 @@ bool brigxml_readComment( PBRIG_XMLITEM pParent, unsigned char **pBuffer )
 
    if( **pBuffer )
    {
-      long lLen = *pBuffer - ptr;
-      pNode->szText = (PBRIG_CHAR) malloc( lLen + 1 );
-      memcpy( pNode->szText, ptr, lLen );
-      pNode->szText[lLen] = '\0';
-
+      if( pParent )
+      {
+         PBRIG_XMLITEM pNode = brigxml_addnode( pParent );
+         long lLen = *pBuffer - ptr;
+         pNode->szText = (PBRIG_CHAR) malloc( lLen + 1 );
+         memcpy( pNode->szText, ptr, lLen );
+         pNode->szText[lLen] = '\0';
+         pNode->iType = XML_TYPE_COMMENT;
+      }
       ( *pBuffer ) += 3;
    }
    else
@@ -281,12 +281,9 @@ bool brigxml_readComment( PBRIG_XMLITEM pParent, unsigned char **pBuffer )
    return ( nParseError ) ? 0 : 1;
 }
 
-bool brigxml_readCDATA( PBRIG_XMLITEM pParent, unsigned char **pBuffer )
+static bool brigxml_readCDATA( PBRIG_XMLITEM pParent, unsigned char **pBuffer )
 {
    unsigned char *ptr;
-   PBRIG_XMLITEM pNode = brigxml_addnode( pParent );
-
-   pNode->iType = XML_TYPE_CDATA;
 
    ( *pBuffer ) += 9;
    ptr = *pBuffer;
@@ -297,10 +294,12 @@ bool brigxml_readCDATA( PBRIG_XMLITEM pParent, unsigned char **pBuffer )
 
    if( **pBuffer )
    {
+      PBRIG_XMLITEM pNode = brigxml_addnode( pParent );
       long lLen = *pBuffer - ptr;
       pNode->szText = (PBRIG_CHAR) malloc( lLen + 1 );
       memcpy( pNode->szText, ptr, lLen );
       pNode->szText[lLen] = '\0';
+      pNode->iType = XML_TYPE_CDATA;
 
       ( *pBuffer ) += 3;
    }
@@ -310,7 +309,7 @@ bool brigxml_readCDATA( PBRIG_XMLITEM pParent, unsigned char **pBuffer )
    return ( nParseError ) ? 0 : 1;
 }
 
-bool brigxml_readElement( PBRIG_XMLITEM pParent, unsigned char **pBuffer )
+static bool brigxml_readElement( PBRIG_XMLITEM pParent, unsigned char **pBuffer )
 {
    PBRIG_XMLITEM pNode = brigxml_addnode( pParent );
    unsigned char *ptr;
@@ -323,6 +322,7 @@ bool brigxml_readElement( PBRIG_XMLITEM pParent, unsigned char **pBuffer )
    ptr = *pBuffer;
    SKIPCHARS( ptr );
 
+   iLenNodeName = ptr - *pBuffer - ( ( *( ptr - 1 ) == '/' ) ? 1 : 0 );
    pNode->szTitle = (PBRIG_CHAR) malloc( iLenNodeName + 1 );
    memcpy( pNode->szTitle, *pBuffer, iLenNodeName );
    pNode->szTitle[iLenNodeName] = '\0';
@@ -333,9 +333,7 @@ bool brigxml_readElement( PBRIG_XMLITEM pParent, unsigned char **pBuffer )
    pNode->amAttr = brigxml_getattr( pBuffer, &lSingle );
    if( nParseError )
    {
-      free( pNode->szTitle );
-      pNode->szTitle = NULL;
-      free( pNode );
+      brigxml_Release( pNode );
       return 0;
    }
 
@@ -359,9 +357,7 @@ bool brigxml_readElement( PBRIG_XMLITEM pParent, unsigned char **pBuffer )
             unsigned char * szTemp = brigxml_pp( ptr, *pBuffer - ptr );
             if( !szTemp || nParseError )
             {
-               free( pNode->szTitle );
-               pNode->szTitle = NULL;
-               free( pNode );
+               brigxml_Release( pNode );
                return 0;
             }
             pNode->szText = szTemp;
@@ -372,9 +368,7 @@ bool brigxml_readElement( PBRIG_XMLITEM pParent, unsigned char **pBuffer )
             if( memcmp( *pBuffer + 2, pNode->szTitle, iLenNodeName ) )
             {
                brigxml_error( XML_ERROR_WRONG_TAG_END, *pBuffer );
-               free( pNode->szTitle );
-               pNode->szTitle = NULL;
-               free( pNode );
+               brigxml_Release( pNode );
                return 0;
             }
             else
@@ -391,9 +385,7 @@ bool brigxml_readElement( PBRIG_XMLITEM pParent, unsigned char **pBuffer )
             {
                if( !brigxml_readComment( pNode, pBuffer ) )
                {
-                  free( pNode->szTitle );
-                  pNode->szTitle = NULL;
-                  free( pNode );
+                  brigxml_Release( pNode );
                   return 0;
                }
             }
@@ -401,9 +393,7 @@ bool brigxml_readElement( PBRIG_XMLITEM pParent, unsigned char **pBuffer )
             {
                if( !brigxml_readCDATA( pNode, pBuffer ) )
                {
-                  free( pNode->szTitle );
-                  pNode->szTitle = NULL;
-                  free( pNode );
+                  brigxml_Release( pNode );
                   return 0;
                }
             }
@@ -411,9 +401,7 @@ bool brigxml_readElement( PBRIG_XMLITEM pParent, unsigned char **pBuffer )
             {
                if( !brigxml_readElement( pNode, pBuffer ) )
                {
-                  free( pNode->szTitle );
-                  pNode->szTitle = NULL;
-                  free( pNode );
+                  brigxml_Release( pNode );
                   return 0;
                }
             }
@@ -422,6 +410,20 @@ bool brigxml_readElement( PBRIG_XMLITEM pParent, unsigned char **pBuffer )
    }
    return 1;
 
+}
+
+void brigxml_Release( PBRIG_XMLITEM pItem )
+{
+   if( pItem->szTitle )
+      free( pItem->szTitle );
+   if( pItem->szText )
+      free( pItem->szText );
+   pItem->szTitle = pItem->szText = NULL;
+
+   for( unsigned int i = 0; i < pItem->avItems.size(); i++ )
+      brigxml_Release( pItem->avItems[i] );
+
+   delete pItem;
 }
 
 static unsigned char * brig_ReadFile( PBRIG_CHAR szName )
@@ -436,18 +438,21 @@ static unsigned char * brig_ReadFile( PBRIG_CHAR szName )
       lSize = ftell( f );
       fseek(f, 0, SEEK_SET);
 
-      pBuffer = (unsigned char *) malloc( lSize + 1 );
-      fread( pBuffer, lSize, 1, f );
-      fclose( f );
+      if( lSize )
+      {
+         pBuffer = (unsigned char *) malloc( lSize + 1 );
+         fread( pBuffer, lSize, 1, f );
+         fclose( f );
 
-      pBuffer[lSize] = 0;
+         pBuffer[lSize] = 0;
+      }
    }
    return pBuffer;
 }
 
 PBRIG_XMLITEM brigxml_GetDoc( PBRIG_CHAR szSource, bool bFile )
 {
-   PBRIG_XMLITEM pDoc = (PBRIG_XMLITEM) malloc( sizeof(BRIG_XMLITEM) );
+   PBRIG_XMLITEM pDoc = new BRIG_XMLITEM;
    unsigned char *ptr, *pBuffer;
    int iMainTags = 0;
 
@@ -476,15 +481,12 @@ PBRIG_XMLITEM brigxml_GetDoc( PBRIG_CHAR szSource, bool bFile )
       if( !memcmp( ptr + 1, "?xml", 4 ) )
       {
          bool bSingle;
-         brig_writelog( NULL, "gt-1 %d\r\n", (pDoc)? 1:0 );
-         //pDoc->amAttr = brigxml_getattr( &ptr, &bSingle );
-         brigxml_getattr( &ptr, &bSingle );
-         brig_writelog( NULL, "gt-2\r\n" );
+         pDoc->amAttr = brigxml_getattr( &ptr, &bSingle );
          if( pDoc->amAttr.empty() || nParseError )
          {
             if( bFile )
                free( pBuffer );
-            free( pDoc );
+            brigxml_Release( pDoc );
             return NULL;
          }
          SKIPTABSPACES( ptr );
@@ -520,7 +522,7 @@ PBRIG_XMLITEM brigxml_GetDoc( PBRIG_CHAR szSource, bool bFile )
       {
          if( !memcmp( ptr + 1, "!--", 3 ) )
          {
-            if( !brigxml_readComment( pDoc, &ptr ) )
+            if( !brigxml_readComment( NULL, &ptr ) )
                break;
          }
          else
