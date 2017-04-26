@@ -7,7 +7,7 @@
  * www - http://www.kresin.ru
  */
 
-#include "brig_funcs.h"
+#include "brig.h"
 #include <math.h>
 
 static void brig__setcolor( cairo_t * cr, long int nColor )
@@ -27,9 +27,9 @@ static void brig__setcolor( cairo_t * cr, long int nColor )
 PBRIG_PPS brig_BeginPaint( BRIG_HANDLE handle )
 {
    PBRIG_PPS pps = ( PBRIG_PPS ) malloc( sizeof( BRIG_PPS ) );
-   PBRIG_HDC hDC = (PBRIG_HDC) malloc( sizeof(PBRIG_HDC) );   
+   PBRIG_DC hDC = (PBRIG_DC) malloc( sizeof(PBRIG_DC) );   
 
-   memset( hDC, 0, sizeof(PBRIG_HDC) );
+   memset( hDC, 0, sizeof(PBRIG_DC) );
    hDC->widget = handle;
 
    hDC->window = handle->window;
@@ -70,15 +70,15 @@ void brig_GetClientRect( BRIG_HANDLE handle, RECT *prc )
 {
    prc->left = 0;
    prc->top = 0;
-   prc->right =  widget->allocation.width;
-   prc->bottom = widget->allocation.height;
+   prc->right =  handle->allocation.width;
+   prc->bottom = handle->allocation.height;
 
 }
 
 void brig_FillRect( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom, PBRIG_BRUSH hBrush )
 {
 
-   brig__setcolor( hDC->cr, brush->color );
+   brig__setcolor( hDC->cr, hBrush->color );
    cairo_rectangle( hDC->cr, (gdouble)iLeft, (gdouble)iTop, 
          (gdouble)(iRight-iLeft+1), (gdouble)(iBottom-iTop+1) );
    cairo_fill( hDC->cr );
@@ -130,7 +130,7 @@ void brig_DeleteObject( PBRIG_FONT pFont )
 {
    pango_font_description_free( pFont->hFont );
    pango_attr_list_unref( pFont->attrs );
-   xfree( pFont );
+   free( pFont );
 }
 
 PBRIG_BRUSH brig_SelectObject( PBRIG_DC hDC, PBRIG_BRUSH pBrush )

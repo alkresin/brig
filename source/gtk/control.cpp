@@ -9,6 +9,8 @@
 
 #include "brig.h"
 
+extern void brig_SetEvent( gpointer handle, char * cSignal, long int p1, long int p2, long int p3 );
+
 /* -------- Label ---------
  */
 BRIG_HANDLE brig_CreateLabel( BRIG_HANDLE hParentWindow, int iWidgId,
@@ -43,7 +45,7 @@ BRIG_HANDLE brig_CreateLabel( BRIG_HANDLE hParentWindow, int iWidgId,
 
    if( ( ulStyle & SS_OWNERDRAW ) == SS_OWNERDRAW )
    {
-      set_event( ( gpointer ) hCtrl, "expose_event", WM_PAINT, 0, 0 );
+      brig_SetEvent( ( gpointer ) hCtrl, "expose_event", WM_PAINT, 0, 0 );
    }
    return hCtrl;
 
@@ -159,7 +161,7 @@ BRIG_HANDLE brig_CreateEdit( BRIG_HANDLE hParentWindow, int iWidgId,
    }
 
    gtk_widget_add_events( hCtrl, GDK_BUTTON_PRESS_MASK );
-   set_event( ( gpointer ) hCtrl, "button_press_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hCtrl, "button_press_event", 0, 0, 0 );
 
    //all_signal_connect( ( gpointer ) hCtrl );
 
@@ -205,7 +207,7 @@ BRIG_HANDLE brig_CreatePanel( BRIG_HANDLE hParentWindow, int iWidgId,
    //   hPanel = gtk_toolbar_new();
 
    gtk_box_pack_start( GTK_BOX( hbox ), vbox, TRUE, TRUE, 0 );
-   if( ulStyle & WS_VSCROLL )
+   /*if( ulStyle & WS_VSCROLL )
    {
       GtkObject *adjV;
       adjV = gtk_adjustment_new( 0.0, 0.0, 101.0, 1.0, 10.0, 10.0 );
@@ -235,7 +237,7 @@ BRIG_HANDLE brig_CreatePanel( BRIG_HANDLE hParentWindow, int iWidgId,
 
       SetWindowObject( ( GtkWidget * ) adjH, pObject );
       set_signal( ( gpointer ) adjH, "value_changed", WM_HSCROLL, 0, 0 );
-   }
+   }*/
 
    box = ( GtkFixed * ) g_object_get_data( ( GObject * ) handle, "fbox" );
    if( box )
@@ -256,15 +258,15 @@ BRIG_HANDLE brig_CreatePanel( BRIG_HANDLE hParentWindow, int iWidgId,
    //hb_itemRelease( temp );
 
    GTK_WIDGET_SET_FLAGS( hPanel, GTK_CAN_FOCUS );
-   if( ( ulStyle & SS_OWNERDRAW ) == SS_OWNERDRAW )
-      set_event( ( gpointer ) hPanel, "expose_event", WM_PAINT, 0, 0 );
+   //if( ( ulStyle & SS_OWNERDRAW ) == SS_OWNERDRAW )
+      brig_SetEvent( ( gpointer ) hPanel, "expose_event", WM_PAINT, 0, 0 );
    gtk_widget_add_events( hPanel, GDK_BUTTON_PRESS_MASK |
          GDK_BUTTON_RELEASE_MASK | GDK_ENTER_NOTIFY_MASK |
          GDK_LEAVE_NOTIFY_MASK );
-   set_event( ( gpointer ) hPanel, "button_press_event", 0, 0, 0 );
-   set_event( ( gpointer ) hPanel, "button_release_event", 0, 0, 0 );
-   set_event( ( gpointer ) hPanel, "enter_notify_event", 0, 0, 0 );
-   set_event( ( gpointer ) hPanel, "leave_notify_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hPanel, "button_press_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hPanel, "button_release_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hPanel, "enter_notify_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hPanel, "leave_notify_event", 0, 0, 0 );
    //all_signal_connect( ( gpointer ) hPanel );
 
    /*
@@ -294,15 +296,15 @@ BRIG_HANDLE brig_CreateQButton( BRIG_HANDLE hParentWindow, int iWidgId,
       gtk_fixed_put( box, hQButton, x, y );
       gtk_widget_set_size_request( hQButton, nWidth, nHeight );
    }
-   set_event( ( gpointer ) hQButton, "expose_event", WM_PAINT, 0, 0 );
+   brig_SetEvent( ( gpointer ) hQButton, "expose_event", WM_PAINT, 0, 0 );
    GTK_WIDGET_SET_FLAGS( hQButton, GTK_CAN_FOCUS );
    gtk_widget_add_events( hQButton, GDK_BUTTON_PRESS_MASK |
          GDK_BUTTON_RELEASE_MASK | GDK_ENTER_NOTIFY_MASK |
          GDK_LEAVE_NOTIFY_MASK );
-   set_event( ( gpointer ) hQButton, "button_press_event", 0, 0, 0 );
-   set_event( ( gpointer ) hQButton, "button_release_event", 0, 0, 0 );
-   set_event( ( gpointer ) hQButton, "enter_notify_event", 0, 0, 0 );
-   set_event( ( gpointer ) hQButton, "leave_notify_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hQButton, "button_press_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hQButton, "button_release_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hQButton, "enter_notify_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hQButton, "leave_notify_event", 0, 0, 0 );
    //all_signal_connect( ( gpointer ) hQButton );
 
    /*
