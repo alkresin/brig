@@ -52,7 +52,7 @@ BRIG_HANDLE brig_CreateLabel( BRIG_HANDLE hParentWindow, int iWidgId,
 /* -------- Button ---------
  */
 
-HWND brig_CreateButton( HWND hParentWindow, int iWidgId,
+BRIG_HANDLE brig_CreateButton( BRIG_HANDLE hParentWindow, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle, PBRIG_CHAR lpCaption )
 {
 /*
@@ -95,64 +95,75 @@ HWND brig_CreateButton( HWND hParentWindow, int iWidgId,
 
 }
 
-bool brig_CheckBtnGet( HWND handle )
+bool brig_CheckBtnGet( BRIG_HANDLE handle )
 {
-   return SendMessage( handle, BM_GETCHECK, 0, 0 );
+   return gtk_toggle_button_get_active( ( GtkToggleButton * ) handle );
+
 }
 
-void brig_CheckBtnSet( HWND handle, bool bValue )
+void brig_CheckBtnSet( BRIG_HANDLE handle, bool bValue )
 {
-   SendMessage( handle, BM_SETCHECK, bValue, 0 );
+   gtk_toggle_button_set_active( ( GtkToggleButton * ) handle, bValue );
 }
 
-bool brig_RadioBtnGet( HWND handle )
+bool brig_RadioBtnGet( BRIG_HANDLE handle )
 {
-   return SendMessage( handle, BM_GETCHECK, 0, 0 );
+   return gtk_toggle_button_get_active( ( GtkToggleButton * ) handle );
 }
 
-void brig_RadioBtnSet( HWND handle, bool bValue )
+void brig_RadioBtnSet( BRIG_HANDLE handle, bool bValue )
 {
-   SendMessage( handle, BM_SETCHECK, (bValue)? BST_CHECKED : BST_UNCHECKED, 0 );
+   gtk_toggle_button_set_active( ( GtkToggleButton * ) handle, bValue );
 }
 
 
 /* -------- Edit --------- 
  */
-static LRESULT CALLBACK s_EditProc( HWND hDlg, UINT message,
-      WPARAM wParam, LPARAM lParam )
-{
 
-   brig_Edit *pObject;
-
-   //brig_writelog( NULL, "edimsg %u\r\n", message );
-   switch( message ) {
-
-      case WM_GETDLGCODE:
-         return DLGC_WANTARROWS | DLGC_WANTCHARS; // DLGC_WANTTAB
-   }
-
-   pObject = ( brig_Edit * ) GetWindowLongPtr( hDlg, GWLP_USERDATA );
-   if( !pObject || !( pObject->onEvent( message, wParam, lParam ) ) )
-      return CallWindowProc( wpOrigEditProc, hDlg, message, wParam, lParam );
-   else
-      return 0;
-}
-
-HWND brig_CreateEdit( HWND hParentWindow, int iWidgId,
+BRIG_HANDLE brig_CreateEdit( BRIG_HANDLE hParentWindow, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle,
           PBRIG_CHAR lpCaption, unsigned long ulExStyle )
 {
-   HWND hEdit;
+   GtkWidget *hCtrl;
 
-   hEdit = CreateWindowEx( ulExStyle,
-         TEXT( "EDIT" ),
-         NULL,
-         WS_CHILD | WS_VISIBLE | ulStyle,
-         x, y, nWidth, nHeight,
-         hParentWindow,                   /* parent window    */
-         ( HMENU ) iWidgId,            /* button       ID  */
-         GetModuleHandle( NULL ), NULL );
+   if( ulStyle & ES_MULTILINE )
+   {
+      hCtrl = gtk_text_view_new(  );
+      g_object_set_data( ( GObject * ) hCtrl, "multi", ( gpointer ) 1 );
+      if( ulStyle & ES_READONLY )
+         gtk_text_view_set_editable( ( GtkTextView * ) hCtrl, 0 );
+      gtk_text_view_set_wrap_mode( GTK_TEXT_VIEW(hCtrl), GTK_WRAP_WORD_CHAR);
+   }
+   else
+   {
+      hCtrl = gtk_entry_new(  );
+      if( ulStyle & ES_PASSWORD )
+         gtk_entry_set_visibility( ( GtkEntry * ) hCtrl, FALSE );
+   }
 
+   GtkFixed *box = getFixedBox( ( GObject * ) hParentWindow );
+   if( box )
+      gtk_fixed_put( box, hCtrl, x, y );
+   gtk_widget_set_size_request( hCtrl, nWidth, nHeight );
+
+   if( lpCaption )
+   {
+      if( ulStyle & ES_MULTILINE )
+      {
+         GtkTextBuffer *buffer =
+               gtk_text_view_get_buffer( GTK_TEXT_VIEW( hCtrl ) );
+         gtk_text_buffer_set_text( buffer, lpCaption, -1 );
+      }
+      else
+         gtk_entry_set_text( ( GtkEntry * ) hCtrl, lpCaption );
+   }
+
+   gtk_widget_add_events( hCtrl, GDK_BUTTON_PRESS_MASK );
+   set_event( ( gpointer ) hCtrl, "button_press_event", 0, 0, 0 );
+
+   //all_signal_connect( ( gpointer ) hCtrl );
+
+   /*
    if( hEdit )
    {
       if( lpCaption )
@@ -165,155 +176,140 @@ HWND brig_CreateEdit( HWND hParentWindow, int iWidgId,
       wpOrigEditProc = ( WNDPROC ) SetWindowLongPtr( hEdit,
             GWLP_WNDPROC, ( LONG_PTR ) s_EditProc );
    }
-
-   return hEdit;
+   */
+   return hCtrl;
 
 }
 
 /* -------- Panel --------- 
  */
 
-static LRESULT CALLBACK s_PanelProc( HWND hDlg, UINT message,
-      WPARAM wParam, LPARAM lParam )
-{
-
-   brig_Panel *pObject = ( brig_Panel * ) GetWindowLongPtr( hDlg, GWLP_USERDATA );
-   //brig_writelog( NULL, "panelmsg %u\r\n", message );
-
-   if( !pObject || !( pObject->onEvent( message, wParam, lParam ) ) )
-      return DefWindowProc( hDlg, message, wParam, lParam );
-   else
-      return 0;
-}
-
-static void reg_Panel( void )
-{
-   static BOOL bRegistered = FALSE;
-
-   if( !bRegistered )
-   {
-      WNDCLASS wndclass;
-
-      wndclass.style = CS_OWNDC | CS_VREDRAW | CS_HREDRAW | CS_DBLCLKS;
-      wndclass.lpfnWndProc = s_PanelProc;
-      wndclass.cbClsExtra = 0;
-      wndclass.cbWndExtra = 0;
-      wndclass.hInstance = GetModuleHandle( NULL );
-      wndclass.hIcon = NULL;
-      wndclass.hCursor = LoadCursor( NULL, IDC_ARROW );
-      wndclass.hbrBackground = ( HBRUSH ) ( COLOR_3DFACE + 1 );
-      wndclass.lpszMenuName = NULL;
-      wndclass.lpszClassName = TEXT( "PANEL" );
-
-      RegisterClass( &wndclass );
-      bRegistered = TRUE;
-   }
-}
-
-HWND brig_CreatePanel( HWND hParentWindow, int iWidgId,
+BRIG_HANDLE brig_CreatePanel( BRIG_HANDLE hParentWindow, int iWidgId,
           int x, int y, int nWidth, int nHeight )
 {
-   HWND hPanel;
+   BRIG_HANDLE hPanel;
 
-   reg_Panel();
-   hPanel = CreateWindow( TEXT( "PANEL" ),
-         NULL,                         /* no window title   */
-         WS_CHILD | WS_VISIBLE | SS_GRAYRECT | SS_OWNERDRAW | CCS_TOP,
-         x, y, nWidth, nHeight,
-         hParentWindow,                /* parent window    */
-         ( HMENU ) iWidgId,            /* button       ID  */
-         GetModuleHandle( NULL ), NULL );
+   GtkWidget *vbox, *hbox;
+   GtkWidget *vscroll = NULL, *hscroll = NULL;
+   GtkFixed *box, *fbox;
+   GObject *handle;
 
+   fbox = ( GtkFixed * ) gtk_fixed_new();
+
+   hbox = gtk_hbox_new( FALSE, 0 );
+   vbox = gtk_vbox_new( FALSE, 0 );
+
+   //if( ( ulStyle & SS_OWNERDRAW ) == SS_OWNERDRAW )
+      hPanel = gtk_drawing_area_new();
+   //else
+   //   hPanel = gtk_toolbar_new();
+
+   gtk_box_pack_start( GTK_BOX( hbox ), vbox, TRUE, TRUE, 0 );
+   if( ulStyle & WS_VSCROLL )
+   {
+      GtkObject *adjV;
+      adjV = gtk_adjustment_new( 0.0, 0.0, 101.0, 1.0, 10.0, 10.0 );
+      vscroll = gtk_vscrollbar_new( GTK_ADJUSTMENT( adjV ) );
+      gtk_box_pack_end( GTK_BOX( hbox ), vscroll, FALSE, FALSE, 0 );
+
+      //temp = HB_PUTHANDLE( NULL, adjV );
+      //SetObjectVar( pObject, "_HSCROLLV", temp );
+      //hb_itemRelease( temp );
+
+      SetWindowObject( ( GtkWidget * ) adjV, pObject );
+      set_signal( ( gpointer ) adjV, "value_changed", WM_VSCROLL, 0, 0 );
+   }
+
+   gtk_box_pack_start( GTK_BOX( vbox ), (GtkWidget*)fbox, TRUE, TRUE, 0 );
+   gtk_fixed_put( fbox, hPanel, 0, 0 );
+   if( ulStyle & WS_HSCROLL )
+   {
+      GtkObject *adjH;
+      adjH = gtk_adjustment_new( 0.0, 0.0, 101.0, 1.0, 10.0, 10.0 );
+      hscroll = gtk_hscrollbar_new( GTK_ADJUSTMENT( adjH ) );
+      gtk_box_pack_end( GTK_BOX( vbox ), hscroll, FALSE, FALSE, 0 );
+
+      //temp = HB_PUTHANDLE( NULL, adjH );
+      //SetObjectVar( pObject, "_HSCROLLH", temp );
+      //hb_itemRelease( temp );
+
+      SetWindowObject( ( GtkWidget * ) adjH, pObject );
+      set_signal( ( gpointer ) adjH, "value_changed", WM_HSCROLL, 0, 0 );
+   }
+
+   box = getFixedBox( handle );
+   if( box )
+   {
+      gtk_fixed_put( box, ( GtkWidget * ) hbox, x, y );
+      gtk_widget_set_size_request( ( GtkWidget * ) hbox, nWidth, nHeight );
+      if( vscroll )
+         nWidth -= 12;
+      if( hscroll )
+         nHeight -= 12;
+      gtk_widget_set_size_request( hPanel, nWidth, nHeight );
+   }
+   
+   g_object_set_data( ( GObject * ) hPanel, "fbox", ( gpointer ) fbox );
+
+   //temp = HB_PUTHANDLE( NULL, hbox );
+   //SetObjectVar( pObject, "_HBOX", temp );
+   //hb_itemRelease( temp );
+
+   GTK_WIDGET_SET_FLAGS( hPanel, GTK_CAN_FOCUS );
+   if( ( ulStyle & SS_OWNERDRAW ) == SS_OWNERDRAW )
+      set_event( ( gpointer ) hPanel, "expose_event", WM_PAINT, 0, 0 );
+   gtk_widget_add_events( hPanel, GDK_BUTTON_PRESS_MASK |
+         GDK_BUTTON_RELEASE_MASK | GDK_ENTER_NOTIFY_MASK |
+         GDK_LEAVE_NOTIFY_MASK );
+   set_event( ( gpointer ) hPanel, "button_press_event", 0, 0, 0 );
+   set_event( ( gpointer ) hPanel, "button_release_event", 0, 0, 0 );
+   set_event( ( gpointer ) hPanel, "enter_notify_event", 0, 0, 0 );
+   set_event( ( gpointer ) hPanel, "leave_notify_event", 0, 0, 0 );
+   //all_signal_connect( ( gpointer ) hPanel );
+
+   /*
    if( hPanel )
    {
       SetWindowLongPtr( hPanel, GWLP_USERDATA, NULL );
    }
-
+   */
    return hPanel;
 }
 
 /* -------- QButton --------- 
  */
 
-static LRESULT CALLBACK s_QButtonProc( HWND handle, UINT message,
-      WPARAM wParam, LPARAM lParam )
-{
-
-   int ixPos, iyPos;
-   brig_QButton *pObject = ( brig_QButton * ) GetWindowLongPtr( handle, GWLP_USERDATA );
-   //brig_writelog( NULL, "panelmsg %u\r\n", message );
-
-   if( !pObject )
-      return DefWindowProc( handle, message, wParam, lParam );
-
-   switch( message ) {
-
-      case WM_MOUSEMOVE:
-         ixPos = ( (unsigned long) lParam ) & 0xFFFF;
-         iyPos = ( ( (unsigned long) lParam ) >> 16 ) & 0xFFFF;
-         if( !pObject->iState )
-         {
-            pObject->iState = 1;
-            SetCapture( handle );
-            InvalidateRect( handle, NULL, 1 );
-         }
-         else if( ixPos > pObject->iWidth || iyPos > pObject->iHeight )
-         {
-            pObject->iState = 0;
-            ReleaseCapture();
-            InvalidateRect( handle, NULL, 1 );
-         }
-         return 0;
-   }
-
-   if( !( pObject->onEvent( message, wParam, lParam ) ) )
-      return DefWindowProc( handle, message, wParam, lParam );
-   else
-      return 0;
-}
-
-static void reg_QButton( void )
-{
-   static BOOL bRegistered = FALSE;
-
-   if( !bRegistered )
-   {
-      WNDCLASS wndclass;
-
-      wndclass.style = CS_OWNDC | CS_VREDRAW | CS_HREDRAW | CS_DBLCLKS;
-      wndclass.lpfnWndProc = s_QButtonProc;
-      wndclass.cbClsExtra = 0;
-      wndclass.cbWndExtra = 0;
-      wndclass.hInstance = GetModuleHandle( NULL );
-      wndclass.hIcon = NULL;
-      wndclass.hCursor = LoadCursor( NULL, IDC_ARROW );
-      wndclass.hbrBackground = ( HBRUSH ) ( COLOR_3DFACE + 1 );
-      wndclass.lpszMenuName = NULL;
-      wndclass.lpszClassName = TEXT( "QBUTTON" );
-
-      RegisterClass( &wndclass );
-      bRegistered = TRUE;
-   }
-}
-
-HWND brig_CreateQButton( HWND hParentWindow, int iWidgId,
+BRIG_HANDLE brig_CreateQButton( BRIG_HANDLE hParentWindow, int iWidgId,
           int x, int y, int nWidth, int nHeight )
 {
-   HWND hQButton;
+   BRIG_HANDLE hQButton;
 
-   reg_QButton();
-   hQButton = CreateWindow( TEXT( "QBUTTON" ),
-         NULL,                          /* no window title   */
-         WS_CHILD | WS_VISIBLE | SS_GRAYRECT | SS_OWNERDRAW | CCS_TOP,
-         x, y, nWidth, nHeight,
-         hParentWindow,                   /* parent window    */
-         ( HMENU ) iWidgId,            /* button       ID  */
-         GetModuleHandle( NULL ), NULL );
+   GtkFixed *box;
 
+   hQButton = gtk_drawing_area_new(  );
+
+   box = getFixedBox( ( GObject * ) hParentWindow );
+   if( box )
+   {
+      gtk_fixed_put( box, hQButton, x, y );
+      gtk_widget_set_size_request( hQButton, nWidth, nHeight );
+   }
+   set_event( ( gpointer ) hQButton, "expose_event", WM_PAINT, 0, 0 );
+   GTK_WIDGET_SET_FLAGS( hQButton, GTK_CAN_FOCUS );
+   gtk_widget_add_events( hQButton, GDK_BUTTON_PRESS_MASK |
+         GDK_BUTTON_RELEASE_MASK | GDK_ENTER_NOTIFY_MASK |
+         GDK_LEAVE_NOTIFY_MASK );
+   set_event( ( gpointer ) hQButton, "button_press_event", 0, 0, 0 );
+   set_event( ( gpointer ) hQButton, "button_release_event", 0, 0, 0 );
+   set_event( ( gpointer ) hQButton, "enter_notify_event", 0, 0, 0 );
+   set_event( ( gpointer ) hQButton, "leave_notify_event", 0, 0, 0 );
+   //all_signal_connect( ( gpointer ) hQButton );
+
+   /*
    if( hQButton )
    {
       SetWindowLongPtr( hQButton, GWLP_USERDATA, NULL );
    }
-
+   */
    return hQButton;
 }
