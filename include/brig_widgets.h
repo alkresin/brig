@@ -17,7 +17,7 @@ extern BRIG_HANDLE brig_CreatePanel( BRIG_HANDLE hParentWindow, int iWidgId,
           int x, int y, int nWidth, int nHeight );
 extern BRIG_HANDLE brig_CreateQButton( BRIG_HANDLE hParentWindow, int iWidgId,
           int x, int y, int nWidth, int nHeight );
-extern BRIG_HANDLE brig_CreateTable( HWND hParentWindow, int iWidgId,
+extern BRIG_HANDLE brig_CreateTable( BRIG_HANDLE hParentWindow, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle );
 
 class brig_Label : public brig_Widget
@@ -159,6 +159,3 @@ public:
    int uiCols;
    int uiHeadRows, uiFootRows;
 };
-
-extern void brig_paint_QButton( brig_QButton *pQButton );
-extern void brig_paint_Table( brig_Table *pTable );

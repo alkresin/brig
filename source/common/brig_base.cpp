@@ -18,6 +18,7 @@ brig_Widget::~brig_Widget()
 {
    if( hBrush )
       brigDelBrush( hBrush );
+   //brig_writelog( NULL, "destruc %d\r\n", iWidgId );
 }
 
 bool brig_Widget::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
@@ -117,7 +118,7 @@ brig_Container::brig_Container():brig_Widget(), iIdCount(100) {};
 
 brig_Container::~brig_Container()
 {
-   brig_Widget::~brig_Widget();
+   //brig_Widget::~brig_Widget();
 }
 
 int brig_Container::NewId()
@@ -145,7 +146,7 @@ void brig_Container::OnSize( WPARAM wParam, LPARAM lParam )
 brig_MainWindow::brig_MainWindow():brig_Container(), szAppName((PBRIG_CHAR)"Brig_App") {}
 
 void brig_MainWindow::New( int x, int y, int width, int height, PBRIG_CHAR lpTitle,
-         long int lStyle, HICON hIcon, PBRIG_BRUSH hBrush )
+         long int lStyle, PBRIG_ICON hIcon, PBRIG_BRUSH hBrush )
 {
    iLeft = x;
    iTop = y;

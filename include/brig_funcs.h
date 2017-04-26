@@ -80,10 +80,12 @@ extern void brig_DrawGradient( PBRIG_DC hDC, int x1, int y1, int x2, int y2, int
 
 extern BRIG_HMENU brig_CreateMenu( void );
 extern BRIG_HMENU brig_CreatePopupMenu( void );
-extern int brig_SetMenu( HWND hWnd, HMENU hMenu );
+extern int brig_SetMenu( BRIG_HANDLE hWnd, BRIG_HMENU hMenu );
 
+#if defined( BRIG_OS_WIN )
 extern wchar_t * brig_strToWC( UINT cp, char * szText );
 extern char * brig_WCTostr( UINT cp, wchar_t * wcText, int uilen );
+#endif
 
 #if defined( UNICODE )
 #define brig_str2WC( szText )             brig_strToWC( CP_UTF8, szText )

@@ -13,6 +13,7 @@
    #define _UNICODE
 #endif
 
+#include <stdlib.h>
 #include <vector>
 #include <string>
 #include <map>
@@ -48,12 +49,53 @@ using std::vector;
 
 #else
    #include <gtk/gtk.h>
+   #include "gdk/gdkkeysyms.h"
 
    #define BRIG_STRING  std::wstring
    #define BRIG_HANDLE   GtkWidget*
    #define BRIG_HMENU    GtkWidget*
    #define BRIG_WCHAR    gchar
    #define BRIG_CHAR     gchar
+
+   #define HACCEL        void*
+   #define DWORD         int
+   #define WPARAM        long
+   #define LPARAM        long
+   #define UINT          unsigned int
+
+   #define WM_DESTROY           2
+   #define WM_MOVE              3
+   #define WM_SIZE              5
+   #define WM_PAINT            15
+   #define WM_COMMAND         273
+   #define WM_SYSCOMMAND      274
+   #define WM_HSCROLL         276
+   #define WM_VSCROLL         277
+   #define WM_LBUTTONDOWN     513
+   #define WM_LBUTTONUP       514
+
+   #define BS_AUTOCHECKBOX      3
+   #define BS_RADIOBUTTON       4
+   #define BS_GROUPBOX          7
+   #define BS_AUTORADIOBUTTON   9
+   #define DT_CENTER            1
+   #define DT_RIGHT             2
+   #define DT_VCENTER           4
+   #define DT_SINGLELINE       32
+   #define SS_LEFT              0
+   #define SS_CENTER            1
+   #define SS_RIGHT             2
+   #define SS_OWNERDRAW        13
+   #define ES_MULTILINE         4
+   #define ES_PASSWORD         32
+   #define ES_READONLY       2048
+
+   #define WS_VSCROLL     2097152
+   #define WS_HSCROLL     1048576
+   #define WS_BORDER      8388608
+   #define WS_OVERLAPPEDWINDOW  0
+   #define WS_EX_TRANSPARENT   32
+   #define SC_CLOSE         61536
 
    #define BRIG_OBJECT_PEN    1
    #define BRIG_OBJECT_BRUSH  2

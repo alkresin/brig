@@ -27,7 +27,7 @@ BRIG_HANDLE brig_CreateLabel( BRIG_HANDLE hParentWindow, int iWidgId,
       hLabel = gtk_label_new( lpCaption );
       gtk_container_add( GTK_CONTAINER( hCtrl ), hLabel );
       g_object_set_data( ( GObject * ) hCtrl, "label", ( gpointer ) hLabel );
-      if( ulExtStyle && WS_EX_TRANSPARENT )
+      if( ulExStyle && WS_EX_TRANSPARENT )
       {
          gtk_event_box_set_visible_window( GTK_EVENT_BOX( hCtrl ), 0 );
       }
@@ -36,7 +36,7 @@ BRIG_HANDLE brig_CreateLabel( BRIG_HANDLE hParentWindow, int iWidgId,
          gtk_misc_set_alignment( GTK_MISC( hLabel ),
                ( ulStyle & SS_RIGHT ) ? 1 : 0, 0 );
    }
-   box = getFixedBox( ( GObject * ) hParentWindow );
+   box = ( GtkFixed * ) g_object_get_data( ( GObject * ) hParentWindow, "fbox" );
    if( box )
       gtk_fixed_put( box, hCtrl, x, y );
    gtk_widget_set_size_request( hCtrl, nWidth, nHeight );
@@ -76,7 +76,7 @@ BRIG_HANDLE brig_CreateButton( BRIG_HANDLE hParentWindow, int iWidgId,
    else
       hCtrl = gtk_button_new_with_mnemonic( lpCaption );
 
-   box = getFixedBox( ( GObject * ) hParentWindow );
+   box = ( GtkFixed * ) g_object_get_data( ( GObject * ) hParentWindow, "fbox" );
    if( box )
       gtk_fixed_put( box, hCtrl, x, y );
    gtk_widget_set_size_request( hCtrl, nWidth, nHeight );
@@ -141,7 +141,7 @@ BRIG_HANDLE brig_CreateEdit( BRIG_HANDLE hParentWindow, int iWidgId,
          gtk_entry_set_visibility( ( GtkEntry * ) hCtrl, FALSE );
    }
 
-   GtkFixed *box = getFixedBox( ( GObject * ) hParentWindow );
+   GtkFixed *box = ( GtkFixed * ) g_object_get_data( ( GObject * ) hParentWindow, "fbox" );
    if( box )
       gtk_fixed_put( box, hCtrl, x, y );
    gtk_widget_set_size_request( hCtrl, nWidth, nHeight );
@@ -237,7 +237,7 @@ BRIG_HANDLE brig_CreatePanel( BRIG_HANDLE hParentWindow, int iWidgId,
       set_signal( ( gpointer ) adjH, "value_changed", WM_HSCROLL, 0, 0 );
    }
 
-   box = getFixedBox( handle );
+   box = ( GtkFixed * ) g_object_get_data( ( GObject * ) handle, "fbox" );
    if( box )
    {
       gtk_fixed_put( box, ( GtkWidget * ) hbox, x, y );
@@ -288,7 +288,7 @@ BRIG_HANDLE brig_CreateQButton( BRIG_HANDLE hParentWindow, int iWidgId,
 
    hQButton = gtk_drawing_area_new(  );
 
-   box = getFixedBox( ( GObject * ) hParentWindow );
+   box = ( GtkFixed * ) g_object_get_data( ( GObject * ) hParentWindow, "fbox" );
    if( box )
    {
       gtk_fixed_put( box, hQButton, x, y );

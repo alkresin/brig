@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <brig_xml.h>
 
 #if (defined(_MSC_VER)&&(_MSC_VER>=1400))
@@ -367,7 +368,7 @@ static bool brigxml_readElement( PBRIG_XMLITEM pParent, unsigned char **pBuffer 
                brigxml_Release( pNode );
                return 0;
             }
-            pNode->szText = szTemp;
+            pNode->szText = (PBRIG_CHAR) szTemp;
          }
 
          if( *( *pBuffer + 1 ) == '/' )
@@ -521,7 +522,7 @@ static unsigned char * brig_ReadFile( PBRIG_CHAR szName )
 PBRIG_XMLITEM brigxml_GetDoc( PBRIG_CHAR szSource, unsigned long ulLen )
 {
    PBRIG_XMLITEM pDoc = new BRIG_XMLITEM;
-   unsigned char *ptr, *pBuffer;
+   unsigned char *ptr, *pBuffer = NULL;
    int iMainTags = 0;
 
    if( !pEntity1 )
@@ -531,7 +532,7 @@ PBRIG_XMLITEM brigxml_GetDoc( PBRIG_CHAR szSource, unsigned long ulLen )
    }
    if( ulLen )
    {
-      ptr = szSource;
+      ptr = (unsigned char *) szSource;
       ulDataLen = ulLen;
    }
    else
@@ -555,7 +556,7 @@ PBRIG_XMLITEM brigxml_GetDoc( PBRIG_CHAR szSource, unsigned long ulLen )
          pDoc->amAttr = brigxml_getattr( &ptr, &bSingle );
          if( pDoc->amAttr.empty() || nParseError )
          {
-            if( !ulLen )
+            if( pBuffer )
                free( pBuffer );
             brigxml_Release( pDoc );
             return NULL;
@@ -610,7 +611,7 @@ PBRIG_XMLITEM brigxml_GetDoc( PBRIG_CHAR szSource, unsigned long ulLen )
       }
    }
 
-   if( !ulLen )
+   if( pBuffer )
       free( pBuffer );
 
    return pDoc;

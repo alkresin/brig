@@ -25,6 +25,8 @@
 
 static BRIG_HANDLE hMainWindow = NULL;
 
+static long prevp2 = -1;
+
 void brig_writelog( const char * sFile, const char * sTraceMsg, ... )
 {
    FILE *hFile;
@@ -91,7 +93,7 @@ void brig_ShowWindow( BRIG_HANDLE handle, bool bShow )
 
 BRIG_HANDLE brig_SetFocus( BRIG_HANDLE handle )
 {
-   GtkWidget * oldhandle = gtk_window_get_focus( gtk_window_list_toplevels()->data );
+   GtkWidget * oldhandle = gtk_window_get_focus( (GtkWindow*) gtk_window_list_toplevels()->data );
 
    if( g_object_get_data( ( GObject * ) handle, "window" ) )
       gtk_window_present( (GtkWindow*) handle );
@@ -103,7 +105,7 @@ BRIG_HANDLE brig_SetFocus( BRIG_HANDLE handle )
 
 BRIG_HANDLE brig_GetFocus( void )
 {
-   return gtk_window_get_focus( gtk_window_list_toplevels()->data );
+   return gtk_window_get_focus( (GtkWindow*) gtk_window_list_toplevels()->data );
 }
 
 void brig_SetTopmost( BRIG_HANDLE handle )
@@ -313,7 +315,6 @@ gint cb_signal_size( GtkWidget *widget, GtkAllocation *allocation, gpointer data
 static gint cb_event( GtkWidget *widget, GdkEvent * event, gchar* data )
 {
    gpointer gObject = g_object_get_data( (GObject*) widget, "obj" );
-   long lRes;
 
    if( gObject )
    {
@@ -460,14 +461,16 @@ BRIG_HANDLE brig_InitMainWindow( PBRIG_CHAR lpAppName, PBRIG_CHAR lpTitle,
 
 void brig_ActivateMainWindow( int bShow, HACCEL hAcceler, int iMaxMin )
 {
-
+   SYMBOL_UNUSED( bShow );
+   SYMBOL_UNUSED( hAcceler );
+   SYMBOL_UNUSED( iMaxMin );
    gtk_main();
 }
 
-HWND brig_InitDialog( PBRIG_CHAR lpTitle,
+BRIG_HANDLE brig_InitDialog( PBRIG_CHAR lpTitle,
       int x, int y, int width, int height, long int lStyle )
 {
-   BRIG_HANDLE * hWnd;
+   BRIG_HANDLE hWnd;
    GtkWidget * vbox;
    GtkFixed  * box;
 
@@ -476,8 +479,7 @@ HWND brig_InitDialog( PBRIG_CHAR lpTitle,
    //if( pIcon )
    //   gtk_window_set_icon(GTK_WINDOW(hWnd), pIcon->handle  );
 
-   gtk_window_set_title( GTK_WINDOW(hWnd), gcTitle );
-   g_free( gcTitle );
+   gtk_window_set_title( GTK_WINDOW(hWnd), lpTitle );
    gtk_window_set_policy( GTK_WINDOW(hWnd), TRUE, TRUE, FALSE );
    gtk_window_set_default_size( GTK_WINDOW(hWnd), width, height );
    gtk_window_move( GTK_WINDOW(hWnd), x, y );

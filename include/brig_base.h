@@ -90,7 +90,7 @@ public:
    brig_MainWindow();
    void New( int x, int y, int width, int height,
          PBRIG_CHAR lpTitle, long int lStyle = WS_OVERLAPPEDWINDOW,
-         HICON hIcon = NULL, PBRIG_BRUSH hBrush = NULL );
+         PBRIG_ICON hIcon = NULL, PBRIG_BRUSH hBrush = NULL );
    void Activate( void );
    void Close();
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );

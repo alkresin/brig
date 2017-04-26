@@ -215,7 +215,7 @@ brig_Panel::brig_Panel():brig_Container(), pfOnPaint(NULL) { lBackColor = COLOR_
 
 brig_Panel::~brig_Panel()
 {
-   brig_Container::~brig_Container();
+   //brig_Container::~brig_Container();
 }
 
 BRIG_HANDLE brig_Panel::New( brig_Container *pParent,
@@ -288,7 +288,7 @@ brig_QButton::brig_QButton():brig_Widget(), pfOnPaint(NULL), pfOnClick(NULL), iS
 
 brig_QButton::~brig_QButton()
 {
-   brig_Widget::~brig_Widget();
+   //brig_Widget::~brig_Widget();
    if( hBrush1 )
       brigDelBrush( hBrush1 );
    if( hBrush2 )
@@ -394,14 +394,14 @@ bool brig_QButton::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 
       case WM_LBUTTONDOWN:
          iState = 2;
-         InvalidateRect( handle, NULL, 1 );
+         brig_RedrawWindow( handle );
          break;
 
       case WM_LBUTTONUP:
          if( iState == 2 )
          {
             iState = 1;
-            InvalidateRect( handle, NULL, 1 );
+            brig_RedrawWindow( handle );
             if( pfOnClick )
                pfOnClick( this, wParam, lParam );
          }
