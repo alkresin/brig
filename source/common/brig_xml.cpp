@@ -14,9 +14,9 @@
    #define sscanf sscanf_s
 #endif
 
-#define SKIPTABSPACES( sptr ) while( *sptr == ' ' || *sptr == '\t' || \
-         *sptr == '\r' || *sptr == '\n' ) ( sptr )++
-#define SKIPCHARS( sptr ) while( *sptr && *sptr != ' ' && *sptr != '\t' && \
+#define SKIPTABSPACES( sptr ) while( (unsigned long)(sptr-pStart)<ulDataLen && ( *sptr == ' ' || *sptr == '\t' || \
+         *sptr == '\r' || *sptr == '\n' ) ) ( sptr )++
+#define SKIPCHARS( sptr ) while( (unsigned long)(sptr-pStart)<ulDataLen && *sptr != ' ' && *sptr != '\t' && \
          *sptr != '=' && *sptr != '>' && *sptr != '<' && *sptr != '\"' \
          && *sptr != '\'' && *sptr != '\r' && *sptr != '\n' ) ( sptr )++
 
@@ -39,6 +39,7 @@
 #define ATTR_VAL_LEN          100
 
 static unsigned char *pStart;
+static unsigned long ulDataLen;
 static int nParseError;
 static unsigned long ulOffset;
 
@@ -154,9 +155,9 @@ static std::map<std::string,char*> brigxml_getattr( unsigned char **pBuffer, boo
       else
          SKIPTABSPACES( *pBuffer );
 
-      while( **pBuffer && **pBuffer != '>' )
+      while( (unsigned long)(*pBuffer-pStart)<ulDataLen && **pBuffer != '>' )
       {
-         if( !( **pBuffer ) )
+         if( (unsigned long)(*pBuffer-pStart) >= ulDataLen )
          {
             brigxml_error( XML_ERROR_TERMINATION, *pBuffer );
             break;
@@ -202,9 +203,9 @@ static std::map<std::string,char*> brigxml_getattr( unsigned char **pBuffer, boo
                break;
             }
             ptr = *pBuffer;
-            while( **pBuffer && **pBuffer != cQuo )
+            while( (unsigned long)(*pBuffer-pStart)<ulDataLen && **pBuffer != cQuo )
                ( *pBuffer )++;
-            if( **pBuffer != cQuo )
+            if( (unsigned long)(*pBuffer-pStart) >= ulDataLen )
             {
                brigxml_error( XML_ERROR_NOT_QUOTE, *pBuffer );
                break;
@@ -257,12 +258,12 @@ static bool brigxml_readComment( PBRIG_XMLITEM pParent, unsigned char **pBuffer 
 
    ( *pBuffer ) += 4;
    ptr = *pBuffer;
-   while( **pBuffer &&
+   while( (unsigned long)(*pBuffer-pStart)<ulDataLen &&
          ( **pBuffer != '-' || *( *pBuffer + 1 ) != '-' ||
                *( *pBuffer + 2 ) != '>' ) )
       ( *pBuffer )++;
 
-   if( **pBuffer )
+   if( (unsigned long)(*pBuffer-pStart) < ulDataLen )
    {
       if( pParent )
       {
@@ -287,12 +288,12 @@ static bool brigxml_readCDATA( PBRIG_XMLITEM pParent, unsigned char **pBuffer )
 
    ( *pBuffer ) += 9;
    ptr = *pBuffer;
-   while( **pBuffer &&
+   while( (unsigned long)(*pBuffer-pStart)<ulDataLen &&
          ( **pBuffer != ']' || *( *pBuffer + 1 ) != ']' ||
                *( *pBuffer + 2 ) != '>' ) )
       ( *pBuffer )++;
 
-   if( **pBuffer )
+   if( (unsigned long)(*pBuffer-pStart) < ulDataLen )
    {
       PBRIG_XMLITEM pNode = brigxml_addnode( pParent );
       long lLen = *pBuffer - ptr;
@@ -345,12 +346,18 @@ static bool brigxml_readElement( PBRIG_XMLITEM pParent, unsigned char **pBuffer 
       {
          ptr = *pBuffer;
          lEmpty = 1;
-         while( **pBuffer != '<' )
+         while( (unsigned long)(*pBuffer-pStart)<ulDataLen && **pBuffer != '<' )
          {
             if( lEmpty && ( **pBuffer != ' ' && **pBuffer != '\t' &&
                         **pBuffer != '\r' && **pBuffer != '\n' ) )
                lEmpty = 1;
             ( *pBuffer )++;
+         }
+         if( (unsigned long)(*pBuffer-pStart) >= ulDataLen )
+         {
+            brigxml_error( XML_ERROR_WRONG_TAG_END, *pBuffer );
+            brigxml_Release( pNode );
+            return 0;
          }
          if( !lEmpty )
          {
@@ -373,8 +380,14 @@ static bool brigxml_readElement( PBRIG_XMLITEM pParent, unsigned char **pBuffer 
             }
             else
             {
-               while( **pBuffer != '>' )
+               while( (unsigned long)(*pBuffer-pStart)<ulDataLen && **pBuffer != '>' )
                   ( *pBuffer )++;
+               if( (unsigned long)(*pBuffer-pStart) >= ulDataLen )
+               {
+                  brigxml_error( XML_ERROR_WRONG_TAG_END, *pBuffer );
+                  brigxml_Release( pNode );
+                  return 0;
+               }
                ( *pBuffer )++;
                break;
             }
@@ -412,6 +425,60 @@ static bool brigxml_readElement( PBRIG_XMLITEM pParent, unsigned char **pBuffer 
 
 }
 
+PBRIG_XMLITEM brigxml_First( PBRIG_XMLITEM pParent, int *iNum )
+{
+   if( pParent->avItems.size() > 0 )
+   {
+      if( iNum )
+         *iNum = 0;
+      return pParent->avItems[0];
+   }
+   if( iNum )
+      *iNum = -1;
+   return NULL;
+}
+
+PBRIG_XMLITEM brigxml_Last( PBRIG_XMLITEM pParent, int *iNum )
+{
+   if( pParent->avItems.size() > 0 )
+   {
+      if( iNum )
+         *iNum = pParent->avItems.size() - 1;
+      return pParent->avItems[pParent->avItems.size()-1];
+   }
+   if( iNum )
+      *iNum = -1;
+   return NULL;
+}
+
+PBRIG_XMLITEM brigxml_Next( PBRIG_XMLITEM pParent, int *iNum )
+{
+   if( *iNum < (int)(pParent->avItems.size()) && *iNum >= 0 )
+   {
+      return pParent->avItems[(*iNum)++];
+   }
+   return NULL;
+}
+
+PBRIG_XMLITEM brigxml_Prev( PBRIG_XMLITEM pParent, int *iNum )
+{
+   if( *iNum >= 0 && *iNum < (int)(pParent->avItems.size()) )
+   {
+      return pParent->avItems[(*iNum)--];
+   }
+   return NULL;
+}
+
+PBRIG_CHAR brigxml_GetAttr( PBRIG_XMLITEM pItem, PBRIG_CHAR szKey )
+{
+   return pItem->amAttr[ szKey ];
+}
+
+void brigxml_SetAttr( PBRIG_XMLITEM pItem, PBRIG_CHAR szKey, PBRIG_CHAR szVal )
+{
+   pItem->amAttr[ szKey ] = szVal;
+}
+
 void brigxml_Release( PBRIG_XMLITEM pItem )
 {
    if( pItem->szTitle )
@@ -430,7 +497,7 @@ static unsigned char * brig_ReadFile( PBRIG_CHAR szName )
 {
    unsigned char * pBuffer = NULL;
    FILE *f = fopen( szName, "rb" );
-   long lSize;
+   unsigned long lSize;
 
    if( f )
    {
@@ -445,12 +512,13 @@ static unsigned char * brig_ReadFile( PBRIG_CHAR szName )
          fclose( f );
 
          pBuffer[lSize] = 0;
+         ulDataLen = lSize;
       }
    }
    return pBuffer;
 }
 
-PBRIG_XMLITEM brigxml_GetDoc( PBRIG_CHAR szSource, bool bFile )
+PBRIG_XMLITEM brigxml_GetDoc( PBRIG_CHAR szSource, unsigned long ulLen )
 {
    PBRIG_XMLITEM pDoc = new BRIG_XMLITEM;
    unsigned char *ptr, *pBuffer;
@@ -461,10 +529,13 @@ PBRIG_XMLITEM brigxml_GetDoc( PBRIG_CHAR szSource, bool bFile )
       pEntity1 = predefinedEntity1;
       pEntity2 = predefinedEntity2;
    }
-   if( bFile )
-      ptr = pBuffer = brig_ReadFile( szSource );
-   else
+   if( ulLen )
+   {
       ptr = szSource;
+      ulDataLen = ulLen;
+   }
+   else
+      ptr = pBuffer = brig_ReadFile( szSource );
    pStart = ptr;
 
    if( !ptr )
@@ -484,7 +555,7 @@ PBRIG_XMLITEM brigxml_GetDoc( PBRIG_CHAR szSource, bool bFile )
          pDoc->amAttr = brigxml_getattr( &ptr, &bSingle );
          if( pDoc->amAttr.empty() || nParseError )
          {
-            if( bFile )
+            if( !ulLen )
                free( pBuffer );
             brigxml_Release( pDoc );
             return NULL;
@@ -539,7 +610,7 @@ PBRIG_XMLITEM brigxml_GetDoc( PBRIG_CHAR szSource, bool bFile )
       }
    }
 
-   if( bFile )
+   if( !ulLen )
       free( pBuffer );
 
    return pDoc;

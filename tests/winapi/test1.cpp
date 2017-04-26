@@ -120,10 +120,16 @@ int brig_Main( int argc, char *argv[] )
    */
 
    pXmlDoc = brigxml_GetDoc( "test1.xml" );
-   if( pXmlDoc && pXmlDoc->avItems.size() == 1 )
-      brig_writelog( NULL, "size: %d %d\r\n", pXmlDoc->avItems[0]->avItems.size(), brigxml_Error() );
-   else
-      brig_writelog( NULL, "Error %d \r\n", brigxml_Error() );
+   if( !brigxml_Error() )
+   {
+      int iNum = 0;
+      PBRIG_XMLITEM pParent, pNode;
+      if( (pParent = brigxml_First( pXmlDoc )) != NULL )
+         while( ( pNode = brigxml_Next( pParent, &iNum ) ) != NULL )
+         {
+            brig_writelog( NULL, "item: %s\r\n", pNode->szTitle );
+         }
+   }
 
    oMain.New( 100, 100, 500, 300, (PBRIG_CHAR) "First Brig Window" );
    oMain.pfOnClose = fncOnClose;
