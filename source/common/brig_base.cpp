@@ -254,6 +254,8 @@ bool brig_Dialog::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
          if( bModal && pParent )
          {
             pParent->Enable();
+            brig_SetTopmost( pParent->Handle() );
+            brig_RemoveTopmost( pParent->Handle() );
          }
          break;
    }
