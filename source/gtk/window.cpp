@@ -25,6 +25,8 @@
 
 static BRIG_HANDLE hMainWindow = NULL;
 
+brig_Application brigApp;
+
 static long prevp2 = -1;
 
 void brig_writelog( const char * sFile, const char * sTraceMsg, ... )

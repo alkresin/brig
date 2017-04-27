@@ -92,6 +92,7 @@ using std::vector;
    #define ES_PASSWORD         32
    #define ES_READONLY       2048
 
+   #define WS_TABSTOP       65536
    #define WS_VSCROLL     2097152
    #define WS_HSCROLL     1048576
    #define WS_BORDER      8388608
