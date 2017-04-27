@@ -9,6 +9,7 @@
 
 #include "brig.h"
 
+extern void cb_signal( GtkWidget *widget, gchar* data );
 extern void brig_SetEvent( gpointer handle, char * cSignal, long int p1, long int p2, long int p3 );
 
 /* -------- Label ---------
@@ -194,7 +195,6 @@ BRIG_HANDLE brig_CreatePanel( BRIG_HANDLE hParentWindow, int iWidgId,
    GtkWidget *vbox, *hbox;
    GtkWidget *vscroll = NULL, *hscroll = NULL;
    GtkFixed *box, *fbox;
-   GObject *handle;
 
    fbox = ( GtkFixed * ) gtk_fixed_new();
 
@@ -239,7 +239,7 @@ BRIG_HANDLE brig_CreatePanel( BRIG_HANDLE hParentWindow, int iWidgId,
       set_signal( ( gpointer ) adjH, "value_changed", WM_HSCROLL, 0, 0 );
    }*/
 
-   box = ( GtkFixed * ) g_object_get_data( ( GObject * ) handle, "fbox" );
+   box = ( GtkFixed * ) g_object_get_data( ( GObject * ) hParentWindow, "fbox" );
    if( box )
    {
       gtk_fixed_put( box, ( GtkWidget * ) hbox, x, y );

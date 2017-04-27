@@ -91,6 +91,23 @@ void brig_ShowWindow( BRIG_HANDLE handle, bool bShow )
       gtk_widget_hide( handle );
 }
 
+BRIG_HANDLE brig_GetActiveWindow( void )
+{
+   GList * pL = gtk_window_list_toplevels(), * pList;
+
+   pList = pL;
+   while( pList )
+   {
+      if( gtk_window_is_active( (GtkWindow*) (pList->data) ) )
+        break;
+      pList = g_list_next( pList );
+   }
+   if( !pList )
+      pList = pL;
+
+   return (GtkWidget*) ( ( pList )? pList->data : NULL );
+}
+
 BRIG_HANDLE brig_SetFocus( BRIG_HANDLE handle )
 {
    GtkWidget * oldhandle = gtk_window_get_focus( (GtkWindow*) gtk_window_list_toplevels()->data );
@@ -310,6 +327,26 @@ gint cb_signal_size( GtkWidget *widget, GtkAllocation *allocation, gpointer data
       ( ( brig_Widget* ) gObject )->onEvent( WM_SIZE, 0, 0 );
 
    return 0;
+}
+
+void cb_signal( GtkWidget *widget, gchar* data )
+{
+   gpointer gObject;
+   long p1, p2, p3;
+
+   sscanf( (char*)data,"%ld %ld %ld",&p1,&p2,&p3 );
+   if( !p1 )
+   {
+      p1 = 273;
+      widget = (GtkWidget*) p3;
+      p3 = 0;
+   }
+
+   gObject = g_object_get_data( (GObject*) widget, "obj" );
+
+   if( gObject )
+      ( ( brig_Widget* ) gObject )->onEvent( p1, p2, p3 );
+
 }
 
 static gint cb_event( GtkWidget *widget, GdkEvent * event, gchar* data )

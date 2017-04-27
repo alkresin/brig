@@ -13,7 +13,9 @@
    #define _UNICODE
 #endif
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <vector>
 #include <string>
 #include <map>

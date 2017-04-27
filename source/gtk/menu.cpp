@@ -9,6 +9,8 @@
 
 #include "brig.h"
 
+extern void cb_signal( GtkWidget *widget, gchar* data );
+
 BRIG_HMENU brig_CreateMenu( void )
 {
    return gtk_menu_bar_new();
@@ -21,7 +23,7 @@ BRIG_HMENU brig_CreatePopupMenu( void )
 
 int brig_SetMenu( BRIG_HANDLE hWnd, BRIG_HMENU hMenu )
 {
-   GtkFixed * box = ( GtkFixed * ) g_object_get_data( hWnd, "fbox" );
+   GtkFixed * box = ( GtkFixed * ) g_object_get_data( (GObject*) hWnd, "fbox" );
    GtkWidget * vbox = ( (GtkWidget*)box )->parent;
    gtk_box_pack_start( GTK_BOX (vbox), (GtkWidget*)hMenu, FALSE, FALSE, 0);
    gtk_box_reorder_child(GTK_BOX(vbox), (GtkWidget*)hMenu, 0);
@@ -70,7 +72,7 @@ BRIG_HMENU brig_AddMenuItem( BRIG_HMENU hMenu, PBRIG_CHAR szCaption, int iPos,
    else
    {
       char buf[20]={0};
-      sprintf( buf,"0 %ld %ld", uiId, ( long ) pWnd->Handle() );
+      sprintf( buf,"0 %ld %ld", (long) uiId, ( long ) pWnd->Handle() );
       g_signal_connect(G_OBJECT (hMenuItem), "activate",
           G_CALLBACK (cb_signal), (gpointer) g_strdup (buf));
    }

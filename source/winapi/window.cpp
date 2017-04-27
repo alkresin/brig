@@ -111,6 +111,11 @@ void brig_ShowWindow( BRIG_HANDLE handle, bool bShow )
    ShowWindow( handle, (bShow)? SW_SHOWNORMAL:SW_HIDE );
 }
 
+BRIG_HANDLE brig_GetActiveWindow( void )
+{
+   return GetActiveWindow();
+}
+
 BRIG_HANDLE brig_SetFocus( BRIG_HANDLE handle )
 {
    return SetFocus( handle );

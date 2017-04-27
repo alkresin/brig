@@ -6,9 +6,6 @@
  * www - http://www.kresin.ru
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <brig_xml.h>
 
 #if (defined(_MSC_VER)&&(_MSC_VER>=1400))

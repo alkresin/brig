@@ -14,11 +14,11 @@ static int MessageBox( const char * cMsg, const char * cTitle, int message_type,
    GtkWidget * dialog;
    int result;
 
-   dialog = gtk_message_dialog_new( GTK_WINDOW( GetActiveWindow() ),
-                                     GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-                                     message_type,
-                                     button_type,
-                                     cMsg );
+   dialog = gtk_message_dialog_new( GTK_WINDOW( brig_GetActiveWindow() ),
+         (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT),
+         (GtkMessageType) message_type,
+         (GtkButtonsType) button_type,
+         cMsg );
    if( *cTitle )
       gtk_window_set_title( GTK_WINDOW(dialog), cTitle );
    gtk_window_set_position( GTK_WINDOW(dialog), GTK_WIN_POS_CENTER );

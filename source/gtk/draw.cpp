@@ -10,6 +10,8 @@
 #include "brig.h"
 #include <math.h>
 
+#define  PS_SOLID   0
+
 static void brig__setcolor( cairo_t * cr, long int nColor )
 {
    short int r, g, b;
@@ -182,12 +184,12 @@ bool brig_CompareBrush( PBRIG_BRUSH pBrush, long int lColor )
 PBRIG_PEN brig_CreatePen( int iWidth, long int lColor, int iStyle )
 {
 
-   PBRIG_PEN hpen = (PBRIG_PEN) malloc( sizeof(BRIG_PEN) );
+   PBRIG_PEN hPen = (PBRIG_PEN) malloc( sizeof(BRIG_PEN) );
 
-   hpen->type = BRIG_OBJECT_PEN;
-   hpen->style = iStyle;
-   hpen->width = iWidth;
-   hpen->color = lColor;
+   hPen->type = BRIG_OBJECT_PEN;
+   hPen->style = (GdkLineStyle) iStyle;
+   hPen->width = iWidth;
+   hPen->color = lColor;
    return hPen;
 
 }
@@ -205,10 +207,10 @@ PBRIG_FONT brig_CreateFont( PBRIG_CHAR fontName, int fnWidth, int fnHeight, int 
    PangoFontDescription *  hFont;
 
    hFont = pango_font_description_new();
-   pango_font_description_set_family( hFont, fontname );
+   pango_font_description_set_family( hFont, fontName );
    pango_font_description_set_style( hFont, (fdwItalic)? PANGO_STYLE_ITALIC : PANGO_STYLE_NORMAL );
    pango_font_description_set_size( hFont, fnHeight );
-   pango_font_description_set_weight( hFont, fnWeight, );
+   pango_font_description_set_weight( hFont, (PangoWeight)fnWeight );
 
    pFont->type = BRIG_OBJECT_FONT;
    pFont->hFont = hFont;
@@ -230,9 +232,9 @@ void brig_SetFont( BRIG_HANDLE handle, PBRIG_FONT pFont )
 {
    GtkWidget * hLabel = (GtkWidget*) g_object_get_data( (GObject*) handle,"label" );   
 
-   if( GTK_IS_BUTTON( hCtrl ) )
+   if( GTK_IS_BUTTON( handle ) )
       handle = gtk_bin_get_child( GTK_BIN( handle ) );
-   else if( GTK_IS_EVENT_BOX( hCtrl ) )
+   else if( GTK_IS_EVENT_BOX( handle ) )
       handle = gtk_bin_get_child( GTK_BIN( handle ) );
    else if( hLabel )
       handle = (GtkWidget*) hLabel;
@@ -295,6 +297,20 @@ int brig_DrawText( PBRIG_DC hDC, PBRIG_CHAR lpText, int x1, int y1, int x2, int 
    return 0;
 }
 
+static void prepare_cairo_colors( long int nColor, gdouble *r, gdouble *g, gdouble *b )
+{
+   short int int_r, int_g, int_b;
+  
+   nColor %= ( 65536 * 256 );
+   int_r = nColor % 256;
+   int_g = ( ( nColor - int_r ) % 65536 ) / 256;
+   int_b = ( nColor - int_r - int_g ) / 65536;
+
+   *r = (gdouble)int_r / 255.;
+   *g = (gdouble)int_g / 255.;
+   *b = (gdouble)int_b / 255.;
+}
+
 void brig_DrawGradient( PBRIG_DC hDC, int x1, int y1, int x2, int y2, int type,
       vector<long> *pArrColor, vector<double> *pArrStop, vector<int> *pArrRadius )
 {
@@ -311,7 +327,7 @@ void brig_DrawGradient( PBRIG_DC hDC, int x1, int y1, int x2, int y2, int type,
       return;
 
    if( user_colors_num == 1 )
-      brig__setcolor( hDC->cr, pArrColor[0] );
+      brig__setcolor( hDC->cr, (*pArrColor)[0] );
    else
    {
       // type of gradient
@@ -364,9 +380,9 @@ void brig_DrawGradient( PBRIG_DC hDC, int x1, int y1, int x2, int y2, int type,
 
       for ( i = 0; i < colors_num; i++ )
       {
-         color = ( i < user_colors_num ) ? pArrColor[i] : 0xFFFFFF * i;
-         hwg_prepare_cairo_colors( color, &r, &g, &b );
-         stop = (gdouble) ( ( i < user_stops_num ) ? pArrStop[i] : 1. / (colors_num-1) * (gdouble)i );
+         color = (long int) ( ( i < user_colors_num ) ? (*pArrColor)[i] : 0xFFFFFF * i );
+         prepare_cairo_colors( color, &r, &g, &b );
+         stop = (gdouble) ( ( i < user_stops_num ) ? (*pArrStop)[i] : 1. / (colors_num-1) * (gdouble)i );
          cairo_pattern_add_color_stop_rgb( pat, stop, r, g, b );
       }
    }
@@ -378,7 +394,7 @@ void brig_DrawGradient( PBRIG_DC hDC, int x1, int y1, int x2, int y2, int type,
 
       for ( i = 0; i < 4; i++ )
       {
-         radius[i] = ( i < user_radiuses_num ) ? pArrRadius[i] : 0;
+         radius[i] = ( i < user_radiuses_num ) ? (*pArrRadius)[i] : 0;
          radius[i] = ( radius[i] >= 0 ) ? radius[i] : 0;
          radius[i] = ( radius[i] <= max_r ) ? radius[i] : max_r;
       }
