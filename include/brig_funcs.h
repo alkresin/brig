@@ -19,7 +19,7 @@ extern BRIG_HANDLE brig_InitMainWindow( PBRIG_CHAR lpAppName, PBRIG_CHAR lpTitle
 extern void brig_ActivateMainWindow( int bShow, HACCEL hAcceler, int iMaxMin );
 extern BRIG_HANDLE brig_InitDialog( PBRIG_CHAR lpTitle,
       int x, int y, int width, int height, long int lStyle );
-extern void brig_ActivateDialog( bool bModal );
+extern void brig_ActivateDialog( BRIG_HANDLE handle, bool bModal );
 extern void brig_CloseWindow( BRIG_HANDLE handle );
 
 extern bool brig_CheckBtnGet( BRIG_HANDLE handle );

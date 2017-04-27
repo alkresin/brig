@@ -229,10 +229,7 @@ void brig_Dialog::Activate( bool bMode )
 {
 
    bModal = bMode;
-   if( bModal && pParent )
-      pParent->Enable( 0 );
-
-   brig_ActivateDialog( bModal );
+   brig_ActivateDialog( handle, bModal );
 }
 
 bool brig_Dialog::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
@@ -250,14 +247,6 @@ bool brig_Dialog::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
          brig_Container::OnSize( wParam, lParam );
          break;
 
-      case WM_DESTROY:
-         if( bModal && pParent )
-         {
-            pParent->Enable();
-            brig_SetTopmost( pParent->Handle() );
-            brig_RemoveTopmost( pParent->Handle() );
-         }
-         break;
    }
    
    return 0;

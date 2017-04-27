@@ -110,8 +110,6 @@ public:
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
 
    void *pResult;
-
-protected:
    bool bModal;
 
 };

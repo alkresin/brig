@@ -144,18 +144,48 @@ bool brig_CheckButton::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 }
 
 
-/* -------- RadioButton --------- */
+/* -------- Radio --------- */
+
+brig_RadioGroup::brig_RadioGroup(): pBox(NULL) {}
+
+brig_RadioGroup::~brig_RadioGroup()
+{
+   if( pBox )
+      delete pBox;
+}
+
+void brig_RadioGroup::Begin( brig_Container *pParent,
+          int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption )
+{
+   this->pParent = pParent;
+
+   if( x > 0 && y > 0 && nWidth > 0 && nHeight > 0 )
+   {
+      pBox = new brig_GroupBox;
+      pBox->New( pParent, x, y, nWidth, nHeight, lpCaption );
+   }
+}
+
+void brig_RadioGroup::End( int iSelected )
+{
+   brig_RadioGroupSet( this, iSelected );
+}
+
 brig_RadioButton::brig_RadioButton():brig_Widget(), pfOnClick(NULL){}
 
-BRIG_HANDLE brig_RadioButton::New( brig_Container *pParent,
+BRIG_HANDLE brig_RadioButton::New( brig_RadioGroup *pGroup,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption, unsigned long ulStyle )
 {
 
-   brig_Widget::New( pParent, x, y, nWidth, nHeight );
+   brig_Widget::New( (brig_Container *) (pGroup->pParent), x, y, nWidth, nHeight );
+   this->pGroup = pGroup;
 
+   if( pGroup->avButtons.empty() )
+      ulStyle |= WS_GROUP;
    handle = brig_CreateButton( pParent->Handle(), iWidgId,
              x, y, nWidth, nHeight, ulStyle | BS_AUTORADIOBUTTON, lpCaption );
 
+   pGroup->avButtons.push_back( this );
    if( !hFont && pParent->hFont )
       SetFont( pParent->hFont );
    brig_SetWidgetData( this );

@@ -39,6 +39,16 @@ public:
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
 };
 
+class brig_GroupBox : public brig_Widget
+{
+public:
+
+   brig_GroupBox();
+
+   BRIG_HANDLE New( brig_Container *pParent,
+          int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption );
+};
+
 class brig_Button : public brig_Widget
 {
 public:
@@ -72,6 +82,28 @@ public:
 
 };
 
+class brig_RadioButton;
+
+class brig_RadioGroup
+{
+public:
+
+   brig_RadioGroup();
+   ~brig_RadioGroup();
+
+   void Begin( brig_Container *pParent,
+          int x = 0, int y = 0, int nWidth = 0, int nHeight = 0, PBRIG_CHAR lpCaption = NULL );
+   void End( int iSelected );
+
+   bool GetValue( void );
+   void SetValue( bool bValue );
+
+   brig_Widget *pParent;
+   brig_GroupBox * pBox;
+   vector<brig_RadioButton*> avButtons;
+
+};
+
 class brig_RadioButton : public brig_Widget
 {
 public:
@@ -80,7 +112,7 @@ public:
 
    brig_RadioButton();
 
-   BRIG_HANDLE New( brig_Container *pParent,
+   BRIG_HANDLE New( brig_RadioGroup *pGroup,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption, unsigned long ulStyle = 0 );
 
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
@@ -88,16 +120,8 @@ public:
    bool GetValue( void );
    void SetValue( bool bValue );
 
-};
+   brig_RadioGroup *pGroup;
 
-class brig_GroupBox : public brig_Widget
-{
-public:
-
-   brig_GroupBox();
-
-   BRIG_HANDLE New( brig_Container *pParent,
-          int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption );
 };
 
 
@@ -159,3 +183,5 @@ public:
    int uiCols;
    int uiHeadRows, uiFootRows;
 };
+
+extern void brig_RadioGroupSet( brig_RadioGroup *pGroup, int iSelected );

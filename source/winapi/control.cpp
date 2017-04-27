@@ -100,6 +100,16 @@ void brig_RadioBtnSet( HWND handle, bool bValue )
    SendMessage( handle, BM_SETCHECK, (bValue)? BST_CHECKED : BST_UNCHECKED, 0 );
 }
 
+void brig_RadioGroupSet( brig_RadioGroup *pGroup, int iSelected )
+{
+   CheckRadioButton( ( HWND ) pGroup->pParent->Handle(), // handle of dialog box
+         pGroup->avButtons[0]->iWidgId,                  // identifier of first radio button in group
+         pGroup->avButtons.back()->iWidgId,              // identifier of last radio button in group
+         pGroup->avButtons[iSelected-1]->iWidgId         // identifier of radio button to select
+          );
+}
+
+
 
 /* -------- Edit --------- 
  */

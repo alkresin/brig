@@ -11,6 +11,7 @@
 
 extern void cb_signal( GtkWidget *widget, gchar* data );
 extern void brig_SetEvent( gpointer handle, char * cSignal, long int p1, long int p2, long int p3 );
+extern void brig_SetSignal( gpointer handle, char * cSignal, long int p1, long int p2, long int p3 );
 
 /* -------- Label ---------
  */
@@ -84,16 +85,8 @@ BRIG_HANDLE brig_CreateButton( BRIG_HANDLE hParentWindow, int iWidgId,
       gtk_fixed_put( box, hCtrl, x, y );
    gtk_widget_set_size_request( hCtrl, nWidth, nHeight );
 
-   /*
-   if( hBtn )
-   {
-      LONG_PTR hProc;
-      SetWindowLongPtr( hBtn, GWLP_USERDATA, NULL );
-      hProc = SetWindowLongPtr( hBtn, GWLP_WNDPROC, ( LONG_PTR ) s_BtnProc );
-      if( !wpOrigBtnProc )
-         wpOrigBtnProc = ( WNDPROC ) hProc;
-   }
-   */
+   brig_SetSignal( hCtrl, "clicked", WM_LBUTTONUP, 0, 0 );
+
    return hCtrl;
 
 }

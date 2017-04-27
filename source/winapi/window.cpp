@@ -199,6 +199,12 @@ static LRESULT CALLBACK s_DialogProc( BRIG_HANDLE hDlg, UINT message,
          break;
 
       case WM_DESTROY:
+         if( pObjWin->bModal && pObjWin->pParent )
+         {
+            pObjWin->pParent->Enable();
+            brig_SetTopmost( pObjWin->pParent->Handle() );
+            brig_RemoveTopmost( pObjWin->pParent->Handle() );
+         }
          for( i = 0; i < iDialogs; i++ )
             if( aDialogs[i] == hDlg )
             {
@@ -366,19 +372,21 @@ BRIG_HANDLE brig_InitDialog( PBRIG_CHAR lpTitle,
    return hDialog;
 }
 
-void brig_ActivateDialog( bool bModal )
+void brig_ActivateDialog( BRIG_HANDLE handle, bool bModal )
 {
 
-   if( iDialogs )
-   {
-      wpOrigDlgProc = ( WNDPROC ) SetWindowLongPtr( aDialogs[iDialogs-1],
-            GWLP_WNDPROC, ( LONG_PTR ) s_DialogProc ); //DWLP_DLGPROC
+   brig_Dialog *pObjWin = ( brig_Dialog * ) GetWindowLongPtr( handle, GWLP_USERDATA );
 
-      if( bModal )
-         brig_ModalDlgLoop( NULL, aDialogs[iDialogs-1] );
-      else
-         brig_MainLoop( NULL, 0 );
-   }
+   if( bModal && pObjWin->pParent )
+      pObjWin->pParent->Enable( 0 );
+
+   wpOrigDlgProc = ( WNDPROC ) SetWindowLongPtr( handle,
+         GWLP_WNDPROC, ( LONG_PTR ) s_DialogProc ); //DWLP_DLGPROC
+
+   if( bModal )
+      brig_ModalDlgLoop( NULL, handle );
+   else
+      brig_MainLoop( NULL, 0 );
 }
 
 void brig_CloseWindow( BRIG_HANDLE handle )

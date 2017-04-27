@@ -315,7 +315,7 @@ gboolean cb_delete_event( GtkWidget *widget, gchar* data )
    SYMBOL_UNUSED( data );
 
    if( gObject )
-      return !( ( brig_Widget* ) gObject )->onEvent( WM_DESTROY, 0, 0 );
+      return ( ( brig_Widget* ) gObject )->onEvent( WM_DESTROY, 0, 0 );
 
    return FALSE;
 }
@@ -349,6 +349,15 @@ void cb_signal( GtkWidget *widget, gchar* data )
    if( gObject )
       ( ( brig_Widget* ) gObject )->onEvent( p1, p2, p3 );
 
+}
+
+void brig_SetSignal( gpointer handle, char * cSignal, long int p1, long int p2, long int p3 )
+{
+   char buf[25]={0};
+
+   sprintf( buf, "%ld %ld %ld", p1, p2, p3 );
+   g_signal_connect( handle, cSignal,
+                      G_CALLBACK (cb_signal), g_strdup(buf) );
 }
 
 static gint cb_event( GtkWidget *widget, GdkEvent * event, gchar* data )
@@ -503,7 +512,20 @@ void brig_ActivateMainWindow( int bShow, HACCEL hAcceler, int iMaxMin )
    SYMBOL_UNUSED( bShow );
    SYMBOL_UNUSED( hAcceler );
    SYMBOL_UNUSED( iMaxMin );
+
+   gtk_widget_show_all( hMainWindow );
    gtk_main();
+}
+
+gboolean cb_dialog_quit( GtkWidget *widget, gchar* data )
+{
+   gpointer gObject = g_object_get_data( (GObject*) widget, "obj" );
+   SYMBOL_UNUSED( data );
+
+   if( gObject && ( ( brig_Dialog* ) gObject )->bModal )
+      gtk_main_quit();
+
+   return FALSE;
 }
 
 BRIG_HANDLE brig_InitDialog( PBRIG_CHAR lpTitle,
@@ -543,6 +565,8 @@ BRIG_HANDLE brig_InitDialog( PBRIG_CHAR lpTitle,
 
    g_signal_connect (G_OBJECT (hWnd), "delete-event",
       G_CALLBACK (cb_delete_event), NULL );
+   g_signal_connect (G_OBJECT (hWnd), "destroy",
+	 	      G_CALLBACK (cb_dialog_quit), NULL);
 
    brig_SetEvent( (gpointer)hWnd, "configure_event", 0, 0, 0 );
    brig_SetEvent( (gpointer)hWnd, "focus_in_event", 0, 0, 0 );
@@ -552,10 +576,17 @@ BRIG_HANDLE brig_InitDialog( PBRIG_CHAR lpTitle,
    return hWnd;
 }
 
-void brig_ActivateDialog( bool bModal )
+void brig_ActivateDialog( BRIG_HANDLE handle, bool bModal )
 {
+   gtk_widget_show_all( handle );
    if( bModal )
+   {
+      gtk_window_set_modal( (GtkWindow*) handle, 1 );
+      if( handle->parent )
+         gtk_window_set_transient_for( (GtkWindow*) handle, (GtkWindow*) (handle->parent) );
+
       gtk_main();
+   }
 }
 
 void brig_CloseWindow( BRIG_HANDLE handle )
