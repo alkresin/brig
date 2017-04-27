@@ -112,6 +112,11 @@ void brig_RadioBtnSet( BRIG_HANDLE handle, bool bValue )
    gtk_toggle_button_set_active( ( GtkToggleButton * ) handle, bValue );
 }
 
+void brig_RadioGroupSet( brig_RadioGroup *pGroup, int iSelected )
+{
+   gtk_toggle_button_set_active( ( GtkToggleButton * ) pGroup->avButtons[iSelected-1]->Handle(), 1 );
+}
+
 
 /* -------- Edit --------- 
  */

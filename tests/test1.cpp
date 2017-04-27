@@ -91,15 +91,16 @@ void fncMenu2( void )
 
 int brig_Main( int argc, char *argv[] )
 {
-
+   
    brig_Panel oPanel;
    brig_Button oBtn;
+   //brig_Button *pBtn = new brig_Button;
    brig_QButton oQBtn;
    brig_CheckButton oCheck;
    long pColors1[2] = {0x333333, 0xcccccc};
    PBRIG_PEN pPen2;
    PBRIG_XMLITEM pXmlDoc;
-
+   
    SYMBOL_UNUSED( argc );
    SYMBOL_UNUSED( argv );
    /*
@@ -107,7 +108,7 @@ int brig_Main( int argc, char *argv[] )
       brig_writelog( NULL, "arg%d: %s\r\n", i, argv[i] );
    }
    */
-   /*
+   
    brigAddPen( 2, 0x333333 );
    brigAddPen( 2, 0x333333 );
    pPen2 = brigAddPen( 2, 0x333333, 1 );
@@ -117,8 +118,8 @@ int brig_Main( int argc, char *argv[] )
    brig_writelog( NULL, "size: %d\r\n", brigApp.avPens.size() );
    brigDelPen( pPen2 );
    brig_writelog( NULL, "size: %d\r\n", brigApp.avPens.size() );
-   */
-
+   
+   
    pXmlDoc = brigxml_GetDoc( "test1.xml" );
    if( !brigxml_Error() )
    {
@@ -130,10 +131,10 @@ int brig_Main( int argc, char *argv[] )
             brig_writelog( NULL, "item: %s\r\n", pNode->szTitle );
          }
    }
-
+   
    oMain.New( 100, 100, 500, 300, (PBRIG_CHAR) "First Brig Window" );
    oMain.pfOnClose = fncOnClose;
-
+   
    brigMenu( &oMain );
 
    if( brigSubMenu( "File", 0 ) )
@@ -147,7 +148,7 @@ int brig_Main( int argc, char *argv[] )
    brigMenuItemAdd( "Help", 0, fncMenu2 );
 
    brigMenuEnd();
-
+   
    oPanel.New( &oMain, 0, 0, 500, 40, brigAddStyle( 2, pColors1 ) );
    oPanel.pfOnSize = fncOnSize;
 
@@ -161,12 +162,15 @@ int brig_Main( int argc, char *argv[] )
    oBtn.New( &oMain, 100, 100, 100, 32, (PBRIG_CHAR) "Помощь" );
    oBtn.pfOnClick = fncOnClick;
 
+   (new brig_Button)->New( &oMain, 100, 140, 100, 32, (PBRIG_CHAR) "Test" );
+
    //brig_writelog( NULL, "edit id: %d\r\n", oEdit.iControlId );
    //brig_writelog( NULL, "button id: %d\r\n", oBtn.iControlId );
 
    oMain.Activate();
 
-   brigxml_Release( pXmlDoc );
+   if( pXmlDoc )
+      brigxml_Release( pXmlDoc );
 
    return 0;
 }
