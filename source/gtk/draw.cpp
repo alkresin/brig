@@ -12,6 +12,18 @@
 
 #define  PS_SOLID   0
 
+void brig_parse_color( long lColor, GdkColor * pColor )
+{
+   char color[10]={0};
+
+   sprintf( color,"#%0*lX",6,lColor );
+   color[8] = color[1]; color[9] = color[2];
+   color[1] = color[5]; color[2] = color[6];
+   color[5] = color[8]; color[6] = color[9];
+   color[7] = '\0';
+   gdk_color_parse( color,pColor );
+}
+
 static void brig__setcolor( cairo_t * cr, long int nColor )
 {
    short int r, g, b;
@@ -200,7 +212,7 @@ bool brig_ComparePen( PBRIG_PEN pPen, int iWidth, long int lColor, int iStyle )
 
 }
 
-PBRIG_FONT brig_CreateFont( PBRIG_CHAR fontName, int fnWidth, int fnHeight, int fnWeight,
+PBRIG_FONT brig_CreateFont( PBRIG_CHAR fontName, int fnHeight, int fnWeight,
                DWORD fdwCharSet, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut  )
 {
    PBRIG_FONT pFont = (PBRIG_FONT) malloc( sizeof(BRIG_FONT) );
