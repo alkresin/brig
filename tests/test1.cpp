@@ -94,8 +94,9 @@ int brig_Main( int argc, char *argv[] )
    
    brig_Panel oPanel;
    brig_Button oBtn;
-   //brig_Button *pBtn = new brig_Button;
    brig_QButton oQBtn;
+   brig_RadioGroup oRG;
+   brig_RadioButton oR1, oR2;
    brig_CheckButton oCheck;
    long pColors1[2] = {0x333333, 0xcccccc};
    PBRIG_PEN pPen2;
@@ -108,7 +109,7 @@ int brig_Main( int argc, char *argv[] )
       brig_writelog( NULL, "arg%d: %s\r\n", i, argv[i] );
    }
    */
-   
+   /*
    brigAddPen( 2, 0x333333 );
    brigAddPen( 2, 0x333333 );
    pPen2 = brigAddPen( 2, 0x333333, 1 );
@@ -118,7 +119,7 @@ int brig_Main( int argc, char *argv[] )
    brig_writelog( NULL, "size: %d\r\n", brigApp.avPens.size() );
    brigDelPen( pPen2 );
    brig_writelog( NULL, "size: %d\r\n", brigApp.avPens.size() );
-   
+   */
    
    pXmlDoc = brigxml_GetDoc( "test1.xml" );
    if( !brigxml_Error() )
@@ -152,17 +153,20 @@ int brig_Main( int argc, char *argv[] )
    oPanel.New( &oMain, 0, 0, 500, 40, brigAddStyle( 2, pColors1 ) );
    oPanel.pfOnSize = fncOnSize;
 
-   oEdit.New( &oMain, 20, 60, 100, 28 );
-   oCheck.New( &oMain, 160, 60, 100, 28, "Mark me" );
-
-   oQBtn.New( &oMain, 20, 100, 48, 32, "Ok" );
+   oQBtn.New( &oPanel, 0, 0, 48, 40, "Ok" );
    oQBtn.lBackColor = oQBtn.lBackClr1 = 0xcccccc;
    oQBtn.SetFont( brigAddFont( "Georgia", 18, 400, 0, 1 ) );
 
-   oBtn.New( &oMain, 100, 100, 100, 32, (PBRIG_CHAR) "Помощь" );
-   oBtn.pfOnClick = fncOnClick;
+   oEdit.New( &oMain, 20, 60, 100, 28 );
+   oCheck.New( &oMain, 160, 60, 100, 28, "Mark me" );
 
-   (new brig_Button)->New( &oMain, 100, 140, 100, 32, (PBRIG_CHAR) "Test" );
+   oRG.Begin( &oMain, 20, 100, 220, 90, "Radio group" );
+   oR1.New( &oRG, 30, 120, 150, 24, "radio1" );
+   oR2.New( &oRG, 30, 150, 150, 24, "radio2" );
+   oRG.End( 1 );
+
+   oBtn.New( &oMain, 100, 210, 100, 32, (PBRIG_CHAR) "Помощь" );
+   oBtn.pfOnClick = fncOnClick;
 
    //brig_writelog( NULL, "edit id: %d\r\n", oEdit.iControlId );
    //brig_writelog( NULL, "button id: %d\r\n", oBtn.iControlId );

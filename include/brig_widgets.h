@@ -19,6 +19,8 @@ extern BRIG_HANDLE brig_CreateQButton( BRIG_HANDLE hParentWindow, int iWidgId,
           int x, int y, int nWidth, int nHeight );
 extern BRIG_HANDLE brig_CreateTable( BRIG_HANDLE hParentWindow, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle );
+extern BRIG_HANDLE brig_CreateCombo( BRIG_HANDLE hParentWindow, int iWidgId,
+          int x, int y, int nWidth, int nHeight, unsigned long ulStyle );
 
 class brig_Label : public brig_Widget
 {
@@ -53,32 +55,29 @@ class brig_Button : public brig_Widget
 {
 public:
 
-   brig_fnc_mess pfOnClick;
-
    brig_Button();
-
-   bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
 
    BRIG_HANDLE New( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption, unsigned long ulStyle = 0 );
+   bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
 
+   brig_fnc_mess pfOnClick;
 };
 
 class brig_CheckButton : public brig_Widget
 {
 public:
 
-   brig_fnc_mess pfOnClick;
-
    brig_CheckButton();
 
    BRIG_HANDLE New( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption, unsigned long ulStyle = 0 );
-
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
 
    bool GetValue( void );
    void SetValue( bool bValue );
+
+   brig_fnc_mess pfOnClick;
 
 };
 
@@ -95,12 +94,13 @@ public:
           int x = 0, int y = 0, int nWidth = 0, int nHeight = 0, PBRIG_CHAR lpCaption = NULL );
    void End( int iSelected );
 
-   bool GetValue( void );
-   void SetValue( bool bValue );
+   int  GetValue( void );
+   void SetValue( int iSelected );
 
    brig_Widget *pParent;
    brig_GroupBox * pBox;
    vector<brig_RadioButton*> avButtons;
+   int iValue;
 
 };
 
@@ -108,19 +108,28 @@ class brig_RadioButton : public brig_Widget
 {
 public:
 
-   brig_fnc_mess pfOnClick;
-
    brig_RadioButton();
 
    BRIG_HANDLE New( brig_RadioGroup *pGroup,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption, unsigned long ulStyle = 0 );
 
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
-
    bool GetValue( void );
-   void SetValue( bool bValue );
 
+   brig_fnc_mess pfOnClick;
    brig_RadioGroup *pGroup;
+   int iOrder;
+
+};
+
+class brig_Combo : public brig_Widget
+{
+public:
+
+   brig_Combo();
+
+   BRIG_HANDLE New( brig_Container *pParent,
+          int x, int y, int nWidth, int nHeight, unsigned long ulStyle = 0 );
 
 };
 

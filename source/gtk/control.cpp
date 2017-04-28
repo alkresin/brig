@@ -47,23 +47,18 @@ BRIG_HANDLE brig_CreateLabel( BRIG_HANDLE hParentWindow, int iWidgId,
 
    if( ( ulStyle & SS_OWNERDRAW ) == SS_OWNERDRAW )
    {
-      brig_SetEvent( ( gpointer ) hCtrl, "expose_event", WM_PAINT, 0, 0 );
+      brig_SetEvent( ( gpointer ) hCtrl, (char*)"expose_event", WM_PAINT, 0, 0 );
    }
    return hCtrl;
 
 }
 
-/* -------- Button ---------
- */
+/* -------- Button --------- */
 
 BRIG_HANDLE brig_CreateButton( BRIG_HANDLE hParentWindow, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle, PBRIG_CHAR lpCaption )
 {
-/*
-   CreateButton( hParentWindow, nButtonID, nStyle, x, y, nWidth, nHeight,
-                 cCaption )
-*/
-   GtkWidget *hCtrl, *img;
+   GtkWidget *hCtrl; //, *img;
    GtkFixed *box;
 
    if( ( ulStyle & 0xf ) == BS_AUTORADIOBUTTON )
@@ -85,7 +80,7 @@ BRIG_HANDLE brig_CreateButton( BRIG_HANDLE hParentWindow, int iWidgId,
       gtk_fixed_put( box, hCtrl, x, y );
    gtk_widget_set_size_request( hCtrl, nWidth, nHeight );
 
-   brig_SetSignal( hCtrl, "clicked", WM_LBUTTONUP, 0, 0 );
+   brig_SetSignal( hCtrl, (char*)"clicked", WM_LBUTTONUP, 0, 0 );
 
    return hCtrl;
 
@@ -160,7 +155,7 @@ BRIG_HANDLE brig_CreateEdit( BRIG_HANDLE hParentWindow, int iWidgId,
    }
 
    gtk_widget_add_events( hCtrl, GDK_BUTTON_PRESS_MASK );
-   brig_SetEvent( ( gpointer ) hCtrl, "button_press_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hCtrl, (char*)"button_press_event", 0, 0, 0 );
 
    //all_signal_connect( ( gpointer ) hCtrl );
 
@@ -182,8 +177,23 @@ BRIG_HANDLE brig_CreateEdit( BRIG_HANDLE hParentWindow, int iWidgId,
 
 }
 
-/* -------- Panel --------- 
- */
+BRIG_HANDLE brig_CreateCombo( BRIG_HANDLE hParentWindow, int iWidgId,
+          int x, int y, int nWidth, int nHeight, unsigned long ulStyle )
+{
+   GtkWidget *hCtrl = gtk_combo_new();
+   GtkFixed *box = ( GtkFixed * ) g_object_get_data( ( GObject * ) hParentWindow, "fbox" );
+   if( box )
+      gtk_fixed_put( box, hCtrl, x, y );
+   gtk_widget_set_size_request( hCtrl, nWidth, nHeight );
+
+   if( ulStyle & 1 )
+      gtk_entry_set_editable (GTK_ENTRY (GTK_COMBO (hCtrl)->entry), FALSE);
+
+   return hCtrl;
+}
+
+
+/* -------- Panel --------- */
 
 BRIG_HANDLE brig_CreatePanel( BRIG_HANDLE hParentWindow, int iWidgId,
           int x, int y, int nWidth, int nHeight )
@@ -219,9 +229,10 @@ BRIG_HANDLE brig_CreatePanel( BRIG_HANDLE hParentWindow, int iWidgId,
       SetWindowObject( ( GtkWidget * ) adjV, pObject );
       set_signal( ( gpointer ) adjV, "value_changed", WM_VSCROLL, 0, 0 );
    }
-
+   */
    gtk_box_pack_start( GTK_BOX( vbox ), (GtkWidget*)fbox, TRUE, TRUE, 0 );
    gtk_fixed_put( fbox, hPanel, 0, 0 );
+   /*
    if( ulStyle & WS_HSCROLL )
    {
       GtkObject *adjH;
@@ -241,6 +252,7 @@ BRIG_HANDLE brig_CreatePanel( BRIG_HANDLE hParentWindow, int iWidgId,
    if( box )
    {
       gtk_fixed_put( box, ( GtkWidget * ) hbox, x, y );
+      g_object_set_data( ( GObject * ) hPanel, "pbox", ( gpointer ) hbox );
       gtk_widget_set_size_request( ( GtkWidget * ) hbox, nWidth, nHeight );
       if( vscroll )
          nWidth -= 12;
@@ -257,14 +269,14 @@ BRIG_HANDLE brig_CreatePanel( BRIG_HANDLE hParentWindow, int iWidgId,
 
    GTK_WIDGET_SET_FLAGS( hPanel, GTK_CAN_FOCUS );
    //if( ( ulStyle & SS_OWNERDRAW ) == SS_OWNERDRAW )
-      brig_SetEvent( ( gpointer ) hPanel, "expose_event", WM_PAINT, 0, 0 );
+      brig_SetEvent( ( gpointer ) hPanel, (char*)"expose_event", WM_PAINT, 0, 0 );
    gtk_widget_add_events( hPanel, GDK_BUTTON_PRESS_MASK |
          GDK_BUTTON_RELEASE_MASK | GDK_ENTER_NOTIFY_MASK |
          GDK_LEAVE_NOTIFY_MASK );
-   brig_SetEvent( ( gpointer ) hPanel, "button_press_event", 0, 0, 0 );
-   brig_SetEvent( ( gpointer ) hPanel, "button_release_event", 0, 0, 0 );
-   brig_SetEvent( ( gpointer ) hPanel, "enter_notify_event", 0, 0, 0 );
-   brig_SetEvent( ( gpointer ) hPanel, "leave_notify_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hPanel, (char*)"button_press_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hPanel, (char*)"button_release_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hPanel, (char*)"enter_notify_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hPanel, (char*)"leave_notify_event", 0, 0, 0 );
    //all_signal_connect( ( gpointer ) hPanel );
 
    /*
@@ -294,15 +306,15 @@ BRIG_HANDLE brig_CreateQButton( BRIG_HANDLE hParentWindow, int iWidgId,
       gtk_fixed_put( box, hQButton, x, y );
       gtk_widget_set_size_request( hQButton, nWidth, nHeight );
    }
-   brig_SetEvent( ( gpointer ) hQButton, "expose_event", WM_PAINT, 0, 0 );
+   brig_SetEvent( ( gpointer ) hQButton, (char*)"expose_event", WM_PAINT, 0, 0 );
    GTK_WIDGET_SET_FLAGS( hQButton, GTK_CAN_FOCUS );
    gtk_widget_add_events( hQButton, GDK_BUTTON_PRESS_MASK |
          GDK_BUTTON_RELEASE_MASK | GDK_ENTER_NOTIFY_MASK |
          GDK_LEAVE_NOTIFY_MASK );
-   brig_SetEvent( ( gpointer ) hQButton, "button_press_event", 0, 0, 0 );
-   brig_SetEvent( ( gpointer ) hQButton, "button_release_event", 0, 0, 0 );
-   brig_SetEvent( ( gpointer ) hQButton, "enter_notify_event", 0, 0, 0 );
-   brig_SetEvent( ( gpointer ) hQButton, "leave_notify_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hQButton, (char*)"button_press_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hQButton, (char*)"button_release_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hQButton, (char*)"enter_notify_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hQButton, (char*)"leave_notify_event", 0, 0, 0 );
    //all_signal_connect( ( gpointer ) hQButton );
 
    /*

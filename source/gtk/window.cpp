@@ -75,8 +75,25 @@ PBRIG_CHAR brig_GetWindowText( BRIG_HANDLE handle )
 void brig_MoveWindow( BRIG_HANDLE handle, int iLeft, int iTop, int iWidth, int iHeight )
 {
 
-   gtk_window_move( GTK_WINDOW( handle ), iLeft, iTop );
-   gtk_window_resize( GTK_WINDOW( handle ), iWidth, iHeight );
+   if( g_object_get_data( ( GObject * ) handle, "window" ) )
+   {
+      gtk_window_move( GTK_WINDOW( handle ), iLeft, iTop );
+      gtk_window_resize( GTK_WINDOW( handle ), iWidth, iHeight );
+   }
+   else
+   {
+      gpointer gObject = g_object_get_data( (GObject*) handle, "obj" );
+
+      if( gObject )
+      {
+         brig_Widget * pParent = ( ( brig_Widget* ) gObject )->pParent;
+         GtkFixed * fbox = (GtkFixed *) g_object_get_data( ( GObject * )pParent->Handle(), "fbox" );
+         BRIG_HANDLE pbox = (BRIG_HANDLE) g_object_get_data( ( GObject * ) handle, "pbox" );
+         //gtk_fixed_move( fbox, (pbox)? pbox : handle, iLeft, iTop );
+         gtk_widget_set_size_request( handle, iWidth, iHeight );
+      }
+
+   }
 }
 
 void brig_EnableWindow( BRIG_HANDLE handle, bool bEnable )
@@ -490,19 +507,19 @@ BRIG_HANDLE brig_InitMainWindow( PBRIG_CHAR lpAppName, PBRIG_CHAR lpTitle,
    gtk_widget_add_events( hMainWindow, GDK_BUTTON_PRESS_MASK |
          GDK_BUTTON_RELEASE_MASK |
          GDK_POINTER_MOTION_MASK | GDK_FOCUS_CHANGE );
-   brig_SetEvent( ( gpointer ) hMainWindow, "button_press_event", 0, 0, 0 );
-   brig_SetEvent( ( gpointer ) hMainWindow, "button_release_event", 0, 0, 0 );
-   brig_SetEvent( ( gpointer ) hMainWindow, "motion_notify_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hMainWindow, (char*)"button_press_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hMainWindow, (char*)"button_release_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hMainWindow, (char*)"motion_notify_event", 0, 0, 0 );
 
-   g_signal_connect (G_OBJECT (hMainWindow), "delete-event",
+   g_signal_connect (G_OBJECT (hMainWindow), (char*)"delete-event",
 	 	      G_CALLBACK (cb_delete_event), NULL );
-   g_signal_connect (G_OBJECT (hMainWindow), "destroy",
+   g_signal_connect (G_OBJECT (hMainWindow), (char*)"destroy",
 	 	      G_CALLBACK (gtk_main_quit), NULL);
 
-   brig_SetEvent( (gpointer)hMainWindow, "configure_event", 0, 0, 0 );
-   brig_SetEvent( (gpointer)hMainWindow, "focus_in_event", 0, 0, 0 );
+   brig_SetEvent( (gpointer)hMainWindow, (char*)"configure_event", 0, 0, 0 );
+   brig_SetEvent( (gpointer)hMainWindow, (char*)"focus_in_event", 0, 0, 0 );
 
-   g_signal_connect_after( box, "size-allocate", G_CALLBACK (cb_signal_size), NULL );
+   g_signal_connect_after( box, (char*)"size-allocate", G_CALLBACK (cb_signal_size), NULL );
 
    return hMainWindow;
 }
@@ -559,19 +576,19 @@ BRIG_HANDLE brig_InitDialog( PBRIG_CHAR lpTitle,
    gtk_widget_add_events( hWnd, GDK_BUTTON_PRESS_MASK |
          GDK_BUTTON_RELEASE_MASK |
          GDK_POINTER_MOTION_MASK | GDK_FOCUS_CHANGE );
-   brig_SetEvent( ( gpointer ) hWnd, "button_press_event", 0, 0, 0 );
-   brig_SetEvent( ( gpointer ) hWnd, "button_release_event", 0, 0, 0 );
-   brig_SetEvent( ( gpointer ) hWnd, "motion_notify_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hWnd, (char*)"button_press_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hWnd, (char*)"button_release_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hWnd, (char*)"motion_notify_event", 0, 0, 0 );
 
-   g_signal_connect (G_OBJECT (hWnd), "delete-event",
+   g_signal_connect (G_OBJECT (hWnd), (char*)"delete-event",
       G_CALLBACK (cb_delete_event), NULL );
-   g_signal_connect (G_OBJECT (hWnd), "destroy",
+   g_signal_connect (G_OBJECT (hWnd), (char*)"destroy",
 	 	      G_CALLBACK (cb_dialog_quit), NULL);
 
-   brig_SetEvent( (gpointer)hWnd, "configure_event", 0, 0, 0 );
-   brig_SetEvent( (gpointer)hWnd, "focus_in_event", 0, 0, 0 );
+   brig_SetEvent( (gpointer)hWnd, (char*)"configure_event", 0, 0, 0 );
+   brig_SetEvent( (gpointer)hWnd, (char*)"focus_in_event", 0, 0, 0 );
 
-   g_signal_connect( box, "size-allocate", G_CALLBACK (cb_signal_size), NULL );
+   g_signal_connect( box, (char*)"size-allocate", G_CALLBACK (cb_signal_size), NULL );
 
    return hWnd;
 }

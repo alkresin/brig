@@ -169,6 +169,18 @@ void brig_RadioGroup::Begin( brig_Container *pParent,
 void brig_RadioGroup::End( int iSelected )
 {
    brig_RadioGroupSet( this, iSelected );
+   iValue = iSelected;
+}
+
+int brig_RadioGroup::GetValue( void )
+{
+   return iValue;
+}
+
+void brig_RadioGroup::SetValue( int iSelected )
+{
+   brig_RadioGroupSet( this, iSelected );
+   iValue = iSelected;
 }
 
 brig_RadioButton::brig_RadioButton():brig_Widget(), pfOnClick(NULL){}
@@ -186,6 +198,8 @@ BRIG_HANDLE brig_RadioButton::New( brig_RadioGroup *pGroup,
              x, y, nWidth, nHeight, ulStyle | BS_AUTORADIOBUTTON, lpCaption );
 
    pGroup->avButtons.push_back( this );
+   iOrder = pGroup->avButtons.size();
+
    if( !hFont && pParent->hFont )
       SetFont( pParent->hFont );
    brig_SetWidgetData( this );
@@ -198,21 +212,17 @@ bool brig_RadioButton::GetValue()
    return brig_RadioBtnGet( handle );
 }
 
-void brig_RadioButton::SetValue( bool bValue )
-{
-   return brig_RadioBtnSet( handle, bValue );
-}
-
 bool brig_RadioButton::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 {
 
    SYMBOL_UNUSED( wParam );
    SYMBOL_UNUSED( lParam );
 
-   //brig_writelog( NULL, "btn_onEvent %u\r\n", message );
+   //brig_writelog( NULL, "radio_onEvent %u\r\n", message );
    switch( message ) {
 
       case WM_LBUTTONUP:
+         pGroup->iValue = iOrder;
          if( pfOnClick )
             pfOnClick( this, wParam, lParam );
          break;
@@ -239,6 +249,25 @@ BRIG_HANDLE brig_GroupBox::New( brig_Container *pParent,
    return handle;
 }
 
+
+/* -------- Comnobox --------- */
+brig_Combo::brig_Combo():brig_Widget() {}
+
+BRIG_HANDLE brig_Combo::New( brig_Container *pParent,
+          int x, int y, int nWidth, int nHeight, unsigned long ulStyle )
+{
+
+   brig_Widget::New( pParent, x, y, nWidth, nHeight );
+
+   handle = brig_CreateCombo( pParent->Handle(), iWidgId,
+             x, y, nWidth, nHeight, ulStyle );
+
+   if( !hFont && pParent->hFont )
+      SetFont( pParent->hFont );
+   brig_SetWidgetData( this );
+
+   return handle;
+}
 
 /* -------- Panel --------- */
 brig_Panel::brig_Panel():brig_Container(), pfOnPaint(NULL) { lBackColor = COLOR_GR_LIGHT; }

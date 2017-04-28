@@ -41,7 +41,7 @@ static void brig__setcolor( cairo_t * cr, long int nColor )
 PBRIG_PPS brig_BeginPaint( BRIG_HANDLE handle )
 {
    PBRIG_PPS pps = ( PBRIG_PPS ) malloc( sizeof( BRIG_PPS ) );
-   PBRIG_DC hDC = (PBRIG_DC) malloc( sizeof(PBRIG_DC) );   
+   PBRIG_DC hDC = (PBRIG_DC) malloc( sizeof(BRIG_DC) );
 
    memset( hDC, 0, sizeof(PBRIG_DC) );
    hDC->widget = handle;

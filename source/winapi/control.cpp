@@ -14,19 +14,19 @@ static WNDPROC wpOrigBtnProc = NULL;
 
 /* -------- Label ---------
  */
-HWND brig_CreateLabel( HWND hParentWindow, int iWidgId,
+BRIG_HANDLE brig_CreateLabel( BRIG_HANDLE hParentWindow, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle,
           PBRIG_CHAR lpCaption, unsigned long ulExStyle )
 {
 
    PBRIG_WCHAR wcCaption = brig_str2WC( lpCaption );
-   HWND hLabel = 
+   BRIG_HANDLE hLabel = 
          CreateWindowEx( ulExStyle,   /* extended style */
-         TEXT( "STATIC" ),            /* predefined class  */
+         TEXT( "STATIC" ),
          wcCaption,                   /* title   */
          WS_CHILD | WS_VISIBLE | ulStyle,
          x, y, nWidth, nHeight,
-         hParentWindow,               /* parent window    */
+         hParentWindow,
          ( HMENU ) iWidgId,           /* widget ID  */
          GetModuleHandle( NULL ), NULL );
 
@@ -37,7 +37,7 @@ HWND brig_CreateLabel( HWND hParentWindow, int iWidgId,
 
 /* -------- Button ---------
  */
-static LRESULT CALLBACK s_BtnProc( HWND hBtn, UINT message,
+static LRESULT CALLBACK s_BtnProc( BRIG_HANDLE hBtn, UINT message,
       WPARAM wParam, LPARAM lParam )
 {
 
@@ -50,12 +50,12 @@ static LRESULT CALLBACK s_BtnProc( HWND hBtn, UINT message,
       return 0;
 }
 
-HWND brig_CreateButton( HWND hParentWindow, int iWidgId,
+BRIG_HANDLE brig_CreateButton( BRIG_HANDLE hParentWindow, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle, PBRIG_CHAR lpCaption )
 {
 
    PBRIG_WCHAR wcCaption = brig_str2WC( lpCaption );
-   HWND hBtn = 
+   BRIG_HANDLE hBtn = 
          CreateWindow( TEXT( "BUTTON" ),  /* predefined class  */
          wcCaption,                       /* button text   */
          WS_CHILD | WS_VISIBLE | ulStyle, /* style  */
@@ -80,29 +80,29 @@ HWND brig_CreateButton( HWND hParentWindow, int iWidgId,
 
 }
 
-bool brig_CheckBtnGet( HWND handle )
+bool brig_CheckBtnGet( BRIG_HANDLE handle )
 {
    return SendMessage( handle, BM_GETCHECK, 0, 0 );
 }
 
-void brig_CheckBtnSet( HWND handle, bool bValue )
+void brig_CheckBtnSet( BRIG_HANDLE handle, bool bValue )
 {
    SendMessage( handle, BM_SETCHECK, bValue, 0 );
 }
 
-bool brig_RadioBtnGet( HWND handle )
+bool brig_RadioBtnGet( BRIG_HANDLE handle )
 {
    return SendMessage( handle, BM_GETCHECK, 0, 0 );
 }
 
-void brig_RadioBtnSet( HWND handle, bool bValue )
+void brig_RadioBtnSet( BRIG_HANDLE handle, bool bValue )
 {
    SendMessage( handle, BM_SETCHECK, (bValue)? BST_CHECKED : BST_UNCHECKED, 0 );
 }
 
 void brig_RadioGroupSet( brig_RadioGroup *pGroup, int iSelected )
 {
-   CheckRadioButton( ( HWND ) pGroup->pParent->Handle(), // handle of dialog box
+   CheckRadioButton( ( BRIG_HANDLE ) pGroup->pParent->Handle(), // handle of dialog box
          pGroup->avButtons[0]->iWidgId,                  // identifier of first radio button in group
          pGroup->avButtons.back()->iWidgId,              // identifier of last radio button in group
          pGroup->avButtons[iSelected-1]->iWidgId         // identifier of radio button to select
@@ -113,7 +113,7 @@ void brig_RadioGroupSet( brig_RadioGroup *pGroup, int iSelected )
 
 /* -------- Edit --------- 
  */
-static LRESULT CALLBACK s_EditProc( HWND hDlg, UINT message,
+static LRESULT CALLBACK s_EditProc( BRIG_HANDLE hDlg, UINT message,
       WPARAM wParam, LPARAM lParam )
 {
 
@@ -133,11 +133,11 @@ static LRESULT CALLBACK s_EditProc( HWND hDlg, UINT message,
       return 0;
 }
 
-HWND brig_CreateEdit( HWND hParentWindow, int iWidgId,
+BRIG_HANDLE brig_CreateEdit( BRIG_HANDLE hParentWindow, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle,
           PBRIG_CHAR lpCaption, unsigned long ulExStyle )
 {
-   HWND hEdit;
+   BRIG_HANDLE hEdit;
 
    hEdit = CreateWindowEx( ulExStyle,
          TEXT( "EDIT" ),
@@ -165,10 +165,35 @@ HWND brig_CreateEdit( HWND hParentWindow, int iWidgId,
 
 }
 
-/* -------- Panel --------- 
- */
+BRIG_HANDLE brig_CreateCombo( BRIG_HANDLE hParentWindow, int iWidgId,
+          int x, int y, int nWidth, int nHeight, unsigned long ulStyle )
+{
 
-static LRESULT CALLBACK s_PanelProc( HWND hDlg, UINT message,
+   BRIG_HANDLE hCombo = CreateWindow( TEXT( "COMBOBOX" ), TEXT( "" ),
+         WS_CHILD | WS_VISIBLE | ulStyle, /* style  */
+         x, y, nWidth, nHeight,
+         ( BRIG_HANDLE ) hParentWindow,
+         ( HMENU ) iWidgId,
+         GetModuleHandle( NULL ),
+         NULL );
+   /*
+   if( hCombo )
+   {
+      LONG_PTR hProc;
+      SetWindowLongPtr( hCombo, GWLP_USERDATA, NULL );
+      hProc = SetWindowLongPtr( hCombo, GWLP_WNDPROC, ( LONG_PTR ) s_BtnProc );
+      if( !wpOrigBtnProc )
+         wpOrigBtnProc = ( WNDPROC ) hProc;
+   }
+   */
+   return hCombo;
+
+}
+
+
+/* -------- Panel ---------  */
+
+static LRESULT CALLBACK s_PanelProc( BRIG_HANDLE hDlg, UINT message,
       WPARAM wParam, LPARAM lParam )
 {
 
@@ -205,10 +230,10 @@ static void reg_Panel( void )
    }
 }
 
-HWND brig_CreatePanel( HWND hParentWindow, int iWidgId,
+BRIG_HANDLE brig_CreatePanel( BRIG_HANDLE hParentWindow, int iWidgId,
           int x, int y, int nWidth, int nHeight )
 {
-   HWND hPanel;
+   BRIG_HANDLE hPanel;
 
    reg_Panel();
    hPanel = CreateWindow( TEXT( "PANEL" ),
@@ -230,7 +255,7 @@ HWND brig_CreatePanel( HWND hParentWindow, int iWidgId,
 /* -------- QButton --------- 
  */
 
-static LRESULT CALLBACK s_QButtonProc( HWND handle, UINT message,
+static LRESULT CALLBACK s_QButtonProc( BRIG_HANDLE handle, UINT message,
       WPARAM wParam, LPARAM lParam )
 {
 
@@ -291,10 +316,10 @@ static void reg_QButton( void )
    }
 }
 
-HWND brig_CreateQButton( HWND hParentWindow, int iWidgId,
+BRIG_HANDLE brig_CreateQButton( BRIG_HANDLE hParentWindow, int iWidgId,
           int x, int y, int nWidth, int nHeight )
 {
-   HWND hQButton;
+   BRIG_HANDLE hQButton;
 
    reg_QButton();
    hQButton = CreateWindow( TEXT( "QBUTTON" ),
