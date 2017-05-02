@@ -98,6 +98,9 @@ int brig_Main( int argc, char *argv[] )
    brig_RadioGroup oRG;
    brig_RadioButton oR1, oR2;
    brig_CheckButton oCheck;
+   brig_Combo oCombo;
+
+   char *pCombo[3] = { "one", "two", "three" };
    long pColors1[2] = {0x333333, 0xcccccc};
    PBRIG_PEN pPen2;
    PBRIG_XMLITEM pXmlDoc;
@@ -164,6 +167,8 @@ int brig_Main( int argc, char *argv[] )
    oR1.New( &oRG, 30, 120, 150, 24, "radio1" );
    oR2.New( &oRG, 30, 150, 150, 24, "radio2" );
    oRG.End( 1 );
+
+   oCombo.New( &oMain, 250, 100, 120, 28, 0, pCombo, 3 );
 
    oBtn.New( &oMain, 100, 210, 100, 32, (PBRIG_CHAR) "Помощь" );
    oBtn.pfOnClick = fncOnClick;

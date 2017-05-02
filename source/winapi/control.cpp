@@ -165,29 +165,59 @@ BRIG_HANDLE brig_CreateEdit( BRIG_HANDLE hParentWindow, int iWidgId,
 
 }
 
+/* -------- Combobox ---------  */
+
 BRIG_HANDLE brig_CreateCombo( BRIG_HANDLE hParentWindow, int iWidgId,
-          int x, int y, int nWidth, int nHeight, unsigned long ulStyle )
+          int x, int y, int nWidth, int nHeight, unsigned long ulStyle, char **pArray, int iLen )
 {
 
    BRIG_HANDLE hCombo = CreateWindow( TEXT( "COMBOBOX" ), TEXT( "" ),
-         WS_CHILD | WS_VISIBLE | ulStyle, /* style  */
+         WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
          x, y, nWidth, nHeight,
          ( BRIG_HANDLE ) hParentWindow,
          ( HMENU ) iWidgId,
          GetModuleHandle( NULL ),
          NULL );
-   /*
    if( hCombo )
    {
+      if( pArray && iLen > 0 )
+         brig_ComboSetArray( hCombo, pArray, iLen );
+   /*
       LONG_PTR hProc;
       SetWindowLongPtr( hCombo, GWLP_USERDATA, NULL );
       hProc = SetWindowLongPtr( hCombo, GWLP_WNDPROC, ( LONG_PTR ) s_BtnProc );
       if( !wpOrigBtnProc )
          wpOrigBtnProc = ( WNDPROC ) hProc;
-   }
    */
+   }
    return hCombo;
 
+}
+
+void brig_ComboSetArray( BRIG_HANDLE hCombo, char **pArray, int iLen )
+{
+
+   PBRIG_WCHAR wcItem;
+
+   SendMessage( hCombo, CB_RESETCONTENT, 0, 0 );
+
+   for( int i = 0; i < iLen; i++ )
+   {
+      wcItem = brig_str2WC( pArray[i] );
+      SendMessage( hCombo, CB_ADDSTRING, 0, (LPARAM) wcItem );
+      brig_free( wcItem );
+   }
+
+}
+
+int brig_GetValue( BRIG_HANDLE hCombo )
+{
+   return SendMessage( hCombo, CB_GETCURSEL, 0, 0 );
+}
+
+void brig_SetValue( BRIG_HANDLE hCombo, int iSelected )
+{
+   SendMessage( hCombo, CB_SETCURSEL, iSelected, 0 );
 }
 
 

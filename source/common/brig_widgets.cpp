@@ -249,18 +249,17 @@ BRIG_HANDLE brig_GroupBox::New( brig_Container *pParent,
    return handle;
 }
 
-
-/* -------- Comnobox --------- */
+/* -------- Combobox --------- */
 brig_Combo::brig_Combo():brig_Widget() {}
 
 BRIG_HANDLE brig_Combo::New( brig_Container *pParent,
-          int x, int y, int nWidth, int nHeight, unsigned long ulStyle )
+          int x, int y, int nWidth, int nHeight, unsigned long ulStyle, char **pArray, int iLen )
 {
 
    brig_Widget::New( pParent, x, y, nWidth, nHeight );
 
    handle = brig_CreateCombo( pParent->Handle(), iWidgId,
-             x, y, nWidth, nHeight, ulStyle );
+             x, y, nWidth, nHeight, ulStyle, pArray, iLen );
 
    if( !hFont && pParent->hFont )
       SetFont( pParent->hFont );
@@ -268,6 +267,22 @@ BRIG_HANDLE brig_Combo::New( brig_Container *pParent,
 
    return handle;
 }
+
+void brig_Combo::Set( char **pArray, int iLen )
+{
+   brig_ComboSetArray( handle, pArray, iLen );
+}
+
+int  brig_Combo::GetValue( void )
+{
+   return brig_GetValue( handle );
+}
+
+void brig_Combo::SetValue( int iSelected )
+{
+   brig_SetValue( handle, iSelected );
+}
+
 
 /* -------- Panel --------- */
 brig_Panel::brig_Panel():brig_Container(), pfOnPaint(NULL) { lBackColor = COLOR_GR_LIGHT; }
