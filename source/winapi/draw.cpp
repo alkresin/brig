@@ -7,8 +7,28 @@
  * www - http://www.kresin.ru
  */
 
-#include "brig_funcs.h"
+#include "brig.h"
 #include <math.h>
+
+#if defined( __BORLANDC__ ) && __BORLANDC__ == 0x0550
+#ifdef __cplusplus
+extern "C"
+{
+   STDAPI OleLoadPicture( LPSTREAM, LONG, BOOL, REFIID, PVOID * );
+}
+#endif
+#endif /* __BORLANDC__ */
+/*
+#ifdef __cplusplus
+#ifdef CINTERFACE
+#undef CINTERFACE
+#endif
+#endif
+*/
+
+#include <olectl.h>
+#include <ole2.h>
+#include <ocidl.h>
 
 PBRIG_PPS brig_BeginPaint( BRIG_HANDLE handle )
 {
@@ -76,6 +96,105 @@ void brig_Ellipse( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom )
 
    Ellipse( hDC, iLeft, iTop, iRight, iBottom );
 
+}
+
+PBRIG_BITMAP brig_OpenImage( PBRIG_CHAR lpName, bool bString, int iType )
+{
+   PBRIG_BITMAP hBmp;
+   int iFileSize;
+   FILE *fp;
+   LPPICTURE pPic;
+   IStream *pStream;
+   HGLOBAL hG;
+
+   if( bString )
+   {
+      iFileSize = strlen( lpName );
+      hG = GlobalAlloc( GPTR, iFileSize );
+      if( !hG )
+         return NULL;
+      memcpy( ( void * ) hG, ( void * ) lpName, iFileSize );
+   }
+   else
+   {
+      fp = fopen( lpName, "rb" );
+      if( !fp )
+         return NULL;
+
+      fseek( fp, 0, SEEK_END );
+      iFileSize = ftell( fp );
+      hG = GlobalAlloc( GPTR, iFileSize );
+      if( !hG )
+      {
+         fclose( fp );
+         return NULL;
+      }
+      fseek( fp, 0, SEEK_SET );
+      fread( ( void * ) hG, 1, iFileSize, fp );
+      fclose( fp );
+   }
+
+   CreateStreamOnHGlobal( hG, 0, &pStream );
+
+   if( !pStream )
+   {
+      GlobalFree( hG );
+      return NULL;
+   }
+
+#if defined(__cplusplus)
+   OleLoadPicture( pStream, 0, 0, IID_IPicture, ( void ** ) &pPic );
+   pStream->Release(  );
+#else
+   OleLoadPicture( pStream, 0, 0, &IID_IPicture, ( void ** ) ( void * ) &pPic );
+   pStream->lpVtbl->Release( pStream );
+#endif
+
+   GlobalFree( hG );
+
+   if( !pPic )
+      return NULL;
+
+   if( iType == IMAGE_BITMAP )
+   {
+      HBITMAP hBitmap = 0;
+#if defined(__cplusplus)
+      pPic->get_Handle( ( OLE_HANDLE * ) & hBitmap );
+#else
+      pPic->lpVtbl->get_Handle( pPic, ( OLE_HANDLE * ) ( void * ) &hBitmap );
+#endif
+
+      hBmp = (HBITMAP) CopyImage( hBitmap, IMAGE_BITMAP, 0, 0, LR_COPYRETURNORG );
+   }
+   else if( iType == IMAGE_ICON )
+   {
+      HICON hIcon = 0;
+#if defined(__cplusplus)
+      pPic->get_Handle( ( OLE_HANDLE * ) & hIcon );
+#else
+      pPic->lpVtbl->get_Handle( pPic, ( OLE_HANDLE * ) ( void * ) &hIcon );
+#endif
+
+      hBmp =  (HBITMAP) CopyImage( hIcon, IMAGE_ICON, 0, 0, 0 );
+   }
+   else
+   {
+      HCURSOR hCur = 0;
+#if defined(__cplusplus)
+      pPic->get_Handle( ( OLE_HANDLE * ) & hCur );
+#else
+      pPic->lpVtbl->get_Handle( pPic, ( OLE_HANDLE * ) ( void * ) &hCur );
+#endif
+
+      hBmp = (HBITMAP) CopyImage( hCur, IMAGE_CURSOR, 0, 0, 0 );
+   }
+
+#if defined(__cplusplus)
+   pPic->Release(  );
+#else
+   pPic->lpVtbl->Release( pPic );
+#endif
+   return hBmp;
 }
 
 void brig_DrawBitmap( PBRIG_DC hDC, PBRIG_BITMAP hBitmap, int iLeft, int iTop, int iWidth, int iHeight )

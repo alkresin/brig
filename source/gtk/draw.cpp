@@ -123,6 +123,32 @@ void brig_Ellipse( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom )
 
 }
 
+PBRIG_BITMAP brig_OpenImage( PBRIG_CHAR lpName, bool bString )
+{
+   PBRIG_BITMAP hBitmap;
+   GdkPixbuf * handle;
+
+   if( bString )
+   {
+      GdkPixbufLoader *loader = gdk_pixbuf_loader_new();
+
+      gdk_pixbuf_loader_write( loader, (guint8 *)lpName, strlen(lpName), NULL );
+      handle = gdk_pixbuf_loader_get_pixbuf( loader );
+   }
+   else
+      handle = gdk_pixbuf_new_from_file( lpName, NULL );
+   
+   if( handle )
+   {
+      hBitmap = (PBRIG_BITMAP) malloc( sizeof(BRIG_BITMAP) );
+      hBitmap->type = BRIG_OBJECT_PIXBUF;
+      hBitmap->handle = handle;
+      hBitmap->trcolor = -1;
+      return hBitmap;
+   }
+   return NULL;
+}
+
 void brig_DrawBitmap( PBRIG_DC hDC, PBRIG_BITMAP hBitmap, int iLeft, int iTop, int iWidth, int iHeight )
 {
    gint srcWidth = gdk_pixbuf_get_width( hBitmap->handle );
