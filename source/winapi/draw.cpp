@@ -78,6 +78,26 @@ void brig_Ellipse( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom )
 
 }
 
+void brig_DrawBitmap( PBRIG_DC hDC, PBRIG_BITMAP hBitmap, int iLeft, int iTop, int iWidth, int iHeight )
+{
+   HDC hDCmem = CreateCompatibleDC( hDC );
+   DWORD dwraster = SRCCOPY;
+   BITMAP bitmap;
+
+   SelectObject( hDCmem, hBitmap );
+   GetObject( hBitmap, sizeof( BITMAP ), ( LPVOID ) & bitmap );
+   if( iWidth && ( iWidth != bitmap.bmWidth || iHeight != bitmap.bmHeight ) )
+   {
+      SetStretchBltMode( hDC, COLORONCOLOR );
+      StretchBlt( hDC, iLeft, iTop, iWidth, iHeight,
+            hDCmem, 0, 0, bitmap.bmWidth, bitmap.bmHeight, dwraster );
+   }
+   else
+      BitBlt( hDC, iLeft, iTop, bitmap.bmWidth, bitmap.bmHeight, hDCmem, 0, 0, dwraster );
+
+   DeleteDC( hDCmem );
+}
+
 void brig_RedrawWindow( BRIG_HANDLE handle )
 {
    RedrawWindow( handle, NULL, NULL, RDW_ERASE | RDW_INVALIDATE );

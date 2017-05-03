@@ -123,6 +123,26 @@ void brig_Ellipse( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom )
 
 }
 
+void brig_DrawBitmap( PBRIG_DC hDC, PBRIG_BITMAP hBitmap, int iLeft, int iTop, int iWidth, int iHeight )
+{
+   gint srcWidth = gdk_pixbuf_get_width( hBitmap->handle );
+   gint srcHeight = gdk_pixbuf_get_height( hBitmap->handle );
+   gint destWidth = ( iWidth ) ? iWidth : srcWidth;
+   gint destHeight = ( iHeight ) ? iHeight: srcHeight;
+
+   if( srcWidth == destWidth && srcHeight == destHeight ) {
+      gdk_cairo_set_source_pixbuf( hDC->cr, hBitmap->handle, iLeft, iTop );
+      cairo_paint( hDC->cr );
+   }
+   else {
+      GdkPixbuf *pixbuf = gdk_pixbuf_scale_simple( hBitmap->handle, destWidth, destHeight, GDK_INTERP_HYPER );
+      gdk_cairo_set_source_pixbuf( hDC->cr, pixbuf, iLeft, iTop );
+      cairo_paint( hDC->cr );
+      g_object_unref( (GObject*) pixbuf );
+   }
+}
+
+
 void brig_RedrawWindow( BRIG_HANDLE handle )
 {
    gtk_widget_queue_draw_area( handle, 0, 0,
