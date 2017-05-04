@@ -8,9 +8,9 @@
 
 #include "brig.h"
 
-brig_Table::brig_Table():brig_Widget(), pfOnPaint(NULL), pfRows(NULL), pfCellValue(NULL)
+brig_Table::brig_Table():brig_Widget(), pfOnPaint(NULL), pfRows(NULL)
 {
-   uiCols = uiHeadRows = uiFootRows = 0;
+   uiColHeight = uiHeadRows = uiFootRows = 0;
 }
 
 BRIG_HANDLE brig_Table::New( brig_Container *pParent,
@@ -29,11 +29,45 @@ BRIG_HANDLE brig_Table::New( brig_Container *pParent,
    return handle;
 }
 
+void brig_Table::AddColumn( PBRIG_CHAR szHead, int iWidth, brig_Style *pStyle )
+{
+   PBRIG_TCOL pColumn = new BRIG_TCOL;
+
+   pColumn->szHead = szHead;
+   pColumn->szFoot = NULL;
+   pColumn->iWidth = iWidth;
+   pColumn->pStyle = pStyle;
+
+   avColumns.push_back( pColumn );
+}
+
 static void paint_head( brig_Table *pTable, PBRIG_DC hDC )
 {
-   SYMBOL_UNUSED( hDC );
+   PBRIG_TCOL pColumn;
+   int x = 0;
+
    if( !pTable->uiHeadRows )
       return;
+
+   for( unsigned int ui = 0; ui<pTable->avColumns.size(); ui++ )
+   {
+      pColumn = pTable->avColumns[ui];
+      if( pColumn->pStyle )
+      {
+         pColumn->pStyle->Draw( hDC, x, 1, x+pColumn->iWidth-1, pTable->uiColHeight );
+      }
+      if( pColumn->szHead )
+      {
+         if( pTable->hFont )
+            brig_SelectObject( hDC, pTable->hFont );
+
+         brig_SetTransparentMode( hDC, 1 );
+         brig_DrawText( hDC, pColumn->szHead, x+2, 3, x+pColumn->iWidth-2,
+            pTable->uiColHeight-2, DT_SINGLELINE | DT_VCENTER | DT_CENTER );
+         brig_SetTransparentMode( hDC, 0 );
+      }
+      x += pColumn->iWidth;
+   }
 }
 
 static void paint_foot( brig_Table *pTable, PBRIG_DC hDC )
@@ -60,6 +94,18 @@ static void brig_paint_Table( brig_Table *pTable )
    {
       brig_EndPaint( hTable, pps );
       return;
+   }
+
+   if( !pTable->uiColHeight )
+   {
+      if( pTable->hFont )
+         brig_SelectObject( pps->hDC, pTable->hFont );
+
+      pTable->uiColHeight = brig_GetCharHeight( pps->hDC );
+   }
+
+   if( pTable->pfRows() )
+   {
    }
 
    paint_head( pTable, pps->hDC );

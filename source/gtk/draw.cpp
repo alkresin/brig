@@ -123,10 +123,12 @@ void brig_Ellipse( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom )
 
 }
 
-PBRIG_BITMAP brig_OpenImage( PBRIG_CHAR lpName, bool bString )
+PBRIG_BITMAP brig_OpenImage( PBRIG_CHAR lpName, bool bString, int iType )
 {
    PBRIG_BITMAP hBitmap;
    GdkPixbuf * handle;
+
+   SYMBOL_UNUSED( iType );
 
    if( bString )
    {
@@ -321,6 +323,35 @@ void brig_SetTransparentMode( PBRIG_DC hDC, bool bTransp )
 {
    SYMBOL_UNUSED( hDC );
    SYMBOL_UNUSED( bTransp );
+}
+
+int brig_GetCharHeight( PBRIG_DC hDC )
+{
+   PangoContext * context;
+   PangoFontMetrics * metrics;
+
+   if( !(hDC->hFont) )
+   {
+      GtkStyle * style = gtk_widget_get_style( hDC->widget );
+      hDC->hFont = style->font_desc;
+   }
+
+   context = pango_layout_get_context( hDC->layout );
+   metrics = pango_context_get_metrics( context, hDC->hFont, NULL );
+   return ( pango_font_metrics_get_ascent( metrics ) +
+            pango_font_metrics_get_descent( metrics ) ) / PANGO_SCALE;
+
+}
+
+int brig_GetTextWidth( PBRIG_DC hDC, PBRIG_CHAR lpText )
+{
+   PangoRectangle rc;
+
+   pango_layout_set_text( hDC->layout, lpText, -1 );
+   pango_layout_get_pixel_extents( hDC->layout, &rc, NULL );
+
+   hb_retnl( rc.width );
+
 }
 
 int brig_DrawText( PBRIG_DC hDC, PBRIG_CHAR lpText, int x1, int y1, int x2, int y2, unsigned int uiFormat )

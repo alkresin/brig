@@ -70,11 +70,15 @@ extern void brig_moveto( PBRIG_DC hDC, int iLeft, int iTop );
 extern void brig_lineto( PBRIG_DC hDC, int iLeft, int iTop );
 extern void brig_Ellipse( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom );
 extern void brig_DrawBitmap( PBRIG_DC hDC, PBRIG_BITMAP hBitmap, int iLeft, int iTop, int iWidth, int iHeight );
+extern PBRIG_BITMAP brig_OpenImage( PBRIG_CHAR lpName, bool bString, int iType );
 
 extern void brig_SetFont( BRIG_HANDLE handle, PBRIG_FONT pFont );
 extern long int brig_SetTextColor( PBRIG_DC hDC, long int lColor );
 extern long int brig_SetBkColor( PBRIG_DC hDC, long int lColor );
 extern void brig_SetTransparentMode( PBRIG_DC hDC, bool bTransp );
+
+extern int brig_GetCharHeight( PBRIG_DC hDC );
+extern int brig_GetTextWidth( PBRIG_DC hDC, PBRIG_CHAR lpText );
 extern int brig_DrawText( PBRIG_DC hDC, PBRIG_CHAR lpText, int x1, int y1, int x2, int y2, unsigned int uiFormat );
 
 extern void brig_DrawGradient( PBRIG_DC hDC, int x1, int y1, int x2, int y2, int type,

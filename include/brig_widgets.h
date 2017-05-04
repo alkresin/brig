@@ -182,6 +182,15 @@ public:
    brig_Style *pStyleNormal, *pStyleOver, *pStylePress;
 };
 
+typedef struct BRIG_TCOLUMN_STRU
+{
+ 
+   PBRIG_CHAR    szHead, szFoot;
+   int    iWidth;
+   brig_Style    *pStyle;
+
+} BRIG_TCOL, *PBRIG_TCOL;
+
 class brig_Table : public brig_Widget
 {
 public:
@@ -192,13 +201,14 @@ public:
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle = 0 );
 
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
+   void AddColumn( PBRIG_CHAR szHead, int iWidth, brig_Style *pStyle );
 
    brig_fnc_paint pfOnPaint;
    int (*pfRows)( void );
-   PBRIG_CHAR (*pfCellValue)( int uiRow, int uiCol );
 
-   int uiCols;
-   int uiHeadRows, uiFootRows;
+   vector<PBRIG_TCOL> avColumns;
+   unsigned int uiHeadRows, uiFootRows;
+   unsigned int uiColHeight;
 };
 
 extern void brig_RadioGroupSet( brig_RadioGroup *pGroup, int iSelected );

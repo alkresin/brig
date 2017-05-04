@@ -337,6 +337,28 @@ void brig_SetTransparentMode( PBRIG_DC hDC, bool bTransp )
    SetBkMode( hDC, ( bTransp ) ? TRANSPARENT : OPAQUE );
 }
 
+int brig_GetCharHeight( PBRIG_DC hDC )
+{
+   TEXTMETRIC tm;
+
+   GetTextMetrics( hDC, &tm );
+
+   return tm.tmHeight;
+
+}
+
+int brig_GetTextWidth( PBRIG_DC hDC, PBRIG_CHAR lpText )
+{
+   PBRIG_WCHAR wcText = brig_str2WC( lpText );
+   SIZE sz;
+
+   GetTextExtentPoint32( hDC, wcText, wcslen(wcText), &sz );
+   brig_free( wcText );
+
+   return sz.cx;
+
+}
+
 int brig_DrawText( PBRIG_DC hDC, PBRIG_CHAR lpText, int x1, int y1, int x2, int y2, unsigned int uiFormat )
 {
    PBRIG_WCHAR wcText = brig_str2WC( lpText );
