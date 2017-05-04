@@ -12,7 +12,7 @@ brig_MainWindow * pMainWindow = NULL;
 
 /* -------- Widget --------- */
 
-brig_Widget::brig_Widget():lTextColor(-1), lBackColor(-1), hFont(NULL), hBrush(NULL), pfOnSize(NULL) {}
+brig_Widget::brig_Widget():lTextColor(0), lBackColor(-1), hFont(NULL), hBrush(NULL), pfOnSize(NULL) {}
 
 brig_Widget::~brig_Widget()
 {

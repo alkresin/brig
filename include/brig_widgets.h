@@ -201,7 +201,7 @@ public:
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle = 0 );
 
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
-   void AddColumn( PBRIG_CHAR szHead, int iWidth, brig_Style *pStyle );
+   void AddColumn( PBRIG_CHAR szHead, int iWidth, brig_Style *pStyle = NULL );
 
    brig_fnc_paint pfOnPaint;
    int (*pfRows)( void );
@@ -209,6 +209,7 @@ public:
    vector<PBRIG_TCOL> avColumns;
    unsigned int uiHeadRows, uiFootRows;
    unsigned int uiColHeight;
+   PBRIG_PEN pPenSep, pPenHdr;
 };
 
 extern void brig_RadioGroupSet( brig_RadioGroup *pGroup, int iSelected );

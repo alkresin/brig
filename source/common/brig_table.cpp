@@ -67,6 +67,9 @@ static void paint_head( brig_Table *pTable, PBRIG_DC hDC )
          brig_SetTransparentMode( hDC, 0 );
       }
       x += pColumn->iWidth;
+      brig_SelectObject( hDC, pTable->pPenHdr );
+      brig_moveto( hDC, x-1, 1 );
+      brig_lineto( hDC, x-1, pTable->uiColHeight-1 );
    }
 }
 
@@ -90,7 +93,7 @@ static void brig_paint_Table( brig_Table *pTable )
       pTable->SetBackColor( COLOR_WHITE, 0 );
    brig_FillRect( pps->hDC, rc.left, rc.top, rc.right, rc.bottom, pTable->hBrush );
 
-   if( !pTable->pfRows || !pTable->pfRows() )
+   if( !pTable->pfRows )
    {
       brig_EndPaint( hTable, pps );
       return;
@@ -100,8 +103,17 @@ static void brig_paint_Table( brig_Table *pTable )
    {
       if( pTable->hFont )
          brig_SelectObject( pps->hDC, pTable->hFont );
-
       pTable->uiColHeight = brig_GetCharHeight( pps->hDC );
+
+      for( unsigned int ui = 0; ui<pTable->avColumns.size(); ui++ )
+      {
+         if( pTable->avColumns[ui]->szHead )
+            pTable->uiHeadRows = 1;          
+      }
+      if( !pTable->pPenSep )
+         pTable->pPenSep = brigAddPen( 1, pTable->lTextColor );
+      if( !pTable->pPenHdr )
+         pTable->pPenHdr = brigAddPen( 1, 0 );
    }
 
    if( pTable->pfRows() )

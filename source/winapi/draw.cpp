@@ -352,7 +352,11 @@ int brig_GetTextWidth( PBRIG_DC hDC, PBRIG_CHAR lpText )
    PBRIG_WCHAR wcText = brig_str2WC( lpText );
    SIZE sz;
 
+#if defined(UNICODE)
    GetTextExtentPoint32( hDC, wcText, wcslen(wcText), &sz );
+#else
+   GetTextExtentPoint32( hDC, wcText, strlen(wcText), &sz );
+#endif
    brig_free( wcText );
 
    return sz.cx;
