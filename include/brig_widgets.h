@@ -182,14 +182,30 @@ public:
    brig_Style *pStyleNormal, *pStyleOver, *pStylePress;
 };
 
+class brig_Table;
+
+#define  TDS_COUNT   1
+#define  TDS_TOP     2
+#define  TDS_BOTTOM  3
+#define  TDS_FORWARD 4
+#define  TDS_BACK    5
+#define  TDS_BOF     6
+#define  TDS_EOF     7
+#define  TDS_RECNO   8
+#define  TDS_GOTO    9
+
+typedef PBRIG_CHAR (*brig_fnc_column)( brig_Table *pTable, int iCol );
+
 typedef struct BRIG_TCOLUMN_STRU
 {
  
    PBRIG_CHAR    szHead, szFoot;
-   int    iWidth;
-   brig_Style    *pStyle;
+   int  iWidth;
+   brig_fnc_column pfValue;
+   brig_Style  *pStyle, *pStyleHead, *pStyleFoot;
 
 } BRIG_TCOL, *PBRIG_TCOL;
+
 
 class brig_Table : public brig_Widget
 {
@@ -201,15 +217,22 @@ public:
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle = 0 );
 
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
-   void AddColumn( PBRIG_CHAR szHead, int iWidth, brig_Style *pStyle = NULL );
+   void AddColumn( PBRIG_CHAR szHead, int iWidth, brig_fnc_column pfValue );
 
    brig_fnc_paint pfOnPaint;
-   int (*pfRows)( void );
+   unsigned long (*pfDataSet)( brig_Table *pTable, int iOp, unsigned long ulData );
+
+   void *pData;                // A Data source - an array, data table handle, ...
+   unsigned long ulRecCurr;    // A current record number ( in a data source )
+   unsigned long ulRecFirst;   // A data source record number, displayed in a first row of a table
 
    vector<PBRIG_TCOL> avColumns;
    unsigned int uiHeadRows, uiFootRows;
    unsigned int uiColHeight;
+   unsigned int uiRowCount;
+   unsigned int pPadding[4], pHeadPadding[4];
    PBRIG_PEN pPenSep, pPenHdr;
+   brig_Style  *pStyle, *pStyleHead, *pStyleFoot;
 };
 
 extern void brig_RadioGroupSet( brig_RadioGroup *pGroup, int iSelected );
