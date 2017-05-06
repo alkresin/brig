@@ -67,6 +67,8 @@ extern PBRIG_BRUSH brigAddBrush( long int lColor );
 extern void brigDelBrush( PBRIG_BRUSH pBrush );
 extern brig_Style * brigAddStyle( int iColors, long * pColors, int iType = 1,
       long lBorderColor = -1, int iBorder = 1, int iCorners = 0, long * pCorners = NULL );
+extern brig_Style * brigAddStyle( long lColor,
+      long lBorderColor = -1, int iBorder = 1, int iCorners = 0, long * pCorners = NULL );
 extern void brigDelStyle( brig_Style * pStyle );
 
 extern PBRIG_FONT brig_ChooseFont( PBRIG_FONT hFontPrev, BRIGAPP_FONT *pbf = NULL );

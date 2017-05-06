@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 //std::vector<PBRIG_CHAR*> avTable;
-unsigned long ulDataLen = 1;
+unsigned long ulDataLen = 3;
 
 bool fncCloseDlg( brig_Widget *pDlg, WPARAM wParam, LPARAM lParam )
 {
@@ -59,9 +59,9 @@ unsigned long fncTable( brig_Table *pTable, int iOp, unsigned long ulData )
 
 PBRIG_CHAR fncCellValue( brig_Table *pTable, int iCol )
 {
-
+   char (*ptr)[3][4] = (char(*)[3][4]) pTable->pData;
    return (pTable->ulRecCurr <= ulDataLen && pTable->ulRecCurr > 0)?
-         ((char***)(pTable->pData))[pTable->ulRecCurr-1][iCol-1] : NULL;
+         ptr[pTable->ulRecCurr-1][iCol-1] : NULL;
 }
 
 int brig_Main( int argc, char *argv[] )
@@ -71,8 +71,10 @@ int brig_Main( int argc, char *argv[] )
    brig_Table oTable;
 
    long pColors1[2] = {0xaaaaaa, 0xdddddd};
-   brig_Style *pStyle = brigAddStyle( 2, pColors1 );
-   char* pTableData[1][3] = { {"111","222","333"} };
+   brig_Style *pStyleHead = brigAddStyle( 2, pColors1 );
+   brig_Style *pStyle = brigAddStyle( 0xdddddd );
+
+   char pTableData[3][3][4] = { {"a11","a22","a33"}, {"b11","b22","b33"}, {"c11","c22","c33"} };
 
    SYMBOL_UNUSED( argc );
    SYMBOL_UNUSED( argv );
@@ -81,7 +83,9 @@ int brig_Main( int argc, char *argv[] )
 
    oTable.New( &oDlg, 20, 20, 360, 160 );
 
-   oTable.pStyleHead = pStyle;
+   oTable.lTextColor = 255;
+   oTable.pStyleHead = pStyleHead;
+   //oTable.pStyle = pStyle;
    oTable.pfDataSet = fncTable;
    oTable.pData = (void*) pTableData;
    oTable.AddColumn( "First", 80, fncCellValue );
@@ -91,6 +95,7 @@ int brig_Main( int argc, char *argv[] )
    oBtn.pfOnClick = fncCloseDlg;
 
    oDlg.Activate( 0 );
+
    return 0;
 }
 

@@ -228,10 +228,13 @@ public:
 
    vector<PBRIG_TCOL> avColumns;
    unsigned int uiHeadRows, uiFootRows;
-   unsigned int uiColHeight;
-   unsigned int uiRowCount;
+   unsigned int uiTextHeight;  // A height of a text in a row
+   unsigned int uiRowCount;    // A number of visible rows
+   unsigned int uiRowSel;      // A selected row in a table
+
    unsigned int pPadding[4], pHeadPadding[4];
    PBRIG_PEN pPenSep, pPenHdr;
+   unsigned long lSepColor;
    brig_Style  *pStyle, *pStyleHead, *pStyleFoot;
 };
 

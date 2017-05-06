@@ -8,10 +8,11 @@
 
 #include "brig.h"
 
-brig_Table::brig_Table():brig_Widget(), pfOnPaint(NULL), pfDataSet(NULL), pData(NULL)
+brig_Table::brig_Table():brig_Widget(), pfOnPaint(NULL), pfDataSet(NULL), pData(NULL), pPenSep(NULL), pPenHdr(NULL)
 {
-   uiColHeight = uiHeadRows = uiFootRows = uiRowCount = 0;
-   ulRecCurr = ulRecFirst = 1;
+   lSepColor = 0xc0c0c0;
+   uiTextHeight = uiHeadRows = uiFootRows = uiRowCount = 0;
+   ulRecCurr = ulRecFirst = uiRowSel = 1;
    pHeadPadding[0] = pHeadPadding[2] = pPadding[0] = pPadding[2] = 4;
    pHeadPadding[1] = pHeadPadding[3] = pPadding[1] = pPadding[3] = 2;
    pStyle = pStyleHead = pStyleFoot = NULL;
@@ -50,7 +51,7 @@ static void paint_head( brig_Table *pTable, PBRIG_DC hDC )
 {
    PBRIG_TCOL pColumn;
    int x = 0;
-   unsigned int uiHeight = pTable->uiColHeight + pTable->pHeadPadding[1] + pTable->pHeadPadding[3];
+   unsigned int uiHeight = pTable->uiTextHeight + pTable->pHeadPadding[1] + pTable->pHeadPadding[3];
 
    if( !pTable->uiHeadRows )
       return;
@@ -70,7 +71,7 @@ static void paint_head( brig_Table *pTable, PBRIG_DC hDC )
 
          brig_SetTransparentMode( hDC, 1 );
          brig_DrawText( hDC, pColumn->szHead, x+pTable->pHeadPadding[0], pTable->pHeadPadding[1],
-            x+pColumn->iWidth-pTable->pHeadPadding[2]-1, pTable->uiColHeight + pTable->pHeadPadding[1], DT_SINGLELINE | DT_VCENTER | DT_CENTER );
+            x+pColumn->iWidth-pTable->pHeadPadding[2]-1, pTable->uiTextHeight + pTable->pHeadPadding[1], DT_SINGLELINE | DT_VCENTER | DT_CENTER );
          brig_SetTransparentMode( hDC, 0 );
       }
       x += pColumn->iWidth;
@@ -88,27 +89,27 @@ static void paint_foot( brig_Table *pTable, PBRIG_DC hDC )
 
 }
 
-static void paint_row( brig_Table *pTable, PBRIG_DC hDC )
+static void paint_row( brig_Table *pTable, PBRIG_DC hDC, unsigned int y )
 {
    PBRIG_TCOL pColumn;
    PBRIG_CHAR pCellValue;
    int x = 0;
-   unsigned int uiHeight = pTable->uiColHeight + pTable->pPadding[1] + pTable->pPadding[3];
+   unsigned int uiHeight = pTable->uiTextHeight + pTable->pPadding[1] + pTable->pPadding[3];
 
    for( unsigned int ui = 0; ui<pTable->avColumns.size(); ui++ )
    {
       pColumn = pTable->avColumns[ui];
-      if( pColumn->pStyleHead )
-         pColumn->pStyleHead->Draw( hDC, x, 0, x+pColumn->iWidth-1, uiHeight );
-      else if( pTable->pStyleHead )
-         pTable->pStyleHead->Draw( hDC, x, 0, x+pColumn->iWidth-1, uiHeight );
+      if( pColumn->pStyle )
+         pColumn->pStyle->Draw( hDC, x, y, x+pColumn->iWidth-1, y+uiHeight-1 );
+      else if( pTable->pStyle )
+         pTable->pStyle->Draw( hDC, x, y, x+pColumn->iWidth-1, y+uiHeight-1 );
 
-      pCellValue = pColumn->pfValue( pTable, ui );
+      pCellValue = pColumn->pfValue( pTable, ui+1 );
       if( pCellValue )
       {
          brig_SetTransparentMode( hDC, 1 );
-         brig_DrawText( hDC, pCellValue, x+pTable->pPadding[0], pTable->pPadding[1],
-            x+pColumn->iWidth-pTable->pPadding[2]-1, pTable->uiColHeight + pTable->pPadding[1], DT_SINGLELINE | DT_VCENTER | DT_CENTER );
+         brig_DrawText( hDC, pCellValue, x+pTable->pPadding[0], y+pTable->pPadding[1],
+            x+pColumn->iWidth-pTable->pPadding[2]-1, y+pTable->uiTextHeight + pTable->pPadding[1], DT_SINGLELINE | DT_VCENTER | DT_CENTER );
          brig_SetTransparentMode( hDC, 0 );
       }
 
@@ -121,6 +122,8 @@ static void brig_paint_Table( brig_Table *pTable )
    BRIG_HANDLE hTable = pTable->Handle();
    PBRIG_PPS pps = brig_BeginPaint( hTable );
    RECT rc;
+   unsigned long ulRecCount;
+   unsigned int uiRowHeight = 0, y1 = 0, y2 = 30;
 
    brig_GetClientRect( hTable, &rc );
 
@@ -134,11 +137,11 @@ static void brig_paint_Table( brig_Table *pTable )
       return;
    }
 
-   if( !pTable->uiColHeight )
+   if( !pTable->uiTextHeight )
    {
       if( pTable->hFont )
          brig_SelectObject( pps->hDC, pTable->hFont );
-      pTable->uiColHeight = brig_GetCharHeight( pps->hDC );
+      pTable->uiTextHeight = brig_GetCharHeight( pps->hDC );
 
       for( unsigned int ui = 0; ui<pTable->avColumns.size(); ui++ )
       {
@@ -146,21 +149,40 @@ static void brig_paint_Table( brig_Table *pTable )
             pTable->uiHeadRows = 1;          
       }
       if( !pTable->pPenSep )
-         pTable->pPenSep = brigAddPen( 1, pTable->lTextColor );
+         pTable->pPenSep = brigAddPen( 1, pTable->lSepColor );
       if( !pTable->pPenHdr )
          pTable->pPenHdr = brigAddPen( 1, 0 );
    }
 
-   if( pTable->pfDataSet( pTable, TDS_COUNT, 0 ) )
+   uiRowHeight = pTable->uiTextHeight + pTable->pPadding[1] + pTable->pPadding[3];
+   ulRecCount = pTable->pfDataSet( pTable, TDS_COUNT, 0 );
+   if( ulRecCount )
    {
-      unsigned int y1 = rc.top + pTable->uiColHeight + pTable->pHeadPadding[1] + pTable->pHeadPadding[3];
-      unsigned int y2 = rc.bottom;
-      unsigned int uiColHeight = pTable->uiColHeight + pTable->pPadding[1] + pTable->pPadding[3];
+      unsigned long ulTemp;
 
-      pTable->uiRowCount = (y2 - y1) / uiColHeight;
+      y1 = rc.top + uiRowHeight;
+      y2 = rc.bottom;
+
+      pTable->uiRowCount = (y2 - y1) / uiRowHeight;
+      if( pTable->uiRowCount > ulRecCount )
+         pTable->uiRowCount = ulRecCount;
       if( pTable->hFont )
          brig_SelectObject( pps->hDC, pTable->hFont );
 
+      if( pTable->uiRowSel > 1 )
+      {
+         ulTemp = pTable->pfDataSet( pTable, TDS_RECNO, 0 );
+         pTable->pfDataSet( pTable, TDS_BACK, pTable->uiRowSel-1 );
+      }
+
+      for( unsigned int iRow = 0; iRow < pTable->uiRowCount; iRow++ )
+      {
+         paint_row( pTable, pps->hDC, y1 + uiRowHeight*iRow );
+         pTable->pfDataSet( pTable, TDS_FORWARD, 1 );
+      }
+
+      if( pTable->uiRowSel > 1 )
+         pTable->pfDataSet( pTable, TDS_GOTO, ulTemp );
    }
    else
       pTable->uiRowCount = 0;
@@ -168,6 +190,23 @@ static void brig_paint_Table( brig_Table *pTable )
    paint_head( pTable, pps->hDC );
    paint_foot( pTable, pps->hDC );
 
+   if( ulRecCount )
+   {
+      unsigned int iLeft = 0;
+
+      brig_SelectObject( pps->hDC, pTable->pPenSep );
+      for( unsigned int ui = 0; ui<pTable->avColumns.size(); ui++ )
+      {
+         iLeft += pTable->avColumns[ui]->iWidth;
+         brig_moveto( pps->hDC, iLeft-2, y1 );
+         brig_lineto( pps->hDC, iLeft-2, y1 + pTable->uiRowCount*uiRowHeight );
+      }
+      for( unsigned int ui = 1; ui<=pTable->uiRowCount; ui++ )
+      {
+         brig_moveto( pps->hDC, 0, y1 + uiRowHeight*ui );
+         brig_lineto( pps->hDC, iLeft-2, y1 + uiRowHeight*ui );
+      }
+   }
    brig_EndPaint( hTable, pps );
 
 }
