@@ -200,9 +200,9 @@ typedef struct BRIG_TCOLUMN_STRU
 {
  
    PBRIG_CHAR    szHead, szFoot;
-   int  iWidth;
+   unsigned int  iWidth;
    brig_fnc_column pfValue;
-   brig_Style  *pStyle, *pStyleHead, *pStyleFoot;
+   brig_Style  *pStyle, *pStyleSel, *pStyleHead, *pStyleFoot;
 
 } BRIG_TCOL, *PBRIG_TCOL;
 
@@ -225,17 +225,19 @@ public:
    void *pData;                // A Data source - an array, data table handle, ...
    unsigned long ulRecCurr;    // A current record number ( in a data source )
    unsigned long ulRecFirst;   // A data source record number, displayed in a first row of a table
+   unsigned int  uiColFirst;
 
    vector<PBRIG_TCOL> avColumns;
    unsigned int uiHeadRows, uiFootRows;
    unsigned int uiTextHeight;  // A height of a text in a row
    unsigned int uiRowCount;    // A number of visible rows
    unsigned int uiRowSel;      // A selected row in a table
+   unsigned int uiClientWidth, uiClientHeight;
 
    unsigned int pPadding[4], pHeadPadding[4];
    PBRIG_PEN pPenSep, pPenHdr;
-   unsigned long lSepColor;
-   brig_Style  *pStyle, *pStyleHead, *pStyleFoot;
+   unsigned long lSepColor, lSelTColor, lHeadColor;
+   brig_Style  *pStyle, *pStyleSel, *pStyleHead, *pStyleFoot;
 };
 
 extern void brig_RadioGroupSet( brig_RadioGroup *pGroup, int iSelected );

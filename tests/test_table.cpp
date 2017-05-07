@@ -71,8 +71,6 @@ int brig_Main( int argc, char *argv[] )
    brig_Table oTable;
 
    long pColors1[2] = {0xaaaaaa, 0xdddddd};
-   brig_Style *pStyleHead = brigAddStyle( 2, pColors1 );
-   brig_Style *pStyle = brigAddStyle( 0xdddddd );
 
    char pTableData[3][3][4] = { {"a11","a22","a33"}, {"b11","b22","b33"}, {"c11","c22","c33"} };
 
@@ -83,9 +81,11 @@ int brig_Main( int argc, char *argv[] )
 
    oTable.New( &oDlg, 20, 20, 360, 160 );
 
-   oTable.lTextColor = 255;
-   oTable.pStyleHead = pStyleHead;
-   //oTable.pStyle = pStyle;
+   oTable.lTextColor = 0xff0000;
+   oTable.lSelTColor = 0x00ff00;
+   oTable.pStyleHead = brigAddStyle( 2, pColors1 );
+   oTable.pStyle = brigAddStyle( 0xdddddd );
+   oTable.pStyleSel = brigAddStyle( 0xeeeeee );
    oTable.pfDataSet = fncTable;
    oTable.pData = (void*) pTableData;
    oTable.AddColumn( "First", 80, fncCellValue );
