@@ -190,11 +190,9 @@ static void brig_paint_Table( brig_Table *pTable )
       if( pTable->hFont )
          brig_SelectObject( pps->hDC, pTable->hFont );
 
+      ulTemp = pTable->pfDataSet( pTable, TDS_RECNO, 0 );
       if( pTable->uiRowSel > 1 )
-      {
-         ulTemp = pTable->pfDataSet( pTable, TDS_RECNO, 0 );
          pTable->pfDataSet( pTable, TDS_BACK, pTable->uiRowSel-1 );
-      }
 
       for( unsigned int iRow = 0; iRow < pTable->uiRowCount; iRow++ )
       {
@@ -202,8 +200,7 @@ static void brig_paint_Table( brig_Table *pTable )
          pTable->pfDataSet( pTable, TDS_FORWARD, 1 );
       }
 
-      if( pTable->uiRowSel > 1 )
-         pTable->pfDataSet( pTable, TDS_GOTO, ulTemp );
+      pTable->pfDataSet( pTable, TDS_GOTO, ulTemp );
    }
    else
       pTable->uiRowCount = 0;
@@ -234,6 +231,32 @@ static void brig_paint_Table( brig_Table *pTable )
 
 }
 
+void brig_Table::Down( void )
+{
+   if( pfDataSet( this, TDS_EOF, 0 ) )
+      return;
+
+   pfDataSet( this, TDS_FORWARD, 1 );
+   if( uiRowSel < uiRowCount )
+      uiRowSel++;
+
+   brig_RedrawWindow( handle );
+   brig_SetFocus( handle );
+}
+
+void brig_Table::Up( void )
+{
+   if( pfDataSet( this, TDS_BOF, 0 ) )
+      return;
+
+   pfDataSet( this, TDS_BACK, 1 );
+   if( uiRowSel > 1 )
+      uiRowSel--;
+
+   brig_RedrawWindow( handle );
+   brig_SetFocus( handle );
+}
+
 bool brig_Table::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 {
 
@@ -260,7 +283,15 @@ bool brig_Table::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 
       case WM_KEYUP:
       case WM_KEYDOWN:
-         break;
+         switch( wParam ) {
+            case VK_DOWN:
+               Down();
+               break;
+            case VK_UP:
+               Up();
+               break;
+         }
+         return 1;
 
       case WM_LBUTTONDOWN:
          {
@@ -274,12 +305,14 @@ bool brig_Table::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
                unsigned int uiRow = uiyPos / uiHeight + 1;
                if( uiRowSel != uiRow )
                {
+                  ulRecCurr += ( uiRow-uiRowSel );
                   uiRowSel = uiRow;
                   brig_RedrawWindow( handle );
                }
             }
          }
-         break;
+         brig_SetFocus( handle );
+         return 1;
 
       case WM_LBUTTONUP:
       case WM_LBUTTONDBLCLK:

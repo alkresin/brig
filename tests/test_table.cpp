@@ -82,7 +82,7 @@ int brig_Main( int argc, char *argv[] )
    oTable.New( &oDlg, 20, 20, 360, 160 );
 
    oTable.lTextColor = 0xff0000;
-   oTable.lSelTColor = 0x00ff00;
+   oTable.lSelTColor = 0x000000;
    oTable.pStyleHead = brigAddStyle( 2, pColors1 );
    oTable.pStyle = brigAddStyle( 0xdddddd );
    oTable.pStyleSel = brigAddStyle( 0xeeeeee );

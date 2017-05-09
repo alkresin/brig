@@ -219,6 +219,9 @@ public:
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
    void AddColumn( PBRIG_CHAR szHead, int iWidth, brig_fnc_column pfValue );
 
+   void Down( void );
+   void Up( void );
+
    brig_fnc_paint pfOnPaint;
    unsigned long (*pfDataSet)( brig_Table *pTable, int iOp, unsigned long ulData );
 
