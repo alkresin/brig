@@ -16,6 +16,9 @@ static LRESULT CALLBACK s_TableProc( HWND hDlg, UINT message,
    brig_Table *pObject = ( brig_Table * ) GetWindowLongPtr( hDlg, GWLP_USERDATA );
    //brig_writelog( NULL, "tablemsg %u\r\n", message );
 
+   if( message == WM_GETDLGCODE )
+      return DLGC_WANTALLKEYS;
+
    if( !pObject || !( pObject->onEvent( message, wParam, lParam ) ) )
       return DefWindowProc( hDlg, message, wParam, lParam );
    else

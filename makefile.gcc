@@ -21,6 +21,7 @@ $(LIB_DIR)/libbrig_ansi.a : \
    $(OBJ_DIR)/window.o \
    $(OBJ_DIR)/brig_app.o \
    $(OBJ_DIR)/brig_base.o \
+   $(OBJ_DIR)/brig_funcs.o \
    $(OBJ_DIR)/brig_menu.o \
    $(OBJ_DIR)/brig_style.o \
    $(OBJ_DIR)/brig_table.o \
@@ -43,6 +44,7 @@ $(LIB_DIR)/libbrig.a : \
    $(OBJ_DIR)/window.o \
    $(OBJ_DIR)/brig_app.o \
    $(OBJ_DIR)/brig_base.o \
+   $(OBJ_DIR)/brig_funcs.o \
    $(OBJ_DIR)/brig_menu.o \
    $(OBJ_DIR)/brig_style.o \
    $(OBJ_DIR)/brig_table.o \

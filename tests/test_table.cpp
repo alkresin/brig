@@ -59,9 +59,14 @@ unsigned long fncTable( brig_Table *pTable, int iOp, unsigned long ulData )
 
 PBRIG_CHAR fncCellValue( brig_Table *pTable, int iCol )
 {
-   char (*ptr)[3][4] = (char(*)[3][4]) pTable->pData;
-   return (pTable->ulRecCurr <= ulDataLen && pTable->ulRecCurr > 0)?
-         ptr[pTable->ulRecCurr-1][iCol-1] : NULL;
+   if( iCol == 1 )
+      return NULL;
+   else
+   {
+      char (*ptr)[3][4] = (char(*)[3][4]) pTable->pData;
+      return (pTable->ulRecCurr <= ulDataLen && pTable->ulRecCurr > 0)?
+            ptr[pTable->ulRecCurr-1][iCol-2] : NULL;
+   }
 }
 
 int brig_Main( int argc, char *argv[] )
@@ -88,6 +93,8 @@ int brig_Main( int argc, char *argv[] )
    oTable.pStyleSel = brigAddStyle( 0xeeeeee );
    oTable.pfDataSet = fncTable;
    oTable.pData = (void*) pTableData;
+   oTable.AddColumn( "", 28, fncCellValue );
+   oTable.avColumns[0]->pStyle = oTable.avColumns[0]->pStyleSel = brigAddStyle( 2, pColors1, 3 );
    oTable.AddColumn( "First", 80, fncCellValue );
    oTable.AddColumn( "Second", 100, fncCellValue );
 

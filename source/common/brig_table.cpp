@@ -8,15 +8,15 @@
 
 #include "brig.h"
 
-brig_Table::brig_Table():brig_Widget(), pfOnPaint(NULL), pfDataSet(NULL), pData(NULL), pPenSep(NULL), pPenHdr(NULL)
+brig_Table::brig_Table():brig_Widget(), pfOnPaint(NULL), pfDataSet(NULL), pfOnDblClick(NULL), pData(NULL), pPenSep(NULL), pPenHdr(NULL)
 {
    lSepColor = 0xc0c0c0;
    lSelTColor = lHeadColor = lTextColor;
-   uiTextHeight = uiHeadRows = uiFootRows = uiRowCount = 0;
+   uiTextHeight = uiHeadRows = uiFootRows = uiRowCount = uiColumnSel = 0;
    ulRecCurr = ulRecFirst = uiRowSel = uiColFirst = 1;
    pHeadPadding[0] = pHeadPadding[2] = pPadding[0] = pPadding[2] = 4;
    pHeadPadding[1] = pHeadPadding[3] = pPadding[1] = pPadding[3] = 2;
-   pStyle = pStyleSel = pStyleHead = pStyleFoot = NULL;
+   pStyle = pStyleSel = pStyleHead = pStyleFoot = pStyleCell = NULL;
 }
 
 BRIG_HANDLE brig_Table::New( brig_Container *pParent,
@@ -104,7 +104,7 @@ static void paint_row( brig_Table *pTable, PBRIG_DC hDC, unsigned int y, bool bS
 {
    PBRIG_TCOL pColumn;
    PBRIG_CHAR pCellValue;
-   brig_Style *pStyle = NULL;
+   brig_Style *pStyle;
    int x = 0;
    unsigned int uiHeight = pTable->uiTextHeight + pTable->pPadding[1] + pTable->pPadding[3];
    unsigned int uiWidth;
@@ -115,8 +115,14 @@ static void paint_row( brig_Table *pTable, PBRIG_DC hDC, unsigned int y, bool bS
       uiWidth = ( ui+1 == pTable->avColumns.size() || pColumn->iWidth > (pTable->uiClientWidth-x) )?
            pTable->uiClientWidth-x : pColumn->iWidth;
 
+      pStyle = NULL;
       if( bSel )
-         pStyle = (pColumn->pStyleSel)? pColumn->pStyleSel : pTable->pStyleSel;
+      {
+         if( ui+1 == pTable->uiColumnSel && pTable->pStyleCell )
+            pStyle = pTable->pStyleCell;
+         if( !pStyle )
+            pStyle = (pColumn->pStyleSel)? pColumn->pStyleSel : pTable->pStyleSel;
+      }
       if( !pStyle )
          pStyle = (pColumn->pStyle)? pColumn->pStyle : pTable->pStyle;
       if( pStyle )
@@ -181,7 +187,7 @@ static void brig_paint_Table( brig_Table *pTable )
    {
       unsigned long ulTemp;
 
-      y1 = rc.top + uiRowHeight;
+      y1 = rc.top + (pTable->uiHeadRows)? pTable->uiTextHeight + pTable->pHeadPadding[1] + pTable->pHeadPadding[3] : 0;
       y2 = rc.bottom;
 
       pTable->uiRowCount = (y2 - y1) / uiRowHeight;
@@ -231,6 +237,42 @@ static void brig_paint_Table( brig_Table *pTable )
 
 }
 
+static void brig_OnBtnDown( brig_Table *pTable, LPARAM lParam )
+{
+   unsigned int uixPos = ( (unsigned long) lParam ) & 0xFFFF;
+   int iyPos = ( ( (unsigned long) lParam ) >> 16 ) & 0xFFFF;
+   unsigned int uiHeight = pTable->uiTextHeight + pTable->pPadding[1] + pTable->pPadding[3];
+   bool bRepaint = 0;
+
+   iyPos -= (pTable->uiHeadRows)?
+         ( pTable->uiTextHeight + pTable->pHeadPadding[1] + pTable->pHeadPadding[3] ) : 0;
+   if( iyPos > 0 )
+   {
+      unsigned int uiWidth = 0;
+      unsigned int uiRow = iyPos / uiHeight + 1;
+      if( pTable->uiRowSel != uiRow )
+      {
+         pTable->ulRecCurr += ( uiRow-pTable->uiRowSel );
+         pTable->uiRowSel = uiRow;
+         bRepaint = 1;
+      }
+      if( pTable->uiColumnSel )
+         for( unsigned int ui = 0; ui<pTable->avColumns.size(); ui++ )
+         {
+            uiWidth += pTable->avColumns[ui]->iWidth;
+            if( uiWidth > uixPos )
+            {
+               pTable->uiColumnSel = ui + 1;
+               bRepaint = 1;
+               break;
+            }
+         }
+      if( bRepaint )
+         brig_RedrawWindow( pTable->Handle() );
+   }
+   brig_SetFocus( pTable->Handle() );
+}
+
 void brig_Table::Down( void )
 {
    if( pfDataSet( this, TDS_EOF, 0 ) )
@@ -241,7 +283,6 @@ void brig_Table::Down( void )
       uiRowSel++;
 
    brig_RedrawWindow( handle );
-   brig_SetFocus( handle );
 }
 
 void brig_Table::Up( void )
@@ -254,7 +295,23 @@ void brig_Table::Up( void )
       uiRowSel--;
 
    brig_RedrawWindow( handle );
-   brig_SetFocus( handle );
+}
+
+void brig_Table::Top( void )
+{
+   pfDataSet( this, TDS_TOP, 0 );
+   uiRowSel = 1;
+
+   brig_RedrawWindow( handle );
+}
+
+void brig_Table::Bottom( void )
+{
+   unsigned long ulRecs = pfDataSet( this, TDS_COUNT, 0 );
+   pfDataSet( this, TDS_BOTTOM, 0 );
+   uiRowSel = ( ulRecs > uiRowCount )? uiRowCount : ulRecs;
+
+   brig_RedrawWindow( handle );
 }
 
 bool brig_Table::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
@@ -282,6 +339,7 @@ bool brig_Table::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
          break;
 
       case WM_KEYUP:
+         return 1;
       case WM_KEYDOWN:
          switch( wParam ) {
             case VK_DOWN:
@@ -290,32 +348,29 @@ bool brig_Table::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
             case VK_UP:
                Up();
                break;
+            case VK_HOME:
+               Top();
+               break;
+            case VK_END:
+               Bottom();
+               break;
+            case VK_RETURN:
+               if( pfOnDblClick )
+                  pfOnDblClick( this );
+               break;
          }
          return 1;
 
       case WM_LBUTTONDOWN:
-         {
-            //unsigned int uixPos = ( (unsigned long) lParam ) & 0xFFFF;
-            unsigned int uiyPos = ( ( (unsigned long) lParam ) >> 16 ) & 0xFFFF;
-            unsigned int uiHeight = uiTextHeight + pPadding[1] + pPadding[3];
-
-            uiyPos -= ( uiTextHeight + pHeadPadding[1] + pHeadPadding[3] );
-            if( uiyPos > 0 )
-            {
-               unsigned int uiRow = uiyPos / uiHeight + 1;
-               if( uiRowSel != uiRow )
-               {
-                  ulRecCurr += ( uiRow-uiRowSel );
-                  uiRowSel = uiRow;
-                  brig_RedrawWindow( handle );
-               }
-            }
-         }
-         brig_SetFocus( handle );
+         brig_OnBtnDown( this, lParam );
          return 1;
 
       case WM_LBUTTONUP:
       case WM_LBUTTONDBLCLK:
+         brig_OnBtnDown( this, lParam );
+         if( pfOnDblClick )
+            pfOnDblClick( this );
+         break;
       case WM_RBUTTONDOWN:
          break;
    }

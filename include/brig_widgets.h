@@ -221,8 +221,11 @@ public:
 
    void Down( void );
    void Up( void );
+   void Top( void );
+   void Bottom( void );
 
    brig_fnc_paint pfOnPaint;
+   bool (*pfOnDblClick)( brig_Table *pTable );
    unsigned long (*pfDataSet)( brig_Table *pTable, int iOp, unsigned long ulData );
 
    void *pData;                // A Data source - an array, data table handle, ...
@@ -235,12 +238,13 @@ public:
    unsigned int uiTextHeight;  // A height of a text in a row
    unsigned int uiRowCount;    // A number of visible rows
    unsigned int uiRowSel;      // A selected row in a table
+   unsigned int uiColumnSel;   // A selected column in a table. If 0, the columns aren't selected.
    unsigned int uiClientWidth, uiClientHeight;
 
    unsigned int pPadding[4], pHeadPadding[4];
    PBRIG_PEN pPenSep, pPenHdr;
    unsigned long lSepColor, lSelTColor, lHeadColor;
-   brig_Style  *pStyle, *pStyleSel, *pStyleHead, *pStyleFoot;
+   brig_Style  *pStyle, *pStyleSel, *pStyleCell, *pStyleHead, *pStyleFoot;
 };
 
 extern void brig_RadioGroupSet( brig_RadioGroup *pGroup, int iSelected );
