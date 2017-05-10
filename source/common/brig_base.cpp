@@ -8,8 +8,6 @@
 
 #include "brig.h"
 
-brig_MainWindow * pMainWindow = NULL;
-
 /* -------- Widget --------- */
 
 brig_Widget::brig_Widget():lTextColor(0), lBackColor(-1), hFont(NULL), hBrush(NULL), pfOnSize(NULL) {}
@@ -157,7 +155,7 @@ void brig_MainWindow::New( int x, int y, int width, int height, PBRIG_CHAR lpTit
    if( handle )
    {
       brig_SetWidgetData( this );
-      pMainWindow = this;
+      brigApp.pMainWindow = this;
    }
 }
 
@@ -220,7 +218,7 @@ void brig_Dialog::New( brig_Container * pParent,
    iWidth = width;
    iHeight = height;
 
-   this->pParent = (pParent)? pParent : ( (pMainWindow)? pMainWindow : NULL );
+   this->pParent = (pParent)? pParent : ( (brigApp.pMainWindow)? brigApp.pMainWindow : NULL );
    handle = brig_InitDialog( lpTitle, x, y, width, height, lStyle );
    brig_SetWidgetData( this );
 }

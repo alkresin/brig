@@ -85,6 +85,8 @@ int brigChoice( std::vector<char*> &pList, PBRIG_CHAR lpTitle, unsigned int iLef
    brig_Style * pStyleSel = brigAddStyle( 0xeeeeee );
 
    oDlg.New( NULL, iLeft, iTop, iWidth, iHeight, lpTitle );
+   if( brigApp.pMainWindow && brigApp.pMainWindow->hFont )
+      oDlg.hFont = brigApp.pMainWindow->hFont;
 
    oTable.New( &oDlg, 0, 0, iWidth, iHeight - 80 );
 

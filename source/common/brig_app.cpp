@@ -8,7 +8,7 @@
 
 #include "brig.h"
 
-brig_Application::brig_Application() {}
+brig_Application::brig_Application(): pMainWindow(NULL) {}
 
 brig_Application::~brig_Application()
 {
