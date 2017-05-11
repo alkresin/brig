@@ -49,6 +49,16 @@ void brig_EndPaint( BRIG_HANDLE handle, PBRIG_PPS pps )
 
 }
 
+PBRIG_DC brig_GetDC( BRIG_HANDLE handle )
+{
+   return GetDC( handle );
+}
+
+void brig_ReleaseDC( BRIG_HANDLE handle, PBRIG_DC hDC )
+{
+   ReleaseDC( handle, hDC );
+}
+
 void brig_moveto( PBRIG_DC hDC, int iLeft, int iTop )
 {
    MoveToEx( hDC, iLeft, iTop, NULL );

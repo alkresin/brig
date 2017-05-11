@@ -68,6 +68,37 @@ void brig_EndPaint( BRIG_HANDLE handle, PBRIG_PPS pps )
 
 }
 
+PBRIG_DC brig_GetDC( BRIG_HANDLE handle )
+{
+   PBRIG_DC hDC = (PBRIG_DC) malloc( sizeof(BRIG_DC) );
+
+   memset( hDC, 0, sizeof(BRIG_DC) );
+   hDC->widget = handle;
+
+   hDC->window = handle->window;
+   hDC->cr = gdk_cairo_create( handle->window );
+
+   hDC->layout = pango_cairo_create_layout( hDC->cr );
+   hDC->fcolor = hDC->bcolor = -1;
+
+   return hDC;
+}
+
+void brig_ReleaseDC( BRIG_HANDLE handle, PBRIG_DC hDC )
+{
+
+   SYMBOL_UNUSED( handle );
+
+   if( hDC->layout )
+      g_object_unref( (GObject*) hDC->layout );
+
+   if( hDC->surface )
+      cairo_surface_destroy( hDC->surface );
+   cairo_destroy( hDC->cr );
+   free( hDC );
+
+}
+
 void brig_moveto( PBRIG_DC hDC, int iLeft, int iTop )
 {
    cairo_move_to( hDC->cr, (gdouble)iLeft, (gdouble)iTop );

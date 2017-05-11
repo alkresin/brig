@@ -63,6 +63,8 @@ extern long int brig_ChooseColor( long int lDefColor = -1 );
 
 extern PBRIG_PPS brig_BeginPaint( BRIG_HANDLE handle );
 extern void brig_EndPaint( BRIG_HANDLE handle, PBRIG_PPS pps );
+extern PBRIG_DC brig_GetDC( BRIG_HANDLE handle );
+extern void brig_ReleaseDC( BRIG_HANDLE handle, PBRIG_DC hDC );
 extern void brig_GetClientRect( BRIG_HANDLE handle, RECT *prc );
 extern void brig_FillRect( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom, PBRIG_BRUSH hBrush );
 extern void brig_DrawRect( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom );
