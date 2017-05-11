@@ -8,6 +8,14 @@
 
 #include "brig.h"
 
+static bool fncChoic( brig_Table *pTable )
+{
+   ((brig_Dialog*)(pTable->pParent))->pResult = (void*) pTable->ulRecCurr;
+   ((brig_Dialog*)(pTable->pParent))->Close();
+
+   return 1;
+}
+
 static bool fncCloseDlg( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
 {
    brig_Table *pTable = (brig_Table *)((brig_Dialog*)(pBtn->pParent))->avWidgets[0];
@@ -84,7 +92,7 @@ int brigChoice( std::vector<char*> &pList, PBRIG_CHAR lpTitle, unsigned int iLef
    brig_Style * pStyle = brigAddStyle( 0xdddddd );
    brig_Style * pStyleSel = brigAddStyle( 0xeeeeee );
 
-   oDlg.New( NULL, iLeft, iTop, iWidth, iHeight, lpTitle );
+   oDlg.New( NULL, iLeft, iTop, iWidth, iHeight, lpTitle, 0 );
    if( brigApp.pMainWindow && brigApp.pMainWindow->hFont )
       oDlg.hFont = brigApp.pMainWindow->hFont;
 
@@ -96,11 +104,13 @@ int brigChoice( std::vector<char*> &pList, PBRIG_CHAR lpTitle, unsigned int iLef
    oTable.pData = (void*) &pList;
    oTable.pfDataSet = fncTable;
    oTable.AddColumn( NULL, iWidth, fncCellValue );
+   oTable.pfOnDblClick = fncChoic;
 
    oBtn.New( &oDlg, (iWidth-100)/2, iHeight-72, 100, 32, (PBRIG_CHAR) "Ok" );
    oBtn.pfOnClick = fncCloseDlg;
 
-   oDlg.Activate( 0 );
+   brig_SetFocus( oTable.Handle() );
+   oDlg.Activate();
 
    brigDelStyle( pStyleSel );
    brigDelStyle( pStyle );

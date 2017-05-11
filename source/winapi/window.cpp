@@ -347,7 +347,8 @@ BRIG_HANDLE brig_InitDialog( PBRIG_CHAR lpTitle,
    BRIG_HANDLE hDialog;
    PBRIG_WCHAR wcTitle = brig_str2WC( lpTitle );
 
-   hDialog = CreateWindowEx( ExStyle, WC_DIALOG, wcTitle, WS_VISIBLE | lStyle,
+   lStyle |= WS_VISIBLE;
+   hDialog = CreateWindowEx( ExStyle, WC_DIALOG, wcTitle, lStyle,
          x, y,
          ( !width ) ? ( LONG ) CW_USEDEFAULT : width,
          ( !height ) ? ( LONG ) CW_USEDEFAULT : height,

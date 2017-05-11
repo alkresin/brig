@@ -4,6 +4,7 @@
 
 brig_MainWindow oMain;
 brig_Edit oEdit;
+brig_Label oLabel;
 
 bool fncOnClose( brig_Widget *pDlg )
 {
@@ -19,7 +20,6 @@ bool fncOnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
    SYMBOL_UNUSED( wParam );
    SYMBOL_UNUSED( lParam );
 
-   oEdit.SetFont( brigAddFont( "Georgia", 20, 700 ) );
    oEdit.SetTextColor( 255, 0 );
    oEdit.SetBackColor( 11184810, 1 );
    pText = oEdit.GetText();
@@ -45,6 +45,22 @@ bool fncOnSize( brig_Widget *pPanel, WPARAM wParam, LPARAM lParam )
 void fncMenu1( void )
 {
    brig_MsgInfo( (PBRIG_CHAR) "1", (PBRIG_CHAR) "Menu" );
+}
+
+void fncMenu1b( void )
+{
+   int iRes;
+   char szRes[16];
+   std::vector<char*> avList;
+
+   avList.push_back( "Sergey Kropin" );
+   avList.push_back( "Alex Haitek" );
+   avList.push_back( "Mike Horn" );
+   avList.push_back( "Iegudi Menuhin" );
+
+   iRes = brigChoice( avList, NULL, 400, 100, 200, 250 );
+   sprintf( szRes, "Selected: %d", iRes );
+   oLabel.SetText( szRes );
 }
 
 void fncMenu1e( void )
@@ -138,12 +154,14 @@ int brig_Main( int argc, char *argv[] )
    
    oMain.New( 100, 100, 500, 300, (PBRIG_CHAR) "First Brig Window" );
    oMain.pfOnClose = fncOnClose;
+   oMain.hFont = brigAddFont( "Georgia", 20 );
    
    brigMenu( &oMain );
 
    if( brigSubMenu( "File", 0 ) )
    {
-      brigMenuItemAdd( "Open", 0, fncMenu1 );
+      brigMenuItemAdd( "MsgInfo", 0, fncMenu1 );
+      brigMenuItemAdd( "brigChoice", 0, fncMenu1b );
       brigMenuSeparator();
       brigMenuItemAdd( "Close", 0, fncMenu1e );
       brigMenuEnd();
@@ -162,13 +180,14 @@ int brig_Main( int argc, char *argv[] )
 
    oEdit.New( &oMain, 20, 60, 100, 28 );
    oCheck.New( &oMain, 160, 60, 100, 28, "Mark me" );
+   oLabel.New( &oMain, 264, 60, 120, 24, "" );
 
    oRG.Begin( &oMain, 20, 100, 220, 90, "Radio group" );
    oR1.New( &oRG, 30, 120, 150, 24, "radio1" );
    oR2.New( &oRG, 30, 150, 150, 24, "radio2" );
    oRG.End( 1 );
 
-   oCombo.New( &oMain, 250, 100, 120, 28, 0, pCombo, 3 );
+   oCombo.New( &oMain, 264, 100, 120, 28, 0, pCombo, 3 );
 
    oBtn.New( &oMain, 100, 210, 100, 32, (PBRIG_CHAR) "Помощь" );
    oBtn.pfOnClick = fncOnClick;
