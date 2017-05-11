@@ -24,6 +24,7 @@
 #define WM_RBUTTONUP                    517    // 0x0205
 
 static BRIG_HANDLE hMainWindow = NULL;
+static GtkWidget *pWidgAlloc;
 
 brig_Application brigApp;
 
@@ -87,10 +88,17 @@ void brig_MoveWindow( BRIG_HANDLE handle, int iLeft, int iTop, int iWidth, int i
       if( gObject )
       {
          brig_Widget * pParent = ( ( brig_Widget* ) gObject )->pParent;
-         GtkFixed * fbox = (GtkFixed *) g_object_get_data( ( GObject * )pParent->Handle(), "fbox" );
-         BRIG_HANDLE pbox = (BRIG_HANDLE) g_object_get_data( ( GObject * ) handle, "pbox" );
-         //gtk_fixed_move( fbox, (pbox)? pbox : handle, iLeft, iTop );
-         gtk_widget_set_size_request( handle, iWidth, iHeight );
+         GtkWidget * hParent = pParent->Handle();
+         if( hParent != pWidgAlloc )
+         {
+            GtkFixed * fbox = (GtkFixed *) g_object_get_data( ( GObject * )hParent, "fbox" );
+            BRIG_HANDLE pbox = (BRIG_HANDLE) g_object_get_data( ( GObject * ) handle, "pbox" );
+            //gtk_window_move( GTK_WINDOW( (pbox)? pbox : handle ), iLeft, iTop );
+            if( iLeft >= 0 )
+               gtk_fixed_move( fbox, (pbox)? pbox : handle, iLeft, iTop );
+         }
+         if( iWidth >= 0 )
+            gtk_widget_set_size_request( handle, iWidth, iHeight );
       }
 
    }
@@ -340,10 +348,14 @@ gboolean cb_delete_event( GtkWidget *widget, gchar* data )
 gint cb_signal_size( GtkWidget *widget, GtkAllocation *allocation, gpointer data )
 {
    gpointer gObject = g_object_get_data( (GObject*) widget->parent->parent, "obj" );
+   long int p3 = ( (long)(allocation->width) & 0xFFFF ) |
+                          ( ( (unsigned long)(allocation->height) << 16 ) & 0xFFFF0000 );
+   pWidgAlloc = widget->parent->parent;
    SYMBOL_UNUSED( data );
 
    if( gObject )
-      ( ( brig_Widget* ) gObject )->onEvent( WM_SIZE, 0, 0 );
+      ( ( brig_Widget* ) gObject )->onEvent( WM_SIZE, 0, p3 );
+   pWidgAlloc = NULL;
 
    return 0;
 }

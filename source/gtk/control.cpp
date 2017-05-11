@@ -211,12 +211,12 @@ void brig_ComboSetArray( BRIG_HANDLE hCombo, char **pArray, int iLen )
 
 int brig_GetValue( BRIG_HANDLE hCombo )
 {
-   return SendMessage( hCombo, CB_GETCURSEL, 0, 0 );
+   //return SendMessage( hCombo, CB_GETCURSEL, 0, 0 );
 }
 
 void brig_SetValue( BRIG_HANDLE hCombo, int iSelected )
 {
-   SendMessage( hCombo, CB_SETCURSEL, iSelected, 0 );
+   //SendMessage( hCombo, CB_SETCURSEL, iSelected, 0 );
 }
 
 /* -------- Panel --------- */

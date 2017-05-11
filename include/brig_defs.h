@@ -133,12 +133,17 @@ using std::vector;
    #define WM_MOVE              3
    #define WM_SIZE              5
    #define WM_PAINT            15
+   #define WM_KEYDOWN         256
+   #define WM_KEYUP           257
+   #define WM_CHAR            258
    #define WM_COMMAND         273
    #define WM_SYSCOMMAND      274
    #define WM_HSCROLL         276
    #define WM_VSCROLL         277
    #define WM_LBUTTONDOWN     513
    #define WM_LBUTTONUP       514
+   #define WM_LBUTTONDBLCLK   515
+   #define WM_RBUTTONDOWN     516
 
    #define BS_AUTOCHECKBOX      3
    #define BS_RADIOBUTTON       4
@@ -164,6 +169,63 @@ using std::vector;
    #define WS_OVERLAPPEDWINDOW  0
    #define WS_EX_TRANSPARENT   32
    #define SC_CLOSE         61536
+
+   #define  VK_RIGHT   GDK_Right
+   #define  VK_LEFT    GDK_Left
+   #define  VK_HOME    GDK_Home
+   #define  VK_END     GDK_End
+   #define  VK_DOWN    GDK_Down
+   #define  VK_UP      GDK_Up
+   #define  VK_NEXT    GDK_Page_Down
+   #define  VK_PRIOR   GDK_Page_Up
+   #define  VK_INSERT  GDK_Insert
+   #define  VK_RETURN  GDK_Return
+   #define  VK_TAB     GDK_Tab
+   #define  VK_ESCAPE  GDK_Escape
+   #define  VK_BACK    GDK_BackSpace
+   #define  VK_DELETE  GDK_Delete
+   #define  VK_F1      GDK_F1
+   #define  VK_F2      GDK_F2
+   #define  VK_F3      GDK_F3
+   #define  VK_F4      GDK_F4
+   #define  VK_F5      GDK_F5
+   #define  VK_F6      GDK_F6
+   #define  VK_F7      GDK_F7
+   #define  VK_F8      GDK_F8
+   #define  VK_F9      GDK_F9
+   #define  VK_F10     GDK_F10
+   #define  VK_F11     GDK_F11
+   #define  VK_F12     GDK_F12
+
+   #define  VK_SHIFT   GDK_Shift_L
+   #define  VK_CONTROL GDK_Control_L
+   #define  VK_MENU    GDK_Menu
+   #define  VK_HELP    GDK_Help
+   #define  VK_PAUSE   GDK_Pause
+   #define  VK_CAPITAL GDK_Caps_Lock
+
+   #define VK_SCROLL   GDK_Scroll_Lock
+   #define VK_SELECT   GDK_Select
+   #define VK_PRINT    GDK_Print
+   #define VK_EXECUTE  GDK_Execute
+
+   #define VK_NUMLOCK  GDK_Num_Lock
+   #define VK_NUMPAD0  GDK_KP_0
+   #define VK_NUMPAD1  GDK_KP_1
+   #define VK_NUMPAD2  GDK_KP_2
+   #define VK_NUMPAD3  GDK_KP_3
+   #define VK_NUMPAD4  GDK_KP_4
+   #define VK_NUMPAD5  GDK_KP_5
+   #define VK_NUMPAD6  GDK_KP_6
+   #define VK_NUMPAD7  GDK_KP_7
+   #define VK_NUMPAD8  GDK_KP_8
+   #define VK_NUMPAD9  GDK_KP_9
+   #define VK_MULTIPLY  GDK_KP_Multiply
+   #define VK_ADD       GDK_KP_Add
+   #define VK_SEPARATOR GDK_KP_Separator
+   #define VK_SUBTRACT  GDK_KP_Subtract
+   #define VK_DECIMAL   GDK_KP_Decimal
+   #define VK_DIVIDE    GDK_KP_Divide
 
 #endif
 
