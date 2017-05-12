@@ -15,6 +15,9 @@
 class brig_Widget;
 class brig_Container;
 
+extern void brig_SetWindowText( brig_Widget *pWidget, PBRIG_CHAR lpTitle );
+extern PBRIG_CHAR brig_GetWindowText( brig_Widget *pWidget );
+
 typedef bool (*brig_fnc_paint)( brig_Widget *pWidget, PBRIG_DC hDC );
 typedef bool (*brig_fnc_mess)( brig_Widget *pWidget, WPARAM wParam, LPARAM lParam );
 typedef bool (*brig_fnc_mess_1)( brig_Widget *pWidget );
@@ -40,7 +43,7 @@ public:
    ~brig_Widget();
 
    void SetText( PBRIG_CHAR lpTitle );
-   PBRIG_CHAR GetText() const;
+   PBRIG_CHAR GetText();
    BRIG_HANDLE Handle( void ) const;
 
    void New( brig_Container *pParent, int x, int y, int width, int height );
@@ -52,6 +55,7 @@ public:
    void Show( bool bShow = 1 );
    virtual bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
 
+   unsigned int uiType;
    int iLeft, iTop, iWidth, iHeight;
    long int lTextColor, lBackColor;
    int iWidgId;

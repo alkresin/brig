@@ -34,8 +34,6 @@ extern int brig_MsgYesNo( PBRIG_CHAR sText, PBRIG_CHAR sTitle );
 
 extern void brig_writelog( const char * sFile, const char * sTraceMsg, ... );
 
-extern void brig_SetWindowText( BRIG_HANDLE handle, PBRIG_CHAR lpTitle );
-extern PBRIG_CHAR brig_GetWindowText( BRIG_HANDLE handle );
 extern void brig_MoveWindow( BRIG_HANDLE handle, int iLeft, int iTop, int iWidth, int iHeight );
 extern void brig_EnableWindow( BRIG_HANDLE handle, bool bEnable );
 extern void brig_ShowWindow( BRIG_HANDLE handle, bool bShow );

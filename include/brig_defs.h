@@ -237,4 +237,17 @@ using std::vector;
 #define COLOR_GR_LIGHT   0xeeeeee
 #define COLOR_WHITE      0xffffff
 
+#define TYPE_WINDOW        1
+#define TYPE_DIALOG        2
+#define TYPE_LABEL        11
+#define TYPE_EDIT         12
+#define TYPE_BUTTON       13
+#define TYPE_CHECK        14
+#define TYPE_RADIO        15
+#define TYPE_GROUP        16
+#define TYPE_COMBO        17
+#define TYPE_PANEL        51
+#define TYPE_QBTN         52
+#define TYPE_TABLE        53
+
 #endif  // BRIG_DEFS_H_

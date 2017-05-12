@@ -10,6 +10,7 @@
 
 brig_Table::brig_Table():brig_Widget(), pfOnPaint(NULL), pfDataSet(NULL), pfOnDblClick(NULL), pData(NULL), pPenSep(NULL), pPenHdr(NULL)
 {
+   uiType = TYPE_TABLE;
    lSepColor = 0xc0c0c0;
    lSelTColor = lHeadColor = lTextColor;
    uiTextHeight = uiHeadRows = uiFootRows = uiRowCount = uiColumnSel = 0;

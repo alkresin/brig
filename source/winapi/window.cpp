@@ -54,17 +54,18 @@ void brig_SetWidgetData( brig_Widget *pWidget )
    //brig_writelog( NULL, "set: %lu %lu\r\n", (unsigned long)pWidget, (unsigned long)pWidget->Handle() );
 }
 
-void brig_SetWindowText( BRIG_HANDLE handle, PBRIG_CHAR lpTitle )
+void brig_SetWindowText( brig_Widget *pWidget, PBRIG_CHAR lpTitle )
 {
 
    PBRIG_WCHAR wcTitle = brig_str2WC( lpTitle);
-   SetWindowText( handle, wcTitle );
+   SetWindowText( pWidget->Handle(), wcTitle );
    brig_free( wcTitle );
 
 }
 
-PBRIG_CHAR brig_GetWindowText( BRIG_HANDLE handle )
+PBRIG_CHAR brig_GetWindowText( brig_Widget *pWidget )
 {
+   BRIG_HANDLE handle = pWidget->Handle();
    unsigned long ulLen = ( unsigned long ) SendMessage( handle, WM_GETTEXTLENGTH, 0, 0 );
    LPTSTR lpText = ( TCHAR * ) malloc( ( ulLen + 1 ) * sizeof( TCHAR ) );
    PBRIG_CHAR pResult;

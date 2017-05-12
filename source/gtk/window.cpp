@@ -62,15 +62,58 @@ void brig_SetWidgetData( brig_Widget *pWidget )
    //brig_writelog( NULL, "set: %lu %lu\r\n", (unsigned long)pWidget, (unsigned long)pWidget->Handle() );
 }
 
-void brig_SetWindowText( BRIG_HANDLE handle, PBRIG_CHAR lpTitle )
+void brig_SetWindowText( brig_Widget *pWidget, PBRIG_CHAR lpTitle )
 {
-   gtk_window_set_title( GTK_WINDOW( handle ), lpTitle );
+   BRIG_HANDLE handle = pWidget->Handle();
 
+   switch (pWidget->uiType) {
+      case TYPE_WINDOW:
+      case TYPE_DIALOG:
+         gtk_window_set_title( GTK_WINDOW( handle ), lpTitle );
+         break;
+
+      case TYPE_EDIT:
+         if( g_object_get_data( ( GObject * ) handle, "multi" ) )
+         {
+            GtkTextBuffer *buffer =
+                  gtk_text_view_get_buffer( GTK_TEXT_VIEW( handle ) );
+            gtk_text_buffer_set_text( buffer, lpTitle, -1 );
+         }
+         else
+            gtk_entry_set_text( ( GtkEntry * ) handle, lpTitle );
+         break;
+   }
 }
 
-PBRIG_CHAR brig_GetWindowText( BRIG_HANDLE handle )
+PBRIG_CHAR brig_GetWindowText( brig_Widget *pWidget )
 {
-   return (PBRIG_CHAR) gtk_window_get_title( GTK_WINDOW( handle ) );
+   BRIG_HANDLE handle = pWidget->Handle();
+
+   switch (pWidget->uiType) {
+      case TYPE_WINDOW:
+      case TYPE_DIALOG:
+         return (PBRIG_CHAR) gtk_window_get_title( GTK_WINDOW( handle ) );
+
+      case TYPE_EDIT:
+      {
+         char *cptr;
+
+         if( g_object_get_data( ( GObject * ) handle, "multi" ) )
+         {
+            GtkTextBuffer *buffer = gtk_text_view_get_buffer( GTK_TEXT_VIEW( handle ) );
+            GtkTextIter iterStart, iterEnd;
+
+            gtk_text_buffer_get_start_iter( buffer, &iterStart );
+            gtk_text_buffer_get_end_iter( buffer, &iterEnd );
+            cptr = gtk_text_buffer_get_text( buffer, &iterStart, &iterEnd, 1 );
+         }
+         else
+            cptr = ( char * ) gtk_entry_get_text( ( GtkEntry * ) handle );
+
+         return cptr;
+      }
+   }
+   return NULL;
 }
 
 void brig_MoveWindow( BRIG_HANDLE handle, int iLeft, int iTop, int iWidth, int iHeight )

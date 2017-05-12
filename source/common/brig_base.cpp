@@ -36,13 +36,13 @@ BRIG_HANDLE brig_Widget::Handle( void ) const
 void brig_Widget::SetText( PBRIG_CHAR lpTitle )
 {
 
-   brig_SetWindowText( handle, lpTitle );
+   brig_SetWindowText( this, lpTitle );
 }
 
-PBRIG_CHAR brig_Widget::GetText( void ) const
+PBRIG_CHAR brig_Widget::GetText( void )
 {
 
-   return brig_GetWindowText( handle );
+   return brig_GetWindowText( this );
 }
 
 void brig_Widget::New( brig_Container *pParent, int x, int y, int width, int height )
@@ -141,7 +141,10 @@ void brig_Container::OnSize( WPARAM wParam, LPARAM lParam )
 
 /* -------- MainWindow --------- */
 
-brig_MainWindow::brig_MainWindow():brig_Container(), szAppName((PBRIG_CHAR)"Brig_App") {}
+brig_MainWindow::brig_MainWindow():brig_Container(), szAppName((PBRIG_CHAR)"Brig_App")
+{
+   uiType = TYPE_WINDOW;
+}
 
 void brig_MainWindow::New( int x, int y, int width, int height, PBRIG_CHAR lpTitle,
          long int lStyle, PBRIG_ICON hIcon, PBRIG_BRUSH hBrush )
@@ -207,8 +210,10 @@ void brig_MainWindow::Close( void )
 
 /* -------- Dialog --------- */
 
-brig_Dialog::brig_Dialog():brig_Container(), pResult(NULL) {}
-
+brig_Dialog::brig_Dialog():brig_Container(), pResult(NULL)
+{
+   uiType = TYPE_DIALOG;
+}
 
 void brig_Dialog::New( brig_Container * pParent,
       int x, int y, int width, int height, PBRIG_CHAR lpTitle, long int lStyle )

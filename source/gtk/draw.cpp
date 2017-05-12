@@ -381,7 +381,7 @@ int brig_GetTextWidth( PBRIG_DC hDC, PBRIG_CHAR lpText )
    pango_layout_set_text( hDC->layout, lpText, -1 );
    pango_layout_get_pixel_extents( hDC->layout, &rc, NULL );
 
-   hb_retnl( rc.width );
+   return rc.width;
 
 }
 

@@ -64,7 +64,7 @@ static void brigMenuBuild( brig_Container *pWnd, PBRIG_MITEM pMenuCurr, PBRIG_MI
       if( pMenuCurr->avItems[i]->avItems.empty() )
          brig_AddMenuItem( pMenuCurr->handle, pMenuCurr->avItems[i]->szName, -1, pWnd, pMenuCurr->avItems[i]->iId, 0 );
       else
-         brigMenuBuild( NULL, pMenuCurr->avItems[i], pMenuCurr );
+         brigMenuBuild( pWnd, pMenuCurr->avItems[i], pMenuCurr );
    }
 
    if( !pMenuParent )

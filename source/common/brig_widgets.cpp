@@ -10,7 +10,10 @@
 
 
 /* -------- Label --------- */
-brig_Label::brig_Label():brig_Widget(){}
+brig_Label::brig_Label():brig_Widget()
+{
+   uiType = TYPE_LABEL;
+}
 
 BRIG_HANDLE brig_Label::New( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption, unsigned long ulStyle, unsigned long ulExStyle )
@@ -27,7 +30,10 @@ BRIG_HANDLE brig_Label::New( brig_Container *pParent,
 }
 
 /* -------- Edit --------- */
-brig_Edit::brig_Edit():brig_Widget(){}
+brig_Edit::brig_Edit():brig_Widget()
+{
+   uiType = TYPE_EDIT;
+}
 
 BRIG_HANDLE brig_Edit::New( brig_Container * pParent,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption, unsigned long ulStyle, unsigned long ulExStyle )
@@ -58,7 +64,10 @@ bool brig_Edit::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 }
 
 /* -------- Button --------- */
-brig_Button::brig_Button():brig_Widget(), pfOnClick(NULL){}
+brig_Button::brig_Button():brig_Widget(), pfOnClick(NULL)
+{
+   uiType = TYPE_BUTTON;
+}
 
 BRIG_HANDLE brig_Button::New( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption, unsigned long ulStyle )
@@ -97,7 +106,10 @@ bool brig_Button::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 
 
 /* -------- CheckButton --------- */
-brig_CheckButton::brig_CheckButton():brig_Widget(), pfOnClick(NULL){}
+brig_CheckButton::brig_CheckButton():brig_Widget(), pfOnClick(NULL)
+{
+   uiType = TYPE_CHECK;
+}
 
 BRIG_HANDLE brig_CheckButton::New( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption, unsigned long ulStyle )
@@ -146,7 +158,7 @@ bool brig_CheckButton::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 
 /* -------- Radio --------- */
 
-brig_RadioGroup::brig_RadioGroup(): pBox(NULL) {}
+brig_RadioGroup::brig_RadioGroup(): pBox(NULL){}
 
 brig_RadioGroup::~brig_RadioGroup()
 {
@@ -183,7 +195,10 @@ void brig_RadioGroup::SetValue( int iSelected )
    iValue = iSelected;
 }
 
-brig_RadioButton::brig_RadioButton():brig_Widget(), pfOnClick(NULL){}
+brig_RadioButton::brig_RadioButton():brig_Widget(), pfOnClick(NULL)
+{
+   uiType = TYPE_RADIO;
+}
 
 BRIG_HANDLE brig_RadioButton::New( brig_RadioGroup *pGroup,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption, unsigned long ulStyle )
@@ -233,7 +248,10 @@ bool brig_RadioButton::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 
 
 /* -------- GroupBox --------- */
-brig_GroupBox::brig_GroupBox():brig_Widget(){}
+brig_GroupBox::brig_GroupBox():brig_Widget()
+{
+   uiType = TYPE_GROUP;
+}
 
 BRIG_HANDLE brig_GroupBox::New( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption )
@@ -250,7 +268,10 @@ BRIG_HANDLE brig_GroupBox::New( brig_Container *pParent,
 }
 
 /* -------- Combobox --------- */
-brig_Combo::brig_Combo():brig_Widget() {}
+brig_Combo::brig_Combo():brig_Widget()
+{
+   uiType = TYPE_COMBO;
+}
 
 BRIG_HANDLE brig_Combo::New( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle, char **pArray, int iLen )
@@ -285,7 +306,11 @@ void brig_Combo::SetValue( int iSelected )
 
 
 /* -------- Panel --------- */
-brig_Panel::brig_Panel():brig_Container(), pfOnPaint(NULL) { lBackColor = COLOR_GR_LIGHT; }
+brig_Panel::brig_Panel():brig_Container(), pfOnPaint(NULL)
+{
+   uiType = TYPE_PANEL;
+   lBackColor = COLOR_GR_LIGHT;
+}
 
 brig_Panel::~brig_Panel()
 {
@@ -358,7 +383,11 @@ bool brig_Panel::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 }
 
 /* -------- QButton --------- */
-brig_QButton::brig_QButton():brig_Widget(), pfOnPaint(NULL), pfOnClick(NULL), iState(0), lBackClr1(COLOR_GR_LIGHT), lBackClr2(COLOR_WHITE), hBrush1(NULL), hBrush2(NULL) { lBackColor = COLOR_GR_LIGHT; }
+brig_QButton::brig_QButton():brig_Widget(), pfOnPaint(NULL), pfOnClick(NULL), iState(0), lBackClr1(COLOR_GR_LIGHT), lBackClr2(COLOR_WHITE), hBrush1(NULL), hBrush2(NULL)
+{
+   uiType = TYPE_QBTN;
+   lBackColor = COLOR_GR_LIGHT;
+}
 
 brig_QButton::~brig_QButton()
 {
