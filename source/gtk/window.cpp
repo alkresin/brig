@@ -88,15 +88,16 @@ void brig_SetWindowText( brig_Widget *pWidget, PBRIG_CHAR lpTitle )
 PBRIG_CHAR brig_GetWindowText( brig_Widget *pWidget )
 {
    BRIG_HANDLE handle = pWidget->Handle();
+   PBRIG_CHAR ptr = NULL;
 
    switch (pWidget->uiType) {
       case TYPE_WINDOW:
       case TYPE_DIALOG:
-         return (PBRIG_CHAR) gtk_window_get_title( GTK_WINDOW( handle ) );
+         ptr = (PBRIG_CHAR) gtk_window_get_title( GTK_WINDOW( handle ) );
+         break;
 
       case TYPE_EDIT:
       {
-         char *cptr;
 
          if( g_object_get_data( ( GObject * ) handle, "multi" ) )
          {
@@ -105,15 +106,24 @@ PBRIG_CHAR brig_GetWindowText( brig_Widget *pWidget )
 
             gtk_text_buffer_get_start_iter( buffer, &iterStart );
             gtk_text_buffer_get_end_iter( buffer, &iterEnd );
-            cptr = gtk_text_buffer_get_text( buffer, &iterStart, &iterEnd, 1 );
+            ptr = gtk_text_buffer_get_text( buffer, &iterStart, &iterEnd, 1 );
          }
          else
-            cptr = ( char * ) gtk_entry_get_text( ( GtkEntry * ) handle );
+            ptr = (PBRIG_CHAR) gtk_entry_get_text( ( GtkEntry * ) handle );
 
-         return cptr;
+         break;
       }
    }
-   return NULL;
+   if( ptr )
+   {
+      int iLen = strlen( ptr );
+      PBRIG_CHAR pResult = (PBRIG_CHAR) malloc( iLen+1 );
+      memcpy( pResult, ptr, iLen );
+      pResult[iLen] = '\0';
+      return pResult;
+   }
+   else
+      return NULL;
 }
 
 void brig_MoveWindow( BRIG_HANDLE handle, int iLeft, int iTop, int iWidth, int iHeight )

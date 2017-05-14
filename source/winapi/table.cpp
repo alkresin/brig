@@ -49,7 +49,7 @@ static void reg_Table( void )
    }
 }
 
-HWND brig_CreateTable( HWND hParentWindow, int iWidgId,
+HWND brig_CreateTable( brig_Table *pTable, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle )
 {
    HWND hTable;
@@ -59,7 +59,7 @@ HWND brig_CreateTable( HWND hParentWindow, int iWidgId,
          NULL,                          /* no window title   */
          WS_CHILD | WS_VISIBLE | SS_OWNERDRAW | CCS_TOP | ulStyle,
          x, y, nWidth, nHeight,
-         hParentWindow,                /* parent window    */
+         pTable->pParent->Handle(),    /* parent window    */
          ( HMENU ) iWidgId,            /* button       ID  */
          GetModuleHandle( NULL ), NULL );
 

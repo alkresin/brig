@@ -37,7 +37,7 @@ bool fncOnSize( brig_Widget *pPanel, WPARAM wParam, LPARAM lParam )
    SYMBOL_UNUSED( wParam );
 
    //brig_writelog( NULL, "fncOnSize: %d\r\n", iWidth );
-   pPanel->Move( 0, 0, iWidth );
+   pPanel->Move( 0, 0, iWidth, 40 );
    return 0;
 
 }

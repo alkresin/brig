@@ -507,8 +507,8 @@ void brig_DrawGradient( PBRIG_DC hDC, int x1, int y1, int x2, int y2, int type,
       }
    }
 
-   if( pArrRadius ) {
-      user_radiuses_num =  pArrRadius->size();
+   user_radiuses_num = pArrRadius->size();
+   if( user_radiuses_num ) {
       max_r = ( x2-x1+1 > y2-y1+1 ) ? y2-y1+1 : x2-x1+1;
       max_r /= 2;
 

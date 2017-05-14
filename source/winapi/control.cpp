@@ -14,7 +14,7 @@ static WNDPROC wpOrigBtnProc = NULL;
 
 /* -------- Label ---------
  */
-BRIG_HANDLE brig_CreateLabel( BRIG_HANDLE hParentWindow, int iWidgId,
+BRIG_HANDLE brig_CreateLabel( brig_Label *pLabel, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle,
           PBRIG_CHAR lpCaption, unsigned long ulExStyle )
 {
@@ -26,7 +26,7 @@ BRIG_HANDLE brig_CreateLabel( BRIG_HANDLE hParentWindow, int iWidgId,
          wcCaption,                   /* title   */
          WS_CHILD | WS_VISIBLE | ulStyle,
          x, y, nWidth, nHeight,
-         hParentWindow,
+         pLabel->pParent->Handle(),
          ( HMENU ) iWidgId,           /* widget ID  */
          GetModuleHandle( NULL ), NULL );
 
@@ -50,7 +50,7 @@ static LRESULT CALLBACK s_BtnProc( BRIG_HANDLE hBtn, UINT message,
       return 0;
 }
 
-BRIG_HANDLE brig_CreateButton( BRIG_HANDLE hParentWindow, int iWidgId,
+BRIG_HANDLE brig_CreateButton( brig_Widget *pWidget, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle, PBRIG_CHAR lpCaption )
 {
 
@@ -60,7 +60,7 @@ BRIG_HANDLE brig_CreateButton( BRIG_HANDLE hParentWindow, int iWidgId,
          wcCaption,                       /* button text   */
          WS_CHILD | WS_VISIBLE | ulStyle, /* style  */
          x, y, nWidth, nHeight,
-         hParentWindow,                   /* parent window    */
+         pWidget->pParent->Handle(),      /* parent window    */
          ( HMENU ) iWidgId,               /* button       ID  */
          GetModuleHandle( NULL ), NULL );
 
@@ -133,7 +133,7 @@ static LRESULT CALLBACK s_EditProc( BRIG_HANDLE hDlg, UINT message,
       return 0;
 }
 
-BRIG_HANDLE brig_CreateEdit( BRIG_HANDLE hParentWindow, int iWidgId,
+BRIG_HANDLE brig_CreateEdit( brig_Edit *pEdit, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle,
           PBRIG_CHAR lpCaption, unsigned long ulExStyle )
 {
@@ -144,7 +144,7 @@ BRIG_HANDLE brig_CreateEdit( BRIG_HANDLE hParentWindow, int iWidgId,
          NULL,
          WS_CHILD | WS_VISIBLE | ulStyle,
          x, y, nWidth, nHeight,
-         hParentWindow,                   /* parent window    */
+         pEdit->pParent->Handle(),     /* parent window    */
          ( HMENU ) iWidgId,            /* button       ID  */
          GetModuleHandle( NULL ), NULL );
 
@@ -167,7 +167,7 @@ BRIG_HANDLE brig_CreateEdit( BRIG_HANDLE hParentWindow, int iWidgId,
 
 /* -------- Combobox ---------  */
 
-BRIG_HANDLE brig_CreateCombo( BRIG_HANDLE hParentWindow, int iWidgId,
+BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle, char **pArray, int iLen )
 {
 
@@ -176,7 +176,7 @@ BRIG_HANDLE brig_CreateCombo( BRIG_HANDLE hParentWindow, int iWidgId,
    BRIG_HANDLE hCombo = CreateWindow( TEXT( "COMBOBOX" ), TEXT( "" ),
          WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST,
          x, y, nWidth, nHeight,
-         ( BRIG_HANDLE ) hParentWindow,
+         pCombo->pParent->Handle(),
          ( HMENU ) iWidgId,
          GetModuleHandle( NULL ),
          NULL );
@@ -262,7 +262,7 @@ static void reg_Panel( void )
    }
 }
 
-BRIG_HANDLE brig_CreatePanel( BRIG_HANDLE hParentWindow, int iWidgId,
+BRIG_HANDLE brig_CreatePanel( brig_Panel *pPanel, int iWidgId,
           int x, int y, int nWidth, int nHeight )
 {
    BRIG_HANDLE hPanel;
@@ -272,7 +272,7 @@ BRIG_HANDLE brig_CreatePanel( BRIG_HANDLE hParentWindow, int iWidgId,
          NULL,                         /* no window title   */
          WS_CHILD | WS_VISIBLE | SS_GRAYRECT | SS_OWNERDRAW | CCS_TOP,
          x, y, nWidth, nHeight,
-         hParentWindow,                /* parent window    */
+         pPanel->pParent->Handle(),    /* parent window    */
          ( HMENU ) iWidgId,            /* button       ID  */
          GetModuleHandle( NULL ), NULL );
 
@@ -348,7 +348,7 @@ static void reg_QButton( void )
    }
 }
 
-BRIG_HANDLE brig_CreateQButton( BRIG_HANDLE hParentWindow, int iWidgId,
+BRIG_HANDLE brig_CreateQButton( brig_QButton *pQBtn, int iWidgId,
           int x, int y, int nWidth, int nHeight )
 {
    BRIG_HANDLE hQButton;
@@ -358,7 +358,7 @@ BRIG_HANDLE brig_CreateQButton( BRIG_HANDLE hParentWindow, int iWidgId,
          NULL,                          /* no window title   */
          WS_CHILD | WS_VISIBLE | SS_GRAYRECT | SS_OWNERDRAW | CCS_TOP,
          x, y, nWidth, nHeight,
-         hParentWindow,                   /* parent window    */
+         pQBtn->pParent->Handle(),     /* parent window    */
          ( HMENU ) iWidgId,            /* button       ID  */
          GetModuleHandle( NULL ), NULL );
 

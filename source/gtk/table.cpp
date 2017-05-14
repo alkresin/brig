@@ -9,16 +9,16 @@
 
 #include "brig.h"
 
-BRIG_HANDLE brig_CreateTable( BRIG_HANDLE hParentWindow, int iWidgId,
+extern void brig_SetEvent( gpointer handle, char * cSignal, long int p1, long int p2, long int p3 );
+extern void brig_SetSignal( gpointer handle, char * cSignal, long int p1, long int p2, long int p3 );
+
+BRIG_HANDLE brig_CreateTable( brig_Table *pTable, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle )
 {
-   BRIG_HANDLE hTable;
-
    GtkWidget *vbox, *hbox;
    GtkWidget *vscroll, *hscroll;
    GtkWidget *area;
    GtkFixed *box;
-   GObject *handle;
 
    hbox = gtk_hbox_new( FALSE, 0 );
    vbox = gtk_vbox_new( FALSE, 0 );
@@ -38,7 +38,7 @@ BRIG_HANDLE brig_CreateTable( BRIG_HANDLE hParentWindow, int iWidgId,
       //hb_itemRelease( temp );
 
       //SetWindowObject( ( GtkWidget * ) adjV, pObject );
-      set_signal( ( gpointer ) adjV, "value_changed", WM_VSCROLL, 0, 0 );
+      brig_SetSignal( ( gpointer ) adjV, "value_changed", WM_VSCROLL, 0, 0 );
    }
 
    gtk_box_pack_start( GTK_BOX( vbox ), area, TRUE, TRUE, 0 );
@@ -54,12 +54,13 @@ BRIG_HANDLE brig_CreateTable( BRIG_HANDLE hParentWindow, int iWidgId,
       //hb_itemRelease( temp );
 
       //SetWindowObject( ( GtkWidget * ) adjH, pObject );
-      set_signal( ( gpointer ) adjH, "value_changed", WM_HSCROLL, 0, 0 );
+      brig_SetSignal( ( gpointer ) adjH, "value_changed", WM_HSCROLL, 0, 0 );
    }
 
-   box = getFixedBox( handle );
+   box = ( GtkFixed * ) g_object_get_data( ( GObject * ) pTable->pParent->Handle(), "fbox" );
    if( box )
-      gtk_fixed_put( box, hbox, nLeft, nTop );
+      gtk_fixed_put( box, hbox, x, y );
+   g_object_set_data( ( GObject * ) area, "pbox", ( gpointer ) hbox );
    gtk_widget_set_size_request( hbox, nWidth, nHeight );
 
    //temp = HB_PUTHANDLE( NULL, area );
@@ -67,26 +68,21 @@ BRIG_HANDLE brig_CreateTable( BRIG_HANDLE hParentWindow, int iWidgId,
    //hb_itemRelease( temp );
 
    //SetWindowObject( area, pObject );
-   set_event( ( gpointer ) area, "expose_event", WM_PAINT, 0, 0 );
+   brig_SetEvent( ( gpointer ) area, "expose_event", WM_PAINT, 0, 0 );
 
    GTK_WIDGET_SET_FLAGS( area, GTK_CAN_FOCUS );
 
    gtk_widget_add_events( area, GDK_BUTTON_PRESS_MASK |
          GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK |
          GDK_POINTER_MOTION_MASK | GDK_SCROLL_MASK );
-   set_event( ( gpointer ) area, "button_press_event", 0, 0, 0 );
-   set_event( ( gpointer ) area, "button_release_event", 0, 0, 0 );
-   set_event( ( gpointer ) area, "motion_notify_event", 0, 0, 0 );
-   set_event( ( gpointer ) area, "key_press_event", 0, 0, 0 );
-   set_event( ( gpointer ) area, "key_release_event", 0, 0, 0 );
-   set_event( ( gpointer ) area, "scroll_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) area, "button_press_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) area, "button_release_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) area, "motion_notify_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) area, "key_press_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) area, "key_release_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) area, "scroll_event", 0, 0, 0 );
 
-   all_signal_connect( ( gpointer ) area );
-/*
-   if( hTable )
-   {
-      SetWindowLongPtr( hTable, GWLP_USERDATA, NULL );
-   }
-*/
-   return hBox;
+   //all_signal_connect( ( gpointer ) area );
+
+   return area;
 }

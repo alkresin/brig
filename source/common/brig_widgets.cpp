@@ -21,7 +21,7 @@ BRIG_HANDLE brig_Label::New( brig_Container *pParent,
 
    brig_Widget::New( pParent, x, y, nWidth, nHeight );
    
-   handle = brig_CreateLabel( pParent->Handle(), iWidgId,
+   handle = brig_CreateLabel( this, iWidgId,
              x, y, nWidth, nHeight, ulStyle, lpCaption, ulExStyle );
    if( !hFont && pParent->hFont )
       SetFont( pParent->hFont );
@@ -41,7 +41,7 @@ BRIG_HANDLE brig_Edit::New( brig_Container * pParent,
 
    brig_Widget::New( pParent, x, y, nWidth, nHeight );
 
-   handle = brig_CreateEdit( pParent->Handle(), iWidgId,
+   handle = brig_CreateEdit( this, iWidgId,
              x, y, nWidth, nHeight, ulStyle, lpCaption, ulExStyle );
 
    if( !hFont && pParent->hFont )
@@ -75,7 +75,7 @@ BRIG_HANDLE brig_Button::New( brig_Container *pParent,
 
    brig_Widget::New( pParent, x, y, nWidth, nHeight );
 
-   handle = brig_CreateButton( pParent->Handle(), iWidgId,
+   handle = brig_CreateButton( this, iWidgId,
              x, y, nWidth, nHeight, ulStyle, lpCaption );
 
    if( !hFont && pParent->hFont )
@@ -117,7 +117,7 @@ BRIG_HANDLE brig_CheckButton::New( brig_Container *pParent,
 
    brig_Widget::New( pParent, x, y, nWidth, nHeight );
 
-   handle = brig_CreateButton( pParent->Handle(), iWidgId,
+   handle = brig_CreateButton( this, iWidgId,
              x, y, nWidth, nHeight, ulStyle | BS_AUTOCHECKBOX, lpCaption );
 
    if( !hFont && pParent->hFont )
@@ -209,7 +209,7 @@ BRIG_HANDLE brig_RadioButton::New( brig_RadioGroup *pGroup,
 
    if( pGroup->avButtons.empty() )
       ulStyle |= WS_GROUP;
-   handle = brig_CreateButton( pParent->Handle(), iWidgId,
+   handle = brig_CreateButton( this, iWidgId,
              x, y, nWidth, nHeight, ulStyle | BS_AUTORADIOBUTTON, lpCaption );
 
    pGroup->avButtons.push_back( this );
@@ -259,7 +259,7 @@ BRIG_HANDLE brig_GroupBox::New( brig_Container *pParent,
 
    brig_Widget::New( pParent, x, y, nWidth, nHeight );
 
-   handle = brig_CreateButton( pParent->Handle(), iWidgId,
+   handle = brig_CreateButton( this, iWidgId,
              x, y, nWidth, nHeight, BS_GROUPBOX, lpCaption );
 
    if( !hFont && pParent->hFont )
@@ -279,7 +279,7 @@ BRIG_HANDLE brig_Combo::New( brig_Container *pParent,
 
    brig_Widget::New( pParent, x, y, nWidth, nHeight );
 
-   handle = brig_CreateCombo( pParent->Handle(), iWidgId,
+   handle = brig_CreateCombo( this, iWidgId,
              x, y, nWidth, nHeight, ulStyle, pArray, iLen );
 
    if( !hFont && pParent->hFont )
@@ -323,7 +323,7 @@ BRIG_HANDLE brig_Panel::New( brig_Container *pParent,
 
    brig_Widget::New( pParent, x, y, nWidth, nHeight );
 
-   handle = brig_CreatePanel( pParent->Handle(), iWidgId, x, y, nWidth, nHeight );
+   handle = brig_CreatePanel( this, iWidgId, x, y, nWidth, nHeight );
 
    pStyle = ps;
    if( !hFont )
@@ -406,7 +406,7 @@ BRIG_HANDLE brig_QButton::New( brig_Container *pParent,
 
    brig_Widget::New( pParent, x, y, nWidth, nHeight );
    szCaption = lpCaption;
-   handle = brig_CreateQButton( pParent->Handle(), iWidgId,
+   handle = brig_CreateQButton( this, iWidgId,
              x, y, nWidth, nHeight );
 
    pStyleNormal = psNormal;

@@ -6,20 +6,27 @@
  * www - http://www.kresin.ru
  */
 
-extern BRIG_HANDLE brig_CreateLabel( BRIG_HANDLE hParentWindow, int iWidgId,
+class brig_Label;
+class brig_Edit;
+class brig_Combo;
+class brig_Panel;
+class brig_QButton;
+class brig_Table;
+
+extern BRIG_HANDLE brig_CreateLabel( brig_Label *pLabel, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle, PBRIG_CHAR lpCaption, unsigned long ulExStyle );
-extern BRIG_HANDLE brig_CreateButton( BRIG_HANDLE hParentWindow, int iWidgId,
+extern BRIG_HANDLE brig_CreateButton( brig_Widget *pWidget, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle, PBRIG_CHAR lpCaption );
-extern BRIG_HANDLE brig_CreateEdit( BRIG_HANDLE hParentWindow, int iWidgId,
+extern BRIG_HANDLE brig_CreateEdit( brig_Edit *pEdit, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle,
           PBRIG_CHAR lpCaption, unsigned long ulExStyle );
-extern BRIG_HANDLE brig_CreatePanel( BRIG_HANDLE hParentWindow, int iWidgId,
+extern BRIG_HANDLE brig_CreatePanel( brig_Panel *pPanel, int iWidgId,
           int x, int y, int nWidth, int nHeight );
-extern BRIG_HANDLE brig_CreateQButton( BRIG_HANDLE hParentWindow, int iWidgId,
+extern BRIG_HANDLE brig_CreateQButton( brig_QButton *pQBtn, int iWidgId,
           int x, int y, int nWidth, int nHeight );
-extern BRIG_HANDLE brig_CreateTable( BRIG_HANDLE hParentWindow, int iWidgId,
+extern BRIG_HANDLE brig_CreateTable( brig_Table *pTable, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle );
-extern BRIG_HANDLE brig_CreateCombo( BRIG_HANDLE hParentWindow, int iWidgId,
+extern BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle, char **pArray, int iLen );
 extern void brig_ComboSetArray( BRIG_HANDLE hCombo, char **pArray, int iLen );
 extern int brig_GetValue( BRIG_HANDLE hCombo );
@@ -181,8 +188,6 @@ public:
    PBRIG_BRUSH hBrush1, hBrush2;
    brig_Style *pStyleNormal, *pStyleOver, *pStylePress;
 };
-
-class brig_Table;
 
 #define  TDS_COUNT   1
 #define  TDS_TOP     2

@@ -67,7 +67,6 @@ BRIG_LIB = $(LIB_DIR)\brig_ansi.lib
 #
 
 BRIG_LIB_OBJS = \
-   $(OBJ_DIR)\window.obj \
    $(OBJ_DIR)\brig_app.obj \
    $(OBJ_DIR)\brig_base.obj \
    $(OBJ_DIR)\brig_funcs.obj \
@@ -82,7 +81,8 @@ BRIG_LIB_OBJS = \
    $(OBJ_DIR)\menu.obj \
    $(OBJ_DIR)\message.obj \
    $(OBJ_DIR)\strings.obj \
-   $(OBJ_DIR)\table.obj
+   $(OBJ_DIR)\table.obj \
+   $(OBJ_DIR)\window.obj
 
 #
 # Our default target

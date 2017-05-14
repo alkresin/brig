@@ -18,7 +18,6 @@ all: \
    $(LIB_DIR)/libbrig_ansi.a
 
 $(LIB_DIR)/libbrig_ansi.a : \
-   $(OBJ_DIR)/window.o \
    $(OBJ_DIR)/brig_app.o \
    $(OBJ_DIR)/brig_base.o \
    $(OBJ_DIR)/brig_funcs.o \
@@ -33,7 +32,8 @@ $(LIB_DIR)/libbrig_ansi.a : \
    $(OBJ_DIR)/menu.o \
    $(OBJ_DIR)/message.o \
    $(OBJ_DIR)/strings.o \
-   $(OBJ_DIR)/table.o
+   $(OBJ_DIR)/table.o \
+   $(OBJ_DIR)/window.o
 	ar rc $@ $^
 
 else
@@ -41,7 +41,6 @@ all: \
    $(LIB_DIR)/libbrig.a
 
 $(LIB_DIR)/libbrig.a : \
-   $(OBJ_DIR)/window.o \
    $(OBJ_DIR)/brig_app.o \
    $(OBJ_DIR)/brig_base.o \
    $(OBJ_DIR)/brig_funcs.o \
@@ -56,7 +55,8 @@ $(LIB_DIR)/libbrig.a : \
    $(OBJ_DIR)/menu.o \
    $(OBJ_DIR)/message.o \
    $(OBJ_DIR)/strings.o \
-   $(OBJ_DIR)/table.o
+   $(OBJ_DIR)/table.o \
+   $(OBJ_DIR)/window.o
 	ar rc $@ $^
 
 endif

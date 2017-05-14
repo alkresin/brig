@@ -26,7 +26,7 @@ BRIG_HANDLE brig_Table::New( brig_Container *pParent,
 
    brig_Widget::New( pParent, x, y, nWidth, nHeight );
 
-   handle = brig_CreateTable( pParent->Handle(), iWidgId,
+   handle = brig_CreateTable( this, iWidgId,
              x, y, nWidth, nHeight, ulStyle );
 
    if( !hFont )

@@ -15,7 +15,7 @@ extern void brig_SetSignal( gpointer handle, char * cSignal, long int p1, long i
 
 /* -------- Label ---------
  */
-BRIG_HANDLE brig_CreateLabel( BRIG_HANDLE hParentWindow, int iWidgId,
+BRIG_HANDLE brig_CreateLabel( brig_Label *pLabel, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle,
           PBRIG_CHAR lpCaption, unsigned long ulExStyle )
 {
@@ -40,7 +40,7 @@ BRIG_HANDLE brig_CreateLabel( BRIG_HANDLE hParentWindow, int iWidgId,
          gtk_misc_set_alignment( GTK_MISC( hLabel ),
                ( ulStyle & SS_RIGHT ) ? 1 : 0, 0 );
    }
-   box = ( GtkFixed * ) g_object_get_data( ( GObject * ) hParentWindow, "fbox" );
+   box = ( GtkFixed * ) g_object_get_data( ( GObject * ) pLabel->pParent->Handle(), "fbox" );
    if( box )
       gtk_fixed_put( box, hCtrl, x, y );
    gtk_widget_set_size_request( hCtrl, nWidth, nHeight );
@@ -55,18 +55,26 @@ BRIG_HANDLE brig_CreateLabel( BRIG_HANDLE hParentWindow, int iWidgId,
 
 /* -------- Button --------- */
 
-BRIG_HANDLE brig_CreateButton( BRIG_HANDLE hParentWindow, int iWidgId,
+BRIG_HANDLE brig_CreateButton( brig_Widget *pWidget, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle, PBRIG_CHAR lpCaption )
 {
-   GtkWidget *hCtrl; //, *img;
+   GtkWidget *hCtrl;
    GtkFixed *box;
 
    if( ( ulStyle & 0xf ) == BS_AUTORADIOBUTTON )
    {
-      //GSList *group = ( GSList * ) HB_PARHANDLE( 2 );
-      //hCtrl = gtk_radio_button_new_with_label( group, lpCaption );
-      //group = gtk_radio_button_get_group( ( GtkRadioButton * ) hCtrl );
-      //HB_STOREHANDLE( group, 2 );
+      brig_RadioGroup *pGroup = ((brig_RadioButton*)pWidget)->pGroup;
+      bool bFirst = ( pGroup->avButtons.size() == 0 );
+      GSList *group = ( bFirst )? NULL :
+         ( GSList * ) g_object_get_data( ( GObject * ) pGroup->avButtons[0]->Handle(), "list" );
+      hCtrl = gtk_radio_button_new_with_label( group, lpCaption );
+      group = gtk_radio_button_get_group( ( GtkRadioButton * ) hCtrl );
+      if( bFirst )
+         g_object_set_data( ( GObject * ) hCtrl, "list", ( gpointer ) group );
+      else
+         g_object_set_data( ( GObject * ) pGroup->avButtons[0]->Handle(), "list", ( gpointer ) group );
+         
+      //pWidget->pList = (void*) group;
    }
    else if( ( ulStyle & 0xf ) == BS_AUTOCHECKBOX )
       hCtrl = gtk_check_button_new_with_label( lpCaption );
@@ -75,7 +83,7 @@ BRIG_HANDLE brig_CreateButton( BRIG_HANDLE hParentWindow, int iWidgId,
    else
       hCtrl = gtk_button_new_with_mnemonic( lpCaption );
 
-   box = ( GtkFixed * ) g_object_get_data( ( GObject * ) hParentWindow, "fbox" );
+   box = ( GtkFixed * ) g_object_get_data( ( GObject * ) pWidget->pParent->Handle(), "fbox" );
    if( box )
       gtk_fixed_put( box, hCtrl, x, y );
    gtk_widget_set_size_request( hCtrl, nWidth, nHeight );
@@ -116,7 +124,7 @@ void brig_RadioGroupSet( brig_RadioGroup *pGroup, int iSelected )
 /* -------- Edit --------- 
  */
 
-BRIG_HANDLE brig_CreateEdit( BRIG_HANDLE hParentWindow, int iWidgId,
+BRIG_HANDLE brig_CreateEdit( brig_Edit *pEdit, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle,
           PBRIG_CHAR lpCaption, unsigned long ulExStyle )
 {
@@ -137,7 +145,7 @@ BRIG_HANDLE brig_CreateEdit( BRIG_HANDLE hParentWindow, int iWidgId,
          gtk_entry_set_visibility( ( GtkEntry * ) hCtrl, FALSE );
    }
 
-   GtkFixed *box = ( GtkFixed * ) g_object_get_data( ( GObject * ) hParentWindow, "fbox" );
+   GtkFixed *box = ( GtkFixed * ) g_object_get_data( ( GObject * ) pEdit->pParent->Handle(), "fbox" );
    if( box )
       gtk_fixed_put( box, hCtrl, x, y );
    gtk_widget_set_size_request( hCtrl, nWidth, nHeight );
@@ -179,11 +187,11 @@ BRIG_HANDLE brig_CreateEdit( BRIG_HANDLE hParentWindow, int iWidgId,
 
 /* -------- Combobox --------- */
 
-BRIG_HANDLE brig_CreateCombo( BRIG_HANDLE hParentWindow, int iWidgId,
+BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle, char **pArray, int iLen )
 {
    GtkWidget *hCtrl = gtk_combo_new();
-   GtkFixed *box = ( GtkFixed * ) g_object_get_data( ( GObject * ) hParentWindow, "fbox" );
+   GtkFixed *box = ( GtkFixed * ) g_object_get_data( ( GObject * ) pCombo->pParent->Handle(), "fbox" );
    if( box )
       gtk_fixed_put( box, hCtrl, x, y );
    gtk_widget_set_size_request( hCtrl, nWidth, nHeight );
@@ -221,7 +229,7 @@ void brig_SetValue( BRIG_HANDLE hCombo, int iSelected )
 
 /* -------- Panel --------- */
 
-BRIG_HANDLE brig_CreatePanel( BRIG_HANDLE hParentWindow, int iWidgId,
+BRIG_HANDLE brig_CreatePanel( brig_Panel *pPanel, int iWidgId,
           int x, int y, int nWidth, int nHeight )
 {
    BRIG_HANDLE hPanel;
@@ -274,7 +282,7 @@ BRIG_HANDLE brig_CreatePanel( BRIG_HANDLE hParentWindow, int iWidgId,
       set_signal( ( gpointer ) adjH, "value_changed", WM_HSCROLL, 0, 0 );
    }*/
 
-   box = ( GtkFixed * ) g_object_get_data( ( GObject * ) hParentWindow, "fbox" );
+   box = ( GtkFixed * ) g_object_get_data( ( GObject * ) pPanel->pParent->Handle(), "fbox" );
    if( box )
    {
       gtk_fixed_put( box, ( GtkWidget * ) hbox, x, y );
@@ -317,7 +325,7 @@ BRIG_HANDLE brig_CreatePanel( BRIG_HANDLE hParentWindow, int iWidgId,
 /* -------- QButton --------- 
  */
 
-BRIG_HANDLE brig_CreateQButton( BRIG_HANDLE hParentWindow, int iWidgId,
+BRIG_HANDLE brig_CreateQButton( brig_QButton *pQBtn, int iWidgId,
           int x, int y, int nWidth, int nHeight )
 {
    BRIG_HANDLE hQButton;
@@ -326,7 +334,7 @@ BRIG_HANDLE brig_CreateQButton( BRIG_HANDLE hParentWindow, int iWidgId,
 
    hQButton = gtk_drawing_area_new(  );
 
-   box = ( GtkFixed * ) g_object_get_data( ( GObject * ) hParentWindow, "fbox" );
+   box = ( GtkFixed * ) g_object_get_data( ( GObject * ) pQBtn->pParent->Handle(), "fbox" );
    if( box )
    {
       gtk_fixed_put( box, hQButton, x, y );
