@@ -68,9 +68,10 @@ long int brig_Widget::SetTextColor( long int lColor, bool bRepaint )
 {
    long int lRet = lTextColor;
 
-   if( lColor > -1 )
+   if( lColor > -1 && lTextColor != lColor )
    {
       lTextColor = lColor;
+      brig_SetFgColor( handle, lColor );
       if( bRepaint )
          brig_RedrawWindow( handle );
    }
@@ -82,12 +83,13 @@ long int  brig_Widget::SetBackColor( long int lColor, bool bRepaint )
 {
    long int lRet = lBackColor;
 
-   if( lColor > -1 )
+   if( lColor > -1 && lBackColor != lColor )
    {
       lBackColor = lColor;
       if( hBrush )
-        brig_DeleteObject( hBrush );
-      hBrush = brigAddBrush( lBackColor );
+        brigDelBrush( hBrush );
+      hBrush = brigAddBrush( lColor );
+      brig_SetBgColor( handle, lColor );
       if( bRepaint )
          brig_RedrawWindow( handle );
    }

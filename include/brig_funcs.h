@@ -51,6 +51,9 @@ extern PBRIG_BRUSH brig_SelectObject( PBRIG_DC hDC, PBRIG_BRUSH pBrush );
 extern PBRIG_PEN brig_SelectObject( PBRIG_DC hDC, PBRIG_PEN pPen );
 extern PBRIG_FONT brig_SelectObject( PBRIG_DC hDC, PBRIG_FONT pFont );
 
+extern void brig_SetFgColor( BRIG_HANDLE hCtrl, long lColor );
+extern void brig_SetBgColor( BRIG_HANDLE hCtrl, long lColor );
+
 extern PBRIG_BRUSH brig_CreateBrush( long int lColor );
 extern bool brig_CompareBrush( PBRIG_BRUSH pBrush, long int lColor );
 extern PBRIG_PEN brig_CreatePen( int iWidth = 1, long int lColor = 0, int iStyle = 0 );

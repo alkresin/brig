@@ -12,6 +12,7 @@
 extern void cb_signal( GtkWidget *widget, gchar* data );
 extern void brig_SetEvent( gpointer handle, char * cSignal, long int p1, long int p2, long int p3 );
 extern void brig_SetSignal( gpointer handle, char * cSignal, long int p1, long int p2, long int p3 );
+extern void brig_parse_color( long lColor, GdkColor * pColor );
 
 /* -------- Label ---------
  */
@@ -358,4 +359,40 @@ BRIG_HANDLE brig_CreateQButton( brig_QButton *pQBtn, int iWidgId,
    }
    */
    return hQButton;
+}
+
+/* -------- common widget's functions --------- */
+
+void brig_SetFgColor( BRIG_HANDLE hCtrl, long lColor )
+{
+
+   GtkWidget *label;
+
+   if( GTK_IS_BUTTON( hCtrl ) )
+   {
+      label = gtk_bin_get_child( GTK_BIN( hCtrl ) );
+   }
+   else if( GTK_IS_EVENT_BOX( hCtrl ) )
+      label = gtk_bin_get_child( GTK_BIN( hCtrl ) );
+   else
+   {
+      label = hCtrl; //g_object_get_data( ( GObject * ) hCtrl, "label" );
+   }
+
+   if( label )
+   {
+      GtkStyle * style = gtk_style_copy( gtk_widget_get_style( label ) );
+      brig_parse_color( lColor, &(style->fg[GTK_STATE_NORMAL]) );
+      brig_parse_color( lColor, &(style->text[GTK_STATE_NORMAL]) );
+      gtk_widget_set_style( label, style );
+   }
+}
+
+void brig_SetBgColor( BRIG_HANDLE hCtrl, long lColor )
+{
+   GtkStyle * style = gtk_style_copy( gtk_widget_get_style( hCtrl ) );
+
+   brig_parse_color( lColor, &(style->bg[GTK_STATE_NORMAL]) );
+   brig_parse_color( lColor, &(style->base[GTK_STATE_NORMAL]) );
+   gtk_widget_set_style( hCtrl, style );
 }

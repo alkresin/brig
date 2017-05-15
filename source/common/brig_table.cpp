@@ -367,6 +367,8 @@ bool brig_Table::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
          return 1;
 
       case WM_LBUTTONUP:
+         break;
+
       case WM_LBUTTONDBLCLK:
          brig_OnBtnDown( this, lParam );
          if( pfOnDblClick )

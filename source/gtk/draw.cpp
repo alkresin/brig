@@ -43,7 +43,7 @@ PBRIG_PPS brig_BeginPaint( BRIG_HANDLE handle )
    PBRIG_PPS pps = ( PBRIG_PPS ) malloc( sizeof( BRIG_PPS ) );
    PBRIG_DC hDC = (PBRIG_DC) malloc( sizeof(BRIG_DC) );
 
-   memset( hDC, 0, sizeof(PBRIG_DC) );
+   memset( hDC, 0, sizeof(BRIG_DC) );
    hDC->widget = handle;
 
    hDC->window = handle->window;
@@ -268,7 +268,7 @@ PBRIG_BRUSH brig_CreateBrush( long int lColor )
 
 bool brig_CompareBrush( PBRIG_BRUSH pBrush, long int lColor )
 {
-   return ( lColor == pBrush->color );
+   return ( pBrush && lColor == pBrush->color );
 
 }
 
@@ -287,7 +287,7 @@ PBRIG_PEN brig_CreatePen( int iWidth, long int lColor, int iStyle )
 
 bool brig_ComparePen( PBRIG_PEN pPen, int iWidth, long int lColor, int iStyle )
 {
-   return ( iWidth == pPen->width && lColor == pPen->color && iStyle == pPen->style );
+   return ( pPen && iWidth == pPen->width && lColor == pPen->color && iStyle == pPen->style );
 
 }
 
@@ -295,12 +295,12 @@ PBRIG_FONT brig_CreateFont( PBRIG_CHAR fontName, int fnHeight, int fnWeight,
                DWORD fdwCharSet, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut  )
 {
    PBRIG_FONT pFont = (PBRIG_FONT) malloc( sizeof(BRIG_FONT) );
-   PangoFontDescription *  hFont;
+   PangoFontDescription * hFont;
 
    hFont = pango_font_description_new();
    pango_font_description_set_family( hFont, fontName );
    pango_font_description_set_style( hFont, (fdwItalic)? PANGO_STYLE_ITALIC : PANGO_STYLE_NORMAL );
-   pango_font_description_set_size( hFont, fnHeight );
+   pango_font_description_set_size( hFont, fnHeight*1024 );
    pango_font_description_set_weight( hFont, (PangoWeight)fnWeight );
 
    pFont->type = BRIG_OBJECT_FONT;

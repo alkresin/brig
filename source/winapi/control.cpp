@@ -369,3 +369,15 @@ BRIG_HANDLE brig_CreateQButton( brig_QButton *pQBtn, int iWidgId,
 
    return hQButton;
 }
+
+void brig_SetFgColor( BRIG_HANDLE hCtrl, long lColor )
+{
+   SYMBOL_UNUSED( hCtrl );
+   SYMBOL_UNUSED( lColor );
+}
+
+void brig_SetBgColor( BRIG_HANDLE hCtrl, long lColor )
+{
+   SYMBOL_UNUSED( hCtrl );
+   SYMBOL_UNUSED( lColor );
+}
