@@ -326,6 +326,26 @@ BRIG_HANDLE brig_CreatePanel( brig_Panel *pPanel, int iWidgId,
 /* -------- QButton --------- 
  */
 
+static gint cb_qbtn( GtkWidget *widget, GdkEvent * event, gchar* data )
+{
+   gpointer gObject = g_object_get_data( (GObject*) widget, "obj" );
+
+   SYMBOL_UNUSED( data );
+
+   if( gObject )
+   {
+      if( event->type == GDK_ENTER_NOTIFY || event->type == GDK_LEAVE_NOTIFY )
+      {
+         if( event->type == GDK_ENTER_NOTIFY )
+            ((brig_QButton *)gObject)->iState = 1;
+         else
+            ((brig_QButton *)gObject)->iState = 0;
+         brig_RedrawWindow( ((brig_QButton *)gObject)->Handle() );
+      }
+   }
+   return 0;
+}
+
 BRIG_HANDLE brig_CreateQButton( brig_QButton *pQBtn, int iWidgId,
           int x, int y, int nWidth, int nHeight )
 {
@@ -348,16 +368,14 @@ BRIG_HANDLE brig_CreateQButton( brig_QButton *pQBtn, int iWidgId,
          GDK_LEAVE_NOTIFY_MASK );
    brig_SetEvent( ( gpointer ) hQButton, (char*)"button_press_event", 0, 0, 0 );
    brig_SetEvent( ( gpointer ) hQButton, (char*)"button_release_event", 0, 0, 0 );
-   brig_SetEvent( ( gpointer ) hQButton, (char*)"enter_notify_event", 0, 0, 0 );
-   brig_SetEvent( ( gpointer ) hQButton, (char*)"leave_notify_event", 0, 0, 0 );
+
+   g_signal_connect( hQButton, (char*)"enter_notify_event",
+         G_CALLBACK (cb_qbtn), NULL );
+   g_signal_connect( hQButton, (char*)"leave_notify_event",
+         G_CALLBACK (cb_qbtn), NULL );
+
    //all_signal_connect( ( gpointer ) hQButton );
 
-   /*
-   if( hQButton )
-   {
-      SetWindowLongPtr( hQButton, GWLP_USERDATA, NULL );
-   }
-   */
    return hQButton;
 }
 

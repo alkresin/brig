@@ -205,14 +205,14 @@ BRIG_HANDLE brig_GetFocus( void )
    return gtk_window_get_focus( (GtkWindow*) gtk_window_list_toplevels()->data );
 }
 
-void brig_SetTopmost( BRIG_HANDLE handle )
+void brig_SetTopmost( brig_Widget *pWidget )
 {
-   gtk_window_set_keep_above( (GtkWindow*) handle, TRUE );
+   gtk_window_set_keep_above( (GtkWindow*) (pWidget->Handle()), TRUE );
 }
 
-void brig_RemoveTopmost( BRIG_HANDLE handle )
+void brig_RemoveTopmost( brig_Widget *pWidget )
 {
-   gtk_window_set_keep_above( (GtkWindow*) handle, FALSE );
+   gtk_window_set_keep_above( (GtkWindow*) (pWidget->Handle()), FALSE );
 }
 
 static long ToKey( long a, long b )

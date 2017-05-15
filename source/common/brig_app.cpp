@@ -278,8 +278,7 @@ brig_Style * brigAddStyle( int iColors, long * pColors, int iType,
 
 brig_Style * brigAddStyle( long lColor, long lBorderColor, int iBorder, int iCorners, long * pCorners )
 {
-   long pColors[1] = { lColor };
-   return brigAddStyle( 1, pColors, 1, lBorderColor, iBorder, iCorners, pCorners );
+   return brigAddStyle( 1, &lColor, 1, lBorderColor, iBorder, iCorners, pCorners );
 }
 
 void brigDelStyle( brig_Style * pStyle )

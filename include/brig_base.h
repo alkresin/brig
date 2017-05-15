@@ -21,6 +21,9 @@ extern PBRIG_CHAR brig_GetWindowText( brig_Widget *pWidget );
 extern void brig_CloseWindow( brig_Widget *pWidget );
 extern void brig_ActivateDialog( brig_Dialog *pDialog );
 
+extern void brig_SetTopmost( brig_Widget *pWidget );
+extern void brig_RemoveTopmost( brig_Widget *pWidget );
+
 typedef bool (*brig_fnc_paint)( brig_Widget *pWidget, PBRIG_DC hDC );
 typedef bool (*brig_fnc_mess)( brig_Widget *pWidget, WPARAM wParam, LPARAM lParam );
 typedef bool (*brig_fnc_mess_1)( brig_Widget *pWidget );

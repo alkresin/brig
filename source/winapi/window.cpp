@@ -127,14 +127,14 @@ BRIG_HANDLE brig_GetFocus( void )
    return GetFocus();
 }
 
-void brig_SetTopmost( BRIG_HANDLE handle )
+void brig_SetTopmost( brig_Widget *pWidget )
 {
-   SetWindowPos( ( HWND ) handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+   SetWindowPos( pWidget->Handle(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
 }
 
-void brig_RemoveTopmost( BRIG_HANDLE handle )
+void brig_RemoveTopmost( brig_Widget *pWidget )
 {
-   SetWindowPos( ( HWND ) handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+   SetWindowPos( pWidget->Handle(), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
 }
 
 static LRESULT CALLBACK s_MainWndProc( BRIG_HANDLE handle, UINT message,
@@ -203,8 +203,8 @@ static LRESULT CALLBACK s_DialogProc( BRIG_HANDLE hDlg, UINT message,
          if( pObjWin->bModal && pObjWin->pParent )
          {
             pObjWin->pParent->Enable();
-            brig_SetTopmost( pObjWin->pParent->Handle() );
-            brig_RemoveTopmost( pObjWin->pParent->Handle() );
+            brig_SetTopmost( pObjWin->pParent );
+            brig_RemoveTopmost( pObjWin->pParent );
          }
          for( i = 0; i < iDialogs; i++ )
             if( aDialogs[i] == hDlg )
