@@ -207,7 +207,7 @@ bool brig_MainWindow::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 void brig_MainWindow::Close( void )
 {
 
-   brig_CloseWindow( handle );
+   brig_CloseWindow( this );
 }
 
 /* -------- Dialog --------- */
@@ -234,7 +234,7 @@ void brig_Dialog::Activate( bool bMode )
 {
 
    bModal = bMode;
-   brig_ActivateDialog( handle, bModal );
+   brig_ActivateDialog( this );
 }
 
 bool brig_Dialog::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
@@ -260,5 +260,5 @@ bool brig_Dialog::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 void brig_Dialog::Close( void )
 {
 
-   brig_CloseWindow( handle );
+   brig_CloseWindow( this );
 }

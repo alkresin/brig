@@ -393,7 +393,7 @@ gboolean cb_delete_event( GtkWidget *widget, gchar* data )
    SYMBOL_UNUSED( data );
 
    if( gObject )
-      return ( ( brig_Widget* ) gObject )->onEvent( WM_DESTROY, 0, 0 );
+      return ( ( brig_Widget* ) gObject )->onEvent( WM_SYSCOMMAND, SC_CLOSE, 0 );
 
    return FALSE;
 }
@@ -658,22 +658,24 @@ BRIG_HANDLE brig_InitDialog( PBRIG_CHAR lpTitle,
    return hWnd;
 }
 
-void brig_ActivateDialog( BRIG_HANDLE handle, bool bModal )
+void brig_ActivateDialog( brig_Dialog *pDialog )
 {
+   GtkWindow *handle = pDialog->Handle();
    gtk_widget_show_all( handle );
-   if( bModal )
+   if( pDialog->bModal )
    {
-      gtk_window_set_modal( (GtkWindow*) handle, 1 );
+      gtk_window_set_modal( handle, 1 );
       if( handle->parent )
-         gtk_window_set_transient_for( (GtkWindow*) handle, (GtkWindow*) (handle->parent) );
+         gtk_window_set_transient_for( handle, (GtkWindow*) (handle->parent) );
 
       gtk_main();
    }
 }
 
-void brig_CloseWindow( BRIG_HANDLE handle )
+void brig_CloseWindow( brig_Widget *pWidget )
 {
-   gtk_widget_destroy( handle );
+   if( !( pWidget->onEvent( WM_SYSCOMMAND, SC_CLOSE, 0 ) ) )
+      gtk_widget_destroy( pWidget->Handle() );
 }
 
 void brig_gtk_init( void )

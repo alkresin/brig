@@ -14,9 +14,12 @@
 
 class brig_Widget;
 class brig_Container;
+class brig_Dialog;
 
 extern void brig_SetWindowText( brig_Widget *pWidget, PBRIG_CHAR lpTitle );
 extern PBRIG_CHAR brig_GetWindowText( brig_Widget *pWidget );
+extern void brig_CloseWindow( brig_Widget *pWidget );
+extern void brig_ActivateDialog( brig_Dialog *pDialog );
 
 typedef bool (*brig_fnc_paint)( brig_Widget *pWidget, PBRIG_DC hDC );
 typedef bool (*brig_fnc_mess)( brig_Widget *pWidget, WPARAM wParam, LPARAM lParam );

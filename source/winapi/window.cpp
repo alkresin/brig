@@ -374,26 +374,26 @@ BRIG_HANDLE brig_InitDialog( PBRIG_CHAR lpTitle,
    return hDialog;
 }
 
-void brig_ActivateDialog( BRIG_HANDLE handle, bool bModal )
+void brig_ActivateDialog( brig_Dialog *pDialog )
 {
 
-   brig_Dialog *pObjWin = ( brig_Dialog * ) GetWindowLongPtr( handle, GWLP_USERDATA );
+   BRIG_HANDLE handle = pDialog->Handle();
 
-   if( bModal && pObjWin->pParent )
-      pObjWin->pParent->Enable( 0 );
+   if( pDialog->bModal && pDialog->pParent )
+      pDialog->pParent->Enable( 0 );
 
    wpOrigDlgProc = ( WNDPROC ) SetWindowLongPtr( handle,
          GWLP_WNDPROC, ( LONG_PTR ) s_DialogProc ); //DWLP_DLGPROC
 
-   if( bModal )
+   if( pDialog->bModal )
       brig_ModalDlgLoop( NULL, handle );
    else
       brig_MainLoop( NULL, 0 );
 }
 
-void brig_CloseWindow( BRIG_HANDLE handle )
+void brig_CloseWindow( brig_Widget *pWidget )
 {
-   SendMessage( handle, WM_SYSCOMMAND, SC_CLOSE, 0 );
+   SendMessage( pWidget->Handle(), WM_SYSCOMMAND, SC_CLOSE, 0 );
 }
 
 int WINAPI WinMain( HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iShowCmd )
