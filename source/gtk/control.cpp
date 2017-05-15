@@ -381,18 +381,30 @@ void brig_SetFgColor( BRIG_HANDLE hCtrl, long lColor )
 
    if( label )
    {
-      GtkStyle * style = gtk_style_copy( gtk_widget_get_style( label ) );
+      GdkColor color;
+      
+      brig_parse_color( lColor, &color );
+      gtk_widget_modify_fg( hCtrl, GTK_STATE_NORMAL, &color );
+      gtk_widget_modify_text( hCtrl, GTK_STATE_NORMAL, &color );
+
+      /* GtkStyle * style = gtk_style_copy( gtk_widget_get_style( label ) );
       brig_parse_color( lColor, &(style->fg[GTK_STATE_NORMAL]) );
       brig_parse_color( lColor, &(style->text[GTK_STATE_NORMAL]) );
-      gtk_widget_set_style( label, style );
+      gtk_widget_set_style( label, style ); */
    }
 }
 
 void brig_SetBgColor( BRIG_HANDLE hCtrl, long lColor )
 {
-   GtkStyle * style = gtk_style_copy( gtk_widget_get_style( hCtrl ) );
+   GdkColor color;
+   
+   brig_parse_color( lColor, &color );
+   gtk_widget_modify_bg( hCtrl, GTK_STATE_NORMAL, &color );
+   gtk_widget_modify_base( hCtrl, GTK_STATE_NORMAL, &color );
 
+   /* GtkStyle * style = gtk_style_copy( gtk_widget_get_style( hCtrl ) );
    brig_parse_color( lColor, &(style->bg[GTK_STATE_NORMAL]) );
    brig_parse_color( lColor, &(style->base[GTK_STATE_NORMAL]) );
-   gtk_widget_set_style( hCtrl, style );
+   gtk_widget_set_style( hCtrl, style ); */
+
 }
