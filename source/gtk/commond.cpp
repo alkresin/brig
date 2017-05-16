@@ -29,7 +29,7 @@ long int brig_ChooseColor( long int lDefColor )
 {
    GtkWidget *colorseldlg;
    GtkColorSelection *colorsel;
-   GtkWidget * hParent = brig_GetActiveWindow();
+   GtkWidget * hParent = brig_GetActiveWindow()->Handle();
    const char *cTitle = "Select color";
 
    colorseldlg = gtk_color_selection_dialog_new( cTitle );

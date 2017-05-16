@@ -271,7 +271,7 @@ static void brig_OnBtnDown( brig_Table *pTable, LPARAM lParam )
       if( bRepaint )
          brig_RedrawWindow( pTable->Handle() );
    }
-   brig_SetFocus( pTable->Handle() );
+   brig_SetFocus( pTable );
 }
 
 void brig_Table::Down( void )

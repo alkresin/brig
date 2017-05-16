@@ -126,8 +126,10 @@ PBRIG_CHAR brig_GetWindowText( brig_Widget *pWidget )
       return NULL;
 }
 
-void brig_MoveWindow( BRIG_HANDLE handle, int iLeft, int iTop, int iWidth, int iHeight )
+void brig_MoveWindow( brig_Widget *pWidget, int iLeft, int iTop, int iWidth, int iHeight )
 {
+
+   BRIG_HANDLE handle = pWidget->Handle();
 
    if( g_object_get_data( ( GObject * ) handle, "window" ) )
    {
@@ -157,21 +159,21 @@ void brig_MoveWindow( BRIG_HANDLE handle, int iLeft, int iTop, int iWidth, int i
    }
 }
 
-void brig_EnableWindow( BRIG_HANDLE handle, bool bEnable )
+void brig_EnableWindow( brig_Widget *pWidget, bool bEnable )
 {
 
-   gtk_widget_set_sensitive( handle, bEnable );
+   gtk_widget_set_sensitive( pWidget->Handle(), bEnable );
 }
 
-void brig_ShowWindow( BRIG_HANDLE handle, bool bShow )
+void brig_ShowWindow( brig_Widget *pWidget, bool bShow )
 {
    if( bShow )
-      gtk_widget_show( handle );
+      gtk_widget_show( pWidget->Handle() );
    else
-      gtk_widget_hide( handle );
+      gtk_widget_hide( pWidget->Handle() );
 }
 
-BRIG_HANDLE brig_GetActiveWindow( void )
+brig_Widget * brig_GetActiveWindow( void )
 {
    GList * pL = gtk_window_list_toplevels(), * pList;
 
@@ -185,24 +187,24 @@ BRIG_HANDLE brig_GetActiveWindow( void )
    if( !pList )
       pList = pL;
 
-   return (GtkWidget*) ( ( pList )? pList->data : NULL );
+   return ( pList )? (brig_Widget *) g_object_get_data( (GObject*) pList->data, "obj" ) : NULL;
 }
 
-BRIG_HANDLE brig_SetFocus( BRIG_HANDLE handle )
+brig_Widget * brig_SetFocus( brig_Widget *pWidget )
 {
    GtkWidget * oldhandle = gtk_window_get_focus( (GtkWindow*) gtk_window_list_toplevels()->data );
 
-   if( g_object_get_data( ( GObject * ) handle, "window" ) )
-      gtk_window_present( (GtkWindow*) handle );
+   if( g_object_get_data( ( GObject * ) pWidget->Handle(), "window" ) )
+      gtk_window_present( (GtkWindow*) pWidget->Handle() );
    else
-      gtk_widget_grab_focus( (GtkWidget*) handle );
+      gtk_widget_grab_focus( (GtkWidget*) pWidget->Handle() );
 
-   return oldhandle;
+   return (brig_Widget *) g_object_get_data( (GObject*) oldhandle, "obj" );
 }
 
-BRIG_HANDLE brig_GetFocus( void )
+brig_Widget * brig_GetFocus( void )
 {
-   return gtk_window_get_focus( (GtkWindow*) gtk_window_list_toplevels()->data );
+   return (brig_Widget *) g_object_get_data( (GObject*) gtk_window_get_focus( (GtkWindow*) gtk_window_list_toplevels()->data ), "obj" );
 }
 
 void brig_SetTopmost( brig_Widget *pWidget )

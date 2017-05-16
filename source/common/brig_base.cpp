@@ -99,17 +99,17 @@ long int  brig_Widget::SetBackColor( long int lColor, bool bRepaint )
 
 void brig_Widget::Move( int iLeft, int iTop, int iWidth, int iHeight )
 {
-   brig_MoveWindow( handle, iLeft, iTop, iWidth, iHeight );
+   brig_MoveWindow( this, iLeft, iTop, iWidth, iHeight );
 }
 
 void brig_Widget::Enable( bool bEnable )
 {
-   brig_EnableWindow( handle, bEnable );
+   brig_EnableWindow( this, bEnable );
 }
 
 void brig_Widget::Show( bool bShow )
 {
-   brig_ShowWindow( handle, bShow );
+   brig_ShowWindow( this, bShow );
 }
 
 /* -------- Container --------- */

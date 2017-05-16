@@ -109,7 +109,7 @@ int brigChoice( std::vector<char*> &pList, PBRIG_CHAR lpTitle, unsigned int iLef
    oBtn.New( &oDlg, (iWidth-100)/2, iHeight-72, 100, 32, (PBRIG_CHAR) "Ok" );
    oBtn.pfOnClick = fncCloseDlg;
 
-   brig_SetFocus( oTable.Handle() );
+   brig_SetFocus( &oTable );
    oDlg.Activate();
 
    brigDelStyle( pStyleSel );

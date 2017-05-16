@@ -21,6 +21,12 @@ extern PBRIG_CHAR brig_GetWindowText( brig_Widget *pWidget );
 extern void brig_CloseWindow( brig_Widget *pWidget );
 extern void brig_ActivateDialog( brig_Dialog *pDialog );
 
+extern void brig_MoveWindow( brig_Widget *pWidget, int iLeft, int iTop, int iWidth, int iHeight );
+extern void brig_EnableWindow( brig_Widget *pWidget, bool bEnable );
+extern void brig_ShowWindow( brig_Widget *pWidget, bool bShow );
+extern brig_Widget * brig_GetActiveWindow( void );
+extern brig_Widget * brig_SetFocus( brig_Widget *pWidget );
+extern brig_Widget * brig_GetFocus( void );
 extern void brig_SetTopmost( brig_Widget *pWidget );
 extern void brig_RemoveTopmost( brig_Widget *pWidget );
 

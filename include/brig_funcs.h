@@ -32,13 +32,6 @@ extern int brig_MsgYesNo( PBRIG_CHAR sText, PBRIG_CHAR sTitle );
 
 extern void brig_writelog( const char * sFile, const char * sTraceMsg, ... );
 
-extern void brig_MoveWindow( BRIG_HANDLE handle, int iLeft, int iTop, int iWidth, int iHeight );
-extern void brig_EnableWindow( BRIG_HANDLE handle, bool bEnable );
-extern void brig_ShowWindow( BRIG_HANDLE handle, bool bShow );
-extern BRIG_HANDLE brig_GetActiveWindow( void );
-extern BRIG_HANDLE brig_SetFocus( BRIG_HANDLE handle );
-extern BRIG_HANDLE brig_GetFocus( void );
-
 extern void brig_RedrawWindow( BRIG_HANDLE handle );
 extern void brig_DeleteObject( PBRIG_BRUSH pBrush );
 extern void brig_DeleteObject( PBRIG_PEN pPen );

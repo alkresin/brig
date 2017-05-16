@@ -14,7 +14,7 @@ static int MessageBox( const char * cMsg, const char * cTitle, int message_type,
    GtkWidget * dialog;
    int result;
 
-   dialog = gtk_message_dialog_new( GTK_WINDOW( brig_GetActiveWindow() ),
+   dialog = gtk_message_dialog_new( GTK_WINDOW( brig_GetActiveWindow()->Handle() ),
          (GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT),
          (GtkMessageType) message_type,
          (GtkButtonsType) button_type,

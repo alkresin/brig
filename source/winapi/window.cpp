@@ -86,12 +86,12 @@ PBRIG_CHAR brig_GetWindowText( brig_Widget *pWidget )
 #endif
 }
 
-void brig_MoveWindow( BRIG_HANDLE handle, int iLeft, int iTop, int iWidth, int iHeight )
+void brig_MoveWindow( brig_Widget *pWidget, int iLeft, int iTop, int iWidth, int iHeight )
 {
    RECT rc;
 
-   GetWindowRect( handle, &rc );
-   MoveWindow( handle,
+   GetWindowRect( pWidget->Handle(), &rc );
+   MoveWindow( pWidget->Handle(),
          ( iLeft < 0 ) ? rc.left : iLeft,                // horizontal position
          ( iTop < 0 )  ? rc.top : iTop,                  // vertical position
          ( iWidth < 0 ) ? rc.right - rc.left : iWidth,   // width
@@ -100,31 +100,31 @@ void brig_MoveWindow( BRIG_HANDLE handle, int iLeft, int iTop, int iWidth, int i
           );
 }
 
-void brig_EnableWindow( BRIG_HANDLE handle, bool bEnable )
+void brig_EnableWindow( brig_Widget *pWidget, bool bEnable )
 {
 
-   EnableWindow( handle, bEnable );
+   EnableWindow( pWidget->Handle(), bEnable );
 }
 
-void brig_ShowWindow( BRIG_HANDLE handle, bool bShow )
+void brig_ShowWindow( brig_Widget *pWidget, bool bShow )
 {
 
-   ShowWindow( handle, (bShow)? SW_SHOWNORMAL:SW_HIDE );
+   ShowWindow( pWidget->Handle(), (bShow)? SW_SHOWNORMAL:SW_HIDE );
 }
 
-BRIG_HANDLE brig_GetActiveWindow( void )
+brig_Widget * brig_GetActiveWindow( void )
 {
-   return GetActiveWindow();
+   return ( brig_Widget * ) GetWindowLongPtr( GetActiveWindow(), GWLP_USERDATA );
 }
 
-BRIG_HANDLE brig_SetFocus( BRIG_HANDLE handle )
+brig_Widget * brig_SetFocus( brig_Widget *pWidget )
 {
-   return SetFocus( handle );
+   return ( brig_Widget * ) GetWindowLongPtr( SetFocus( pWidget->Handle() ), GWLP_USERDATA );
 }
 
-BRIG_HANDLE brig_GetFocus( void )
+brig_Widget * brig_GetFocus( void )
 {
-   return GetFocus();
+   return ( brig_Widget * ) GetWindowLongPtr( GetFocus(), GWLP_USERDATA );
 }
 
 void brig_SetTopmost( brig_Widget *pWidget )
