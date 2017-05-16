@@ -20,11 +20,6 @@ extern void brig_ActivateMainWindow( int bShow, HACCEL hAcceler, int iMaxMin );
 extern BRIG_HANDLE brig_InitDialog( PBRIG_CHAR lpTitle,
       int x, int y, int width, int height, long int lStyle );
 
-extern bool brig_CheckBtnGet( BRIG_HANDLE handle );
-extern void brig_CheckBtnSet( BRIG_HANDLE handle, bool bValue );
-extern bool brig_RadioBtnGet( BRIG_HANDLE handle );
-extern void brig_RadioBtnSet( BRIG_HANDLE handle, bool bValue );
-
 extern void brig_MsgInfo( PBRIG_CHAR sText, PBRIG_CHAR sTitle );
 extern void brig_MsgStop( PBRIG_CHAR sText, PBRIG_CHAR sTitle );
 extern int brig_MsgOkCancel( PBRIG_CHAR sText, PBRIG_CHAR sTitle );
@@ -32,16 +27,12 @@ extern int brig_MsgYesNo( PBRIG_CHAR sText, PBRIG_CHAR sTitle );
 
 extern void brig_writelog( const char * sFile, const char * sTraceMsg, ... );
 
-extern void brig_RedrawWindow( BRIG_HANDLE handle );
 extern void brig_DeleteObject( PBRIG_BRUSH pBrush );
 extern void brig_DeleteObject( PBRIG_PEN pPen );
 extern void brig_DeleteObject( PBRIG_FONT pFont );
 extern PBRIG_BRUSH brig_SelectObject( PBRIG_DC hDC, PBRIG_BRUSH pBrush );
 extern PBRIG_PEN brig_SelectObject( PBRIG_DC hDC, PBRIG_PEN pPen );
 extern PBRIG_FONT brig_SelectObject( PBRIG_DC hDC, PBRIG_FONT pFont );
-
-extern void brig_SetFgColor( BRIG_HANDLE hCtrl, long lColor );
-extern void brig_SetBgColor( BRIG_HANDLE hCtrl, long lColor );
 
 extern PBRIG_BRUSH brig_CreateBrush( long int lColor );
 extern bool brig_CompareBrush( PBRIG_BRUSH pBrush, long int lColor );
@@ -51,11 +42,6 @@ extern PBRIG_FONT brig_CreateFont( PBRIG_CHAR fontName, int fnHeight, int fnWeig
                DWORD fdwCharSet, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut  );
 extern long int brig_ChooseColor( long int lDefColor = -1 );
 
-extern PBRIG_PPS brig_BeginPaint( BRIG_HANDLE handle );
-extern void brig_EndPaint( BRIG_HANDLE handle, PBRIG_PPS pps );
-extern PBRIG_DC brig_GetDC( BRIG_HANDLE handle );
-extern void brig_ReleaseDC( BRIG_HANDLE handle, PBRIG_DC hDC );
-extern void brig_GetClientRect( BRIG_HANDLE handle, RECT *prc );
 extern void brig_FillRect( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom, PBRIG_BRUSH hBrush );
 extern void brig_DrawRect( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom );
 extern void brig_moveto( PBRIG_DC hDC, int iLeft, int iTop );
@@ -64,7 +50,6 @@ extern void brig_Ellipse( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBo
 extern void brig_DrawBitmap( PBRIG_DC hDC, PBRIG_BITMAP hBitmap, int iLeft, int iTop, int iWidth, int iHeight );
 extern PBRIG_BITMAP brig_OpenImage( PBRIG_CHAR lpName, bool bString, int iType );
 
-extern void brig_SetFont( BRIG_HANDLE handle, PBRIG_FONT pFont );
 extern long int brig_SetTextColor( PBRIG_DC hDC, long int lColor );
 extern long int brig_SetBkColor( PBRIG_DC hDC, long int lColor );
 extern void brig_SetTransparentMode( PBRIG_DC hDC, bool bTransp );

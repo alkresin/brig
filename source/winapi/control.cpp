@@ -80,24 +80,24 @@ BRIG_HANDLE brig_CreateButton( brig_Widget *pWidget, int iWidgId,
 
 }
 
-bool brig_CheckBtnGet( BRIG_HANDLE handle )
+bool brig_CheckBtnGet( brig_Widget *pWidget )
 {
-   return SendMessage( handle, BM_GETCHECK, 0, 0 );
+   return SendMessage( pWidget->Handle(), BM_GETCHECK, 0, 0 );
 }
 
-void brig_CheckBtnSet( BRIG_HANDLE handle, bool bValue )
+void brig_CheckBtnSet( brig_Widget *pWidget, bool bValue )
 {
-   SendMessage( handle, BM_SETCHECK, bValue, 0 );
+   SendMessage( pWidget->Handle(), BM_SETCHECK, bValue, 0 );
 }
 
-bool brig_RadioBtnGet( BRIG_HANDLE handle )
+bool brig_RadioBtnGet( brig_Widget *pWidget )
 {
-   return SendMessage( handle, BM_GETCHECK, 0, 0 );
+   return SendMessage( pWidget->Handle(), BM_GETCHECK, 0, 0 );
 }
 
-void brig_RadioBtnSet( BRIG_HANDLE handle, bool bValue )
+void brig_RadioBtnSet( brig_Widget *pWidget, bool bValue )
 {
-   SendMessage( handle, BM_SETCHECK, (bValue)? BST_CHECKED : BST_UNCHECKED, 0 );
+   SendMessage( pWidget->Handle(), BM_SETCHECK, (bValue)? BST_CHECKED : BST_UNCHECKED, 0 );
 }
 
 void brig_RadioGroupSet( brig_RadioGroup *pGroup, int iSelected )
@@ -183,7 +183,7 @@ BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
    if( hCombo )
    {
       if( pArray && iLen > 0 )
-         brig_ComboSetArray( hCombo, pArray, iLen );
+         brig_ComboSetArray( pCombo, pArray, iLen );
    /*
       LONG_PTR hProc;
       SetWindowLongPtr( hCombo, GWLP_USERDATA, NULL );
@@ -196,9 +196,10 @@ BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
 
 }
 
-void brig_ComboSetArray( BRIG_HANDLE hCombo, char **pArray, int iLen )
+void brig_ComboSetArray( brig_Widget *pWidget, char **pArray, int iLen )
 {
 
+   BRIG_HANDLE hCombo = pWidget->Handle();
    PBRIG_WCHAR wcItem;
 
    SendMessage( hCombo, CB_RESETCONTENT, 0, 0 );
@@ -212,14 +213,14 @@ void brig_ComboSetArray( BRIG_HANDLE hCombo, char **pArray, int iLen )
 
 }
 
-int brig_GetValue( BRIG_HANDLE hCombo )
+int brig_ComboGetValue( brig_Widget *pWidget )
 {
-   return SendMessage( hCombo, CB_GETCURSEL, 0, 0 );
+   return SendMessage( pWidget->Handle(), CB_GETCURSEL, 0, 0 );
 }
 
-void brig_SetValue( BRIG_HANDLE hCombo, int iSelected )
+void brig_ComboSetValue( brig_Widget *pWidget, int iSelected )
 {
-   SendMessage( hCombo, CB_SETCURSEL, iSelected, 0 );
+   SendMessage( pWidget->Handle(), CB_SETCURSEL, iSelected, 0 );
 }
 
 
@@ -370,14 +371,14 @@ BRIG_HANDLE brig_CreateQButton( brig_QButton *pQBtn, int iWidgId,
    return hQButton;
 }
 
-void brig_SetFgColor( BRIG_HANDLE hCtrl, long lColor )
+void brig_SetFgColor( brig_Widget *pWidget, long lColor )
 {
-   SYMBOL_UNUSED( hCtrl );
+   SYMBOL_UNUSED( pWidget );
    SYMBOL_UNUSED( lColor );
 }
 
-void brig_SetBgColor( BRIG_HANDLE hCtrl, long lColor )
+void brig_SetBgColor( brig_Widget *pWidget, long lColor )
 {
-   SYMBOL_UNUSED( hCtrl );
+   SYMBOL_UNUSED( pWidget );
    SYMBOL_UNUSED( lColor );
 }

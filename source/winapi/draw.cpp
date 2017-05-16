@@ -30,33 +30,33 @@ extern "C"
 #include <ole2.h>
 #include <ocidl.h>
 
-PBRIG_PPS brig_BeginPaint( BRIG_HANDLE handle )
+PBRIG_PPS brig_BeginPaint( brig_Widget *pWidget )
 {
    PBRIG_PPS pps = ( BRIG_PPS * ) malloc( sizeof( BRIG_PPS ) );
 
    pps->pps = ( PAINTSTRUCT * ) malloc( sizeof( PAINTSTRUCT ) );
-   pps->hDC = BeginPaint( handle, pps->pps );
+   pps->hDC = BeginPaint( pWidget->Handle(), pps->pps );
 
    return pps;
 }
 
-void brig_EndPaint( BRIG_HANDLE handle, PBRIG_PPS pps )
+void brig_EndPaint( brig_Widget *pWidget, PBRIG_PPS pps )
 {
 
-   EndPaint( handle, pps->pps );
+   EndPaint( pWidget->Handle(), pps->pps );
    free( pps->pps );
    free( pps );
 
 }
 
-PBRIG_DC brig_GetDC( BRIG_HANDLE handle )
+PBRIG_DC brig_GetDC( brig_Widget *pWidget )
 {
-   return GetDC( handle );
+   return GetDC( pWidget->Handle() );
 }
 
-void brig_ReleaseDC( BRIG_HANDLE handle, PBRIG_DC hDC )
+void brig_ReleaseDC( brig_Widget *pWidget, PBRIG_DC hDC )
 {
-   ReleaseDC( handle, hDC );
+   ReleaseDC( pWidget->Handle(), hDC );
 }
 
 void brig_moveto( PBRIG_DC hDC, int iLeft, int iTop )
@@ -69,9 +69,9 @@ void brig_lineto( PBRIG_DC hDC, int iLeft, int iTop )
    LineTo( hDC, iLeft, iTop );
 }
 
-void brig_GetClientRect( BRIG_HANDLE handle, RECT *prc )
+void brig_GetClientRect( brig_Widget *pWidget, RECT *prc )
 {
-   GetClientRect( handle, prc );
+   GetClientRect( pWidget->Handle(), prc );
 }
 
 void brig_FillRect( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom, HBRUSH hBrush )
@@ -227,9 +227,9 @@ void brig_DrawBitmap( PBRIG_DC hDC, PBRIG_BITMAP hBitmap, int iLeft, int iTop, i
    DeleteDC( hDCmem );
 }
 
-void brig_RedrawWindow( BRIG_HANDLE handle )
+void brig_RedrawWindow( brig_Widget *pWidget )
 {
-   RedrawWindow( handle, NULL, NULL, RDW_ERASE | RDW_INVALIDATE );
+   RedrawWindow( pWidget->Handle(), NULL, NULL, RDW_ERASE | RDW_INVALIDATE );
 }
 
 void brig_DeleteObject( PBRIG_BRUSH pBrush )
@@ -324,9 +324,9 @@ PBRIG_FONT brig_CreateFont( PBRIG_CHAR fontName, int fnHeight, int fnWeight,
    return hFont;
 }
 
-void brig_SetFont( BRIG_HANDLE handle, PBRIG_FONT pFont )
+void brig_SetFont( brig_Widget *pWidget, PBRIG_FONT pFont )
 {
-   SendMessage( handle, WM_SETFONT, ( WPARAM ) pFont, 0L );
+   SendMessage( pWidget->Handle(), WM_SETFONT, ( WPARAM ) pFont, 0L );
 
 }
 

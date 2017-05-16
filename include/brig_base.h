@@ -30,6 +30,21 @@ extern brig_Widget * brig_GetFocus( void );
 extern void brig_SetTopmost( brig_Widget *pWidget );
 extern void brig_RemoveTopmost( brig_Widget *pWidget );
 
+extern PBRIG_PPS brig_BeginPaint( brig_Widget *pWidget );
+extern void brig_EndPaint( brig_Widget *pWidget, PBRIG_PPS pps );
+extern PBRIG_DC brig_GetDC( brig_Widget *pWidget );
+extern void brig_ReleaseDC( brig_Widget *pWidget, PBRIG_DC hDC );
+extern void brig_GetClientRect( brig_Widget *pWidget, RECT *prc );
+extern void brig_RedrawWindow( brig_Widget *pWidget );
+extern void brig_SetFont( brig_Widget *pWidget, PBRIG_FONT pFont );
+extern void brig_SetFgColor( brig_Widget *pWidget, long lColor );
+extern void brig_SetBgColor( brig_Widget *pWidget, long lColor );
+
+extern bool brig_CheckBtnGet( brig_Widget *pWidget );
+extern void brig_CheckBtnSet( brig_Widget *pWidget, bool bValue );
+extern bool brig_RadioBtnGet( brig_Widget *pWidget );
+extern void brig_RadioBtnSet( brig_Widget *pWidget, bool bValue );
+
 typedef bool (*brig_fnc_paint)( brig_Widget *pWidget, PBRIG_DC hDC );
 typedef bool (*brig_fnc_mess)( brig_Widget *pWidget, WPARAM wParam, LPARAM lParam );
 typedef bool (*brig_fnc_mess_1)( brig_Widget *pWidget );

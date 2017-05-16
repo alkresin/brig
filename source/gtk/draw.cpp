@@ -38,16 +38,16 @@ static void brig__setcolor( cairo_t * cr, long int nColor )
 
 }
 
-PBRIG_PPS brig_BeginPaint( BRIG_HANDLE handle )
+PBRIG_PPS brig_BeginPaint( brig_Widget *pWidget )
 {
    PBRIG_PPS pps = ( PBRIG_PPS ) malloc( sizeof( BRIG_PPS ) );
    PBRIG_DC hDC = (PBRIG_DC) malloc( sizeof(BRIG_DC) );
 
    memset( hDC, 0, sizeof(BRIG_DC) );
-   hDC->widget = handle;
+   hDC->widget = pWidget->Handle();
 
-   hDC->window = handle->window;
-   hDC->cr = gdk_cairo_create( handle->window );
+   hDC->window = hDC->widget->window;
+   hDC->cr = gdk_cairo_create( hDC->widget->window );
 
    hDC->layout = pango_cairo_create_layout( hDC->cr );
    hDC->fcolor = hDC->bcolor = -1;
@@ -57,9 +57,9 @@ PBRIG_PPS brig_BeginPaint( BRIG_HANDLE handle )
    return pps;
 }
 
-void brig_EndPaint( BRIG_HANDLE handle, PBRIG_PPS pps )
+void brig_EndPaint( brig_Widget *pWidget, PBRIG_PPS pps )
 {
-   SYMBOL_UNUSED( handle );
+   SYMBOL_UNUSED( pWidget );
 
    if( pps->hDC->layout )
       g_object_unref( (GObject*) pps->hDC->layout );
@@ -68,15 +68,15 @@ void brig_EndPaint( BRIG_HANDLE handle, PBRIG_PPS pps )
 
 }
 
-PBRIG_DC brig_GetDC( BRIG_HANDLE handle )
+PBRIG_DC brig_GetDC( brig_Widget *pWidget )
 {
    PBRIG_DC hDC = (PBRIG_DC) malloc( sizeof(BRIG_DC) );
 
    memset( hDC, 0, sizeof(BRIG_DC) );
-   hDC->widget = handle;
+   hDC->widget = pWidget->Handle();
 
-   hDC->window = handle->window;
-   hDC->cr = gdk_cairo_create( handle->window );
+   hDC->window = hDC->widget->window;
+   hDC->cr = gdk_cairo_create( hDC->widget->window );
 
    hDC->layout = pango_cairo_create_layout( hDC->cr );
    hDC->fcolor = hDC->bcolor = -1;
@@ -84,10 +84,10 @@ PBRIG_DC brig_GetDC( BRIG_HANDLE handle )
    return hDC;
 }
 
-void brig_ReleaseDC( BRIG_HANDLE handle, PBRIG_DC hDC )
+void brig_ReleaseDC( brig_Widget *pWidget, PBRIG_DC hDC )
 {
 
-   SYMBOL_UNUSED( handle );
+   SYMBOL_UNUSED( pWidget );
 
    if( hDC->layout )
       g_object_unref( (GObject*) hDC->layout );
@@ -111,8 +111,9 @@ void brig_lineto( PBRIG_DC hDC, int iLeft, int iTop )
 
 }
 
-void brig_GetClientRect( BRIG_HANDLE handle, RECT *prc )
+void brig_GetClientRect( brig_Widget *pWidget, RECT *prc )
 {
+   GtkWidget *handle = pWidget->Handle();
    prc->left = 0;
    prc->top = 0;
    prc->right =  handle->allocation.width;
@@ -202,8 +203,9 @@ void brig_DrawBitmap( PBRIG_DC hDC, PBRIG_BITMAP hBitmap, int iLeft, int iTop, i
 }
 
 
-void brig_RedrawWindow( BRIG_HANDLE handle )
+void brig_RedrawWindow( brig_Widget *pWidget )
 {
+   GtkWidget *handle = pWidget->Handle();
    gtk_widget_queue_draw_area( handle, 0, 0,
         handle->allocation.width, handle->allocation.height );
 }
@@ -319,9 +321,10 @@ PBRIG_FONT brig_CreateFont( PBRIG_CHAR fontName, int fnHeight, int fnWeight,
    return pFont;
 }
 
-void brig_SetFont( BRIG_HANDLE handle, PBRIG_FONT pFont )
+void brig_SetFont( brig_Widget *pWidget, PBRIG_FONT pFont )
 {
-   GtkWidget * hLabel = (GtkWidget*) g_object_get_data( (GObject*) handle,"label" );   
+   GtkWidget *handle = pWidget->Handle();
+   GtkWidget *hLabel = (GtkWidget*) g_object_get_data( (GObject*) handle,"label" );   
 
    if( GTK_IS_BUTTON( handle ) )
       handle = gtk_bin_get_child( GTK_BIN( handle ) );

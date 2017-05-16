@@ -129,12 +129,12 @@ BRIG_HANDLE brig_CheckButton::New( brig_Container *pParent,
 
 bool brig_CheckButton::GetValue()
 {
-   return brig_CheckBtnGet( handle );
+   return brig_CheckBtnGet( this );
 }
 
 void brig_CheckButton::SetValue( bool bValue )
 {
-   return brig_CheckBtnSet( handle, bValue );
+   return brig_CheckBtnSet( this, bValue );
 }
 
 bool brig_CheckButton::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
@@ -224,7 +224,7 @@ BRIG_HANDLE brig_RadioButton::New( brig_RadioGroup *pGroup,
 
 bool brig_RadioButton::GetValue()
 {
-   return brig_RadioBtnGet( handle );
+   return brig_RadioBtnGet( this );
 }
 
 bool brig_RadioButton::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
@@ -291,17 +291,17 @@ BRIG_HANDLE brig_Combo::New( brig_Container *pParent,
 
 void brig_Combo::Set( char **pArray, int iLen )
 {
-   brig_ComboSetArray( handle, pArray, iLen );
+   brig_ComboSetArray( this, pArray, iLen );
 }
 
 int  brig_Combo::GetValue( void )
 {
-   return brig_GetValue( handle );
+   return brig_ComboGetValue( this );
 }
 
 void brig_Combo::SetValue( int iSelected )
 {
-   brig_SetValue( handle, iSelected );
+   brig_ComboSetValue( this, iSelected );
 }
 
 
@@ -335,11 +335,10 @@ BRIG_HANDLE brig_Panel::New( brig_Container *pParent,
 
 static void brig_paint_Panel( brig_Panel *pPanel )
 {
-   BRIG_HANDLE hPanel = pPanel->Handle();
-   PBRIG_PPS pps = brig_BeginPaint( hPanel );
+   PBRIG_PPS pps = brig_BeginPaint( pPanel );
    RECT rc;
 
-   brig_GetClientRect( hPanel, &rc );
+   brig_GetClientRect( pPanel, &rc );
 
    if( pPanel->pStyle )
       pPanel->pStyle->Draw( pps->hDC, rc.left, rc.top, rc.right, rc.bottom );
@@ -350,7 +349,7 @@ static void brig_paint_Panel( brig_Panel *pPanel )
       brig_FillRect( pps->hDC, rc.left, rc.top, rc.right, rc.bottom, pPanel->hBrush );
    }
 
-   brig_EndPaint( hPanel, pps );
+   brig_EndPaint( pPanel, pps );
 
 }
 
@@ -367,11 +366,11 @@ bool brig_Panel::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 
          if( pfOnPaint )
          {
-            PBRIG_PPS pps = brig_BeginPaint( handle );
+            PBRIG_PPS pps = brig_BeginPaint( this );
 
             pfOnPaint( this, pps->hDC );
 
-            brig_EndPaint( handle, pps );
+            brig_EndPaint( this, pps );
          }
          else
             brig_paint_Panel( this );
@@ -423,8 +422,7 @@ BRIG_HANDLE brig_QButton::New( brig_Container *pParent,
 
 static void brig_paint_QButton( brig_QButton *pQButton )
 {
-   BRIG_HANDLE hQButton = pQButton->Handle();
-   PBRIG_PPS pps = brig_BeginPaint( hQButton );
+   PBRIG_PPS pps = brig_BeginPaint( pQButton );
    RECT rc;
 
    if( pQButton->pStyleNormal )
@@ -449,7 +447,7 @@ static void brig_paint_QButton( brig_QButton *pQButton )
       if( !pQButton->hBrush2 )
          pQButton->hBrush2 = brigAddBrush( pQButton->lBackClr2 );
 
-      brig_GetClientRect( hQButton, &rc );
+      brig_GetClientRect( pQButton, &rc );
 
       brig_FillRect( pps->hDC, rc.left, rc.top, rc.right, rc.bottom,
          ( (pQButton->iState == 2)? pQButton->hBrush2 : ( (pQButton->iState == 1)? pQButton->hBrush1 : pQButton->hBrush ) ) );
@@ -476,7 +474,7 @@ static void brig_paint_QButton( brig_QButton *pQButton )
       brig_SetTransparentMode( pps->hDC, 0 );
    }
 
-   brig_EndPaint( hQButton, pps );
+   brig_EndPaint( pQButton, pps );
 
 }
 
@@ -490,11 +488,11 @@ bool brig_QButton::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 
          if( pfOnPaint )
          {
-            PBRIG_PPS pps = brig_BeginPaint( handle );
+            PBRIG_PPS pps = brig_BeginPaint( this );
 
             pfOnPaint( this, pps->hDC );
 
-            brig_EndPaint( handle, pps );
+            brig_EndPaint( this, pps );
          }
          else
             brig_paint_QButton( this );
@@ -503,14 +501,14 @@ bool brig_QButton::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 
       case WM_LBUTTONDOWN:
          iState = 2;
-         brig_RedrawWindow( handle );
+         brig_RedrawWindow( this );
          break;
 
       case WM_LBUTTONUP:
          if( iState == 2 )
          {
             iState = 1;
-            brig_RedrawWindow( handle );
+            brig_RedrawWindow( this );
             if( pfOnClick )
                pfOnClick( this, wParam, lParam );
          }

@@ -144,13 +144,12 @@ static void paint_row( brig_Table *pTable, PBRIG_DC hDC, unsigned int y, bool bS
 
 static void brig_paint_Table( brig_Table *pTable )
 {
-   BRIG_HANDLE hTable = pTable->Handle();
-   PBRIG_PPS pps = brig_BeginPaint( hTable );
+   PBRIG_PPS pps = brig_BeginPaint( pTable );
    RECT rc;
    unsigned long ulRecCount;
    unsigned int uiRowHeight, y1 = 0, y2;
 
-   brig_GetClientRect( hTable, &rc );
+   brig_GetClientRect( pTable, &rc );
 
    pTable->uiClientWidth = rc.right - rc.left;
    pTable->uiClientHeight = rc.bottom - rc.top;
@@ -161,7 +160,7 @@ static void brig_paint_Table( brig_Table *pTable )
 
    if( !pTable->pfDataSet )
    {
-      brig_EndPaint( hTable, pps );
+      brig_EndPaint( pTable, pps );
       return;
    }
 
@@ -234,7 +233,7 @@ static void brig_paint_Table( brig_Table *pTable )
          brig_lineto( pps->hDC, pTable->uiClientWidth, y1 + uiRowHeight*ui );
       }
    }
-   brig_EndPaint( hTable, pps );
+   brig_EndPaint( pTable, pps );
 
 }
 
@@ -269,7 +268,7 @@ static void brig_OnBtnDown( brig_Table *pTable, LPARAM lParam )
             }
          }
       if( bRepaint )
-         brig_RedrawWindow( pTable->Handle() );
+         brig_RedrawWindow( pTable );
    }
    brig_SetFocus( pTable );
 }
@@ -283,7 +282,7 @@ void brig_Table::Down( void )
    if( uiRowSel < uiRowCount )
       uiRowSel++;
 
-   brig_RedrawWindow( handle );
+   brig_RedrawWindow( this );
 }
 
 void brig_Table::Up( void )
@@ -295,7 +294,7 @@ void brig_Table::Up( void )
    if( uiRowSel > 1 )
       uiRowSel--;
 
-   brig_RedrawWindow( handle );
+   brig_RedrawWindow( this );
 }
 
 void brig_Table::Top( void )
@@ -303,7 +302,7 @@ void brig_Table::Top( void )
    pfDataSet( this, TDS_TOP, 0 );
    uiRowSel = 1;
 
-   brig_RedrawWindow( handle );
+   brig_RedrawWindow( this );
 }
 
 void brig_Table::Bottom( void )
@@ -312,7 +311,7 @@ void brig_Table::Bottom( void )
    pfDataSet( this, TDS_BOTTOM, 0 );
    uiRowSel = ( ulRecs > uiRowCount )? uiRowCount : ulRecs;
 
-   brig_RedrawWindow( handle );
+   brig_RedrawWindow( this );
 }
 
 bool brig_Table::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
@@ -328,11 +327,11 @@ bool brig_Table::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 
          if( pfOnPaint )
          {
-            PBRIG_PPS pps = brig_BeginPaint( handle );
+            PBRIG_PPS pps = brig_BeginPaint( this );
 
             pfOnPaint( this, pps->hDC );
 
-            brig_EndPaint( handle, pps );
+            brig_EndPaint( this, pps );
          }
          else
             brig_paint_Table( this );

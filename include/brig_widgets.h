@@ -28,9 +28,9 @@ extern BRIG_HANDLE brig_CreateTable( brig_Table *pTable, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle );
 extern BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle, char **pArray, int iLen );
-extern void brig_ComboSetArray( BRIG_HANDLE hCombo, char **pArray, int iLen );
-extern int brig_GetValue( BRIG_HANDLE hCombo );
-extern void brig_SetValue( BRIG_HANDLE hCombo, int iSelected );
+extern void brig_ComboSetArray( brig_Widget *pWidget, char **pArray, int iLen );
+extern int brig_ComboGetValue( brig_Widget *pWidget );
+extern void brig_ComboSetValue( brig_Widget *pWidget, int iSelected );
 
 
 class brig_Label : public brig_Widget

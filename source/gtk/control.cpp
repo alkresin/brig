@@ -95,25 +95,25 @@ BRIG_HANDLE brig_CreateButton( brig_Widget *pWidget, int iWidgId,
 
 }
 
-bool brig_CheckBtnGet( BRIG_HANDLE handle )
+bool brig_CheckBtnGet( brig_Widget *pWidget )
 {
-   return gtk_toggle_button_get_active( ( GtkToggleButton * ) handle );
+   return gtk_toggle_button_get_active( ( GtkToggleButton * ) pWidget->Handle() );
 
 }
 
-void brig_CheckBtnSet( BRIG_HANDLE handle, bool bValue )
+void brig_CheckBtnSet( brig_Widget *pWidget, bool bValue )
 {
-   gtk_toggle_button_set_active( ( GtkToggleButton * ) handle, bValue );
+   gtk_toggle_button_set_active( ( GtkToggleButton * ) pWidget->Handle(), bValue );
 }
 
-bool brig_RadioBtnGet( BRIG_HANDLE handle )
+bool brig_RadioBtnGet( brig_Widget *pWidget )
 {
-   return gtk_toggle_button_get_active( ( GtkToggleButton * ) handle );
+   return gtk_toggle_button_get_active( ( GtkToggleButton * ) pWidget->Handle() );
 }
 
-void brig_RadioBtnSet( BRIG_HANDLE handle, bool bValue )
+void brig_RadioBtnSet( brig_Widget *pWidget, bool bValue )
 {
-   gtk_toggle_button_set_active( ( GtkToggleButton * ) handle, bValue );
+   gtk_toggle_button_set_active( ( GtkToggleButton * ) pWidget->Handle(), bValue );
 }
 
 void brig_RadioGroupSet( brig_RadioGroup *pGroup, int iSelected )
@@ -202,28 +202,28 @@ BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
          gtk_entry_set_editable (GTK_ENTRY (GTK_COMBO (hCtrl)->entry), FALSE);
 
       if( pArray && iLen > 0 )
-         brig_ComboSetArray( hCtrl, pArray, iLen );
+         brig_ComboSetArray( pCombo, pArray, iLen );
    }
    return hCtrl;
 }
 
-void brig_ComboSetArray( BRIG_HANDLE hCombo, char **pArray, int iLen )
+void brig_ComboSetArray( brig_Widget *pWidget, char **pArray, int iLen )
 {
    GList *glist = NULL;
 
    for( int i = 0; i < iLen; i++ )
       glist = g_list_append( glist, pArray[i] );
 
-   gtk_combo_set_popdown_strings( GTK_COMBO( hCombo ), glist );
+   gtk_combo_set_popdown_strings( GTK_COMBO( pWidget->Handle() ), glist );
 
 }
 
-int brig_GetValue( BRIG_HANDLE hCombo )
+int brig_ComboGetValue( brig_Widget *pWidget )
 {
    //return SendMessage( hCombo, CB_GETCURSEL, 0, 0 );
 }
 
-void brig_SetValue( BRIG_HANDLE hCombo, int iSelected )
+void brig_ComboSetValue( brig_Widget *pWidget, int iSelected )
 {
    //SendMessage( hCombo, CB_SETCURSEL, iSelected, 0 );
 }
@@ -340,7 +340,7 @@ static gint cb_qbtn( GtkWidget *widget, GdkEvent * event, gchar* data )
             ((brig_QButton *)gObject)->iState = 1;
          else
             ((brig_QButton *)gObject)->iState = 0;
-         brig_RedrawWindow( ((brig_QButton *)gObject)->Handle() );
+         brig_RedrawWindow( ((brig_QButton *)gObject) );
       }
    }
    return 0;
@@ -381,10 +381,11 @@ BRIG_HANDLE brig_CreateQButton( brig_QButton *pQBtn, int iWidgId,
 
 /* -------- common widget's functions --------- */
 
-void brig_SetFgColor( BRIG_HANDLE hCtrl, long lColor )
+void brig_SetFgColor( brig_Widget *pWidget, long lColor )
 {
 
    GtkWidget *label;
+   BRIG_HANDLE hCtrl = pWidget->Handle();
 
    if( GTK_IS_BUTTON( hCtrl ) )
    {
@@ -412,9 +413,10 @@ void brig_SetFgColor( BRIG_HANDLE hCtrl, long lColor )
    }
 }
 
-void brig_SetBgColor( BRIG_HANDLE hCtrl, long lColor )
+void brig_SetBgColor( brig_Widget *pWidget, long lColor )
 {
    GdkColor color;
+   BRIG_HANDLE hCtrl = pWidget->Handle();
    
    brig_parse_color( lColor, &color );
    gtk_widget_modify_bg( hCtrl, GTK_STATE_NORMAL, &color );

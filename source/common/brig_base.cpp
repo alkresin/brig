@@ -61,7 +61,7 @@ void brig_Widget::New( brig_Container *pParent, int x, int y, int width, int hei
 void brig_Widget::SetFont( PBRIG_FONT hFontNew )
 {
    hFont = hFontNew;
-   brig_SetFont( handle, hFontNew );
+   brig_SetFont( this, hFontNew );
 }
 
 long int brig_Widget::SetTextColor( long int lColor, bool bRepaint )
@@ -71,9 +71,9 @@ long int brig_Widget::SetTextColor( long int lColor, bool bRepaint )
    if( lColor > -1 && lTextColor != lColor )
    {
       lTextColor = lColor;
-      brig_SetFgColor( handle, lColor );
+      brig_SetFgColor( this, lColor );
       if( bRepaint )
-         brig_RedrawWindow( handle );
+         brig_RedrawWindow( this );
    }
 
    return lRet;
@@ -89,9 +89,9 @@ long int  brig_Widget::SetBackColor( long int lColor, bool bRepaint )
       if( hBrush )
         brigDelBrush( hBrush );
       hBrush = brigAddBrush( lColor );
-      brig_SetBgColor( handle, lColor );
+      brig_SetBgColor( this, lColor );
       if( bRepaint )
-         brig_RedrawWindow( handle );
+         brig_RedrawWindow( this );
    }
 
    return lRet;
