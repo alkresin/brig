@@ -189,7 +189,7 @@ BRIG_HANDLE brig_CreateEdit( brig_Edit *pEdit, int iWidgId,
 /* -------- Combobox --------- */
 
 BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
-          int x, int y, int nWidth, int nHeight, unsigned long ulStyle, char **pArray, int iLen )
+          int x, int y, int nWidth, int nHeight, unsigned long ulStyle )
 {
    GtkWidget *hCtrl = gtk_combo_new();
    GtkFixed *box = ( GtkFixed * ) g_object_get_data( ( GObject * ) pCombo->pParent->Handle(), "fbox" );
@@ -200,9 +200,6 @@ BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
    {
       if( ulStyle & 1 )
          gtk_entry_set_editable (GTK_ENTRY (GTK_COMBO (hCtrl)->entry), FALSE);
-
-      if( pArray && iLen > 0 )
-         brig_ComboSetArray( pCombo, pArray, iLen );
    }
    return hCtrl;
 }

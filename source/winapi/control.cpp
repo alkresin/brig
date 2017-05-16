@@ -168,7 +168,7 @@ BRIG_HANDLE brig_CreateEdit( brig_Edit *pEdit, int iWidgId,
 /* -------- Combobox ---------  */
 
 BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
-          int x, int y, int nWidth, int nHeight, unsigned long ulStyle, char **pArray, int iLen )
+          int x, int y, int nWidth, int nHeight, unsigned long ulStyle )
 {
 
    SYMBOL_UNUSED( ulStyle );
@@ -180,18 +180,7 @@ BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
          ( HMENU ) iWidgId,
          GetModuleHandle( NULL ),
          NULL );
-   if( hCombo )
-   {
-      if( pArray && iLen > 0 )
-         brig_ComboSetArray( pCombo, pArray, iLen );
-   /*
-      LONG_PTR hProc;
-      SetWindowLongPtr( hCombo, GWLP_USERDATA, NULL );
-      hProc = SetWindowLongPtr( hCombo, GWLP_WNDPROC, ( LONG_PTR ) s_BtnProc );
-      if( !wpOrigBtnProc )
-         wpOrigBtnProc = ( WNDPROC ) hProc;
-   */
-   }
+
    return hCombo;
 
 }

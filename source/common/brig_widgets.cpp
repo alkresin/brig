@@ -280,7 +280,10 @@ BRIG_HANDLE brig_Combo::New( brig_Container *pParent,
    brig_Widget::New( pParent, x, y, nWidth, nHeight );
 
    handle = brig_CreateCombo( this, iWidgId,
-             x, y, nWidth, nHeight, ulStyle, pArray, iLen );
+             x, y, nWidth, nHeight, ulStyle );
+
+   if( pArray && iLen > 0 )
+      brig_ComboSetArray( this, pArray, iLen );
 
    if( !hFont && pParent->hFont )
       SetFont( pParent->hFont );

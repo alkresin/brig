@@ -148,6 +148,7 @@ public:
 extern void brigMenu( brig_Container *pWnd );
 extern bool brigSubMenu( PBRIG_CHAR szCaption, int iId );
 extern void brigMenuEnd( void );
+extern int brig_SetMenu( brig_Widget *pWidget, BRIG_HMENU hMenu );
 #define brigMenuSeparator()      brigMenuItemAdd( NULL,0,NULL,0,0 )
 extern void brigMenuItemAdd( PBRIG_CHAR szName, int iId, brig_fnc_menu pfMenuItem, int iFlag = 0, int iKey = 0 );
 extern PBRIG_MITEM brig_MenuItemFind( PBRIG_MITEM pMenu, int iId );

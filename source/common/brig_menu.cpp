@@ -71,7 +71,7 @@ static void brigMenuBuild( brig_Container *pWnd, PBRIG_MITEM pMenuCurr, PBRIG_MI
    {
       if( !bPopup )
       {
-         brig_SetMenu( pWnd->Handle(), pMenuCurr->handle );
+         brig_SetMenu( pWnd, pMenuCurr->handle );
          pWnd->pMenu = pMenuDef;
       }
       pMenuDef = NULL;

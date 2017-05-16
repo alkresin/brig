@@ -21,9 +21,9 @@ BRIG_HMENU brig_CreatePopupMenu( void )
    return gtk_menu_new();
 }
 
-int brig_SetMenu( BRIG_HANDLE hWnd, BRIG_HMENU hMenu )
+int brig_SetMenu( brig_Widget *pWidget, BRIG_HMENU hMenu )
 {
-   GtkFixed * box = ( GtkFixed * ) g_object_get_data( (GObject*) hWnd, "fbox" );
+   GtkFixed * box = ( GtkFixed * ) g_object_get_data( (GObject*) (pWidget->Handle()), "fbox" );
    GtkWidget * vbox = ( (GtkWidget*)box )->parent;
    gtk_box_pack_start( GTK_BOX (vbox), (GtkWidget*)hMenu, FALSE, FALSE, 0);
    gtk_box_reorder_child(GTK_BOX(vbox), (GtkWidget*)hMenu, 0);

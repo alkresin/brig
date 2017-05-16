@@ -19,9 +19,9 @@ BRIG_HMENU brig_CreatePopupMenu( void )
    return CreatePopupMenu();
 }
 
-int brig_SetMenu( HWND hWnd, HMENU hMenu )
+int brig_SetMenu( brig_Widget *pWidget, HMENU hMenu )
 {
-   return SetMenu( hWnd, hMenu );
+   return SetMenu( pWidget->Handle(), hMenu );
 }
 
 HMENU brig_AddMenuItem( HMENU hMenu, PBRIG_CHAR szCaption, int iPos,
