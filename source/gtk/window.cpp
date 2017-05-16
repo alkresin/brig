@@ -660,13 +660,13 @@ BRIG_HANDLE brig_InitDialog( PBRIG_CHAR lpTitle,
 
 void brig_ActivateDialog( brig_Dialog *pDialog )
 {
-   GtkWindow *handle = pDialog->Handle();
+   GtkWidget *handle = pDialog->Handle();
    gtk_widget_show_all( handle );
    if( pDialog->bModal )
    {
-      gtk_window_set_modal( handle, 1 );
+      gtk_window_set_modal( (GtkWindow*) handle, 1 );
       if( handle->parent )
-         gtk_window_set_transient_for( handle, (GtkWindow*) (handle->parent) );
+         gtk_window_set_transient_for( (GtkWindow*) handle, (GtkWindow*) (handle->parent) );
 
       gtk_main();
    }

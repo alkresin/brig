@@ -186,6 +186,7 @@ public:
    short int iState;
    long int lBackClr1, lBackClr2;
    PBRIG_BRUSH hBrush1, hBrush2;
+   PBRIG_PEN hPen;
    brig_Style *pStyleNormal, *pStyleOver, *pStylePress;
 };
 

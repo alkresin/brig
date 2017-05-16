@@ -383,7 +383,7 @@ bool brig_Panel::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 }
 
 /* -------- QButton --------- */
-brig_QButton::brig_QButton():brig_Widget(), pfOnPaint(NULL), pfOnClick(NULL), iState(0), lBackClr1(COLOR_GR_LIGHT), lBackClr2(COLOR_WHITE), hBrush1(NULL), hBrush2(NULL)
+brig_QButton::brig_QButton():brig_Widget(), pfOnPaint(NULL), pfOnClick(NULL), iState(0), lBackClr1(COLOR_GR_LIGHT), lBackClr2(COLOR_WHITE), hBrush1(NULL), hBrush2(NULL), hPen(NULL)
 {
    uiType = TYPE_QBTN;
    lBackColor = COLOR_GR_LIGHT;
@@ -391,11 +391,12 @@ brig_QButton::brig_QButton():brig_Widget(), pfOnPaint(NULL), pfOnClick(NULL), iS
 
 brig_QButton::~brig_QButton()
 {
-   //brig_Widget::~brig_Widget();
    if( hBrush1 )
       brigDelBrush( hBrush1 );
    if( hBrush2 )
       brigDelBrush( hBrush2 );
+   if( hPen )
+      brigDelPen( hPen );
 
 }
 
@@ -457,7 +458,12 @@ static void brig_paint_QButton( brig_QButton *pQButton )
          brig_SetTextColor( pps->hDC, pQButton->lTextColor );
 
       if( pQButton->iState > 0 )
-            brig_DrawRect( pps->hDC, rc.left, rc.top, rc.right, rc.bottom );
+      {
+         if( !pQButton->hPen )
+            pQButton->hPen = brigAddPen();
+         brig_SelectObject( pps->hDC, pQButton->hPen );
+         brig_DrawRect( pps->hDC, rc.left, rc.top, rc.right, rc.bottom );
+      }
    }
 
    if( pQButton->szCaption )

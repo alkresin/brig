@@ -125,7 +125,7 @@ void brig_FillRect( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom, 
 
    brig__setcolor( hDC->cr, hBrush->color );
    cairo_rectangle( hDC->cr, (gdouble)iLeft, (gdouble)iTop, 
-         (gdouble)(iRight-iLeft+1), (gdouble)(iBottom-iTop+1) );
+         (gdouble)(iRight-iLeft), (gdouble)(iBottom-iTop) );
    cairo_fill( hDC->cr );
 
 }
@@ -134,7 +134,7 @@ void brig_DrawRect( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom )
 {
 
    cairo_rectangle( hDC->cr, (gdouble)iLeft, (gdouble)iTop,
-        (gdouble)(iRight-iLeft+1), (gdouble)(iBottom-iTop+1) );
+        (gdouble)(iRight-iLeft), (gdouble)(iBottom-iTop) );
    cairo_stroke( hDC->cr );
 }
 
@@ -142,7 +142,7 @@ void brig_Rectangle( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom 
 {
 
    cairo_rectangle( hDC->cr, (gdouble)iLeft, (gdouble)iTop,
-        (gdouble)(iRight-iLeft+1), (gdouble)(iBottom-iTop+1) );
+        (gdouble)(iRight-iLeft), (gdouble)(iBottom-iTop) );
    cairo_stroke( hDC->cr );
 }
 
