@@ -13,6 +13,14 @@
    #define _UNICODE
 #endif
 
+#define BRIG_VER_MAJOR    0
+#define BRIG_VER_MINOR    9
+#define BRIG_VER_BUILD    1
+
+#define BRIG_VERSION_MAJOR    1
+#define BRIG_VERSION_MINOR    2
+#define BRIG_VERSION_BUILD    3
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

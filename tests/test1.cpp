@@ -23,7 +23,7 @@ bool fncOnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
    oEdit.SetTextColor( 255, 0 );
    oEdit.SetBackColor( 11184810, 1 );
    pText = oEdit.GetText();
-   brig_MsgInfo( pText, (PBRIG_CHAR) "StartBox" );
+   oLabel.SetText( pText );
    free( pText );
 
    return 0;
@@ -42,11 +42,6 @@ bool fncOnSize( brig_Widget *pPanel, WPARAM wParam, LPARAM lParam )
 
 }
 
-void fncMenu1( void )
-{
-   brig_MsgInfo( (PBRIG_CHAR) "1", (PBRIG_CHAR) "Menu" );
-}
-
 void fncMenu1b( void )
 {
    int iRes;
@@ -58,7 +53,7 @@ void fncMenu1b( void )
    avList.push_back( "Mike Horn" );
    avList.push_back( "Iegudi Menuhin" );
 
-   iRes = brigChoice( avList, NULL, 400, 100, 200, 250 );
+   iRes = brigChoice( avList, "Select name", 400, 100, 200, 250 );
    sprintf( szRes, "Selected: %d", iRes );
    oLabel.SetText( szRes );
 }
@@ -104,6 +99,12 @@ void fncMenu2( void )
    }
       
 }
+
+void fncMenu3( void )
+{
+   brig_MsgInfo( brig_Version(), (PBRIG_CHAR) "About" );
+}
+
 
 int brig_Main( int argc, char *argv[] )
 {
@@ -160,14 +161,14 @@ int brig_Main( int argc, char *argv[] )
 
    if( brigSubMenu( "File", 0 ) )
    {
-      brigMenuItemAdd( "MsgInfo", 0, fncMenu1 );
       brigMenuItemAdd( "brigChoice", 0, fncMenu1b );
+      brigMenuItemAdd( "Dialog", 0, fncMenu2 );
       brigMenuSeparator();
       brigMenuItemAdd( "Close", 0, fncMenu1e );
       brigMenuEnd();
    }
 
-   brigMenuItemAdd( "Help", 0, fncMenu2 );
+   brigMenuItemAdd( "Help", 0, fncMenu3 );
 
    brigMenuEnd();
    

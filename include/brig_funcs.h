@@ -13,6 +13,9 @@
 
 int brig_Main( int argc, char *argv[] );
 
+extern PBRIG_CHAR brig_Version( void );
+extern int brig_Version( int iVer );
+
 extern BRIG_HANDLE brig_InitMainWindow( PBRIG_CHAR lpAppName, PBRIG_CHAR lpTitle,
       int x, int y, int width, int height, long int lStyle,
       PBRIG_ICON hIcon, PBRIG_BRUSH hBrush );

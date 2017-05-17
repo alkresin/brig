@@ -8,6 +8,8 @@
 
 #include "brig.h"
 
+static BRIG_CHAR szVersion[24];
+
 static bool fncChoic( brig_Table *pTable )
 {
    ((brig_Dialog*)(pTable->pParent))->pResult = (void*) pTable->ulRecCurr;
@@ -116,4 +118,21 @@ int brigChoice( std::vector<char*> &pList, PBRIG_CHAR lpTitle, unsigned int iLef
    brigDelStyle( pStyle );
 
    return (int) oDlg.pResult;
+}
+
+PBRIG_CHAR brig_Version( void )
+{
+   sprintf( szVersion, "Brig %d.%d Build %d", BRIG_VER_MAJOR, BRIG_VER_MINOR, BRIG_VER_BUILD );
+   return szVersion;
+}
+
+int brig_Version( int iVer )
+{
+   switch( iVer )
+   {
+      case BRIG_VERSION_MAJOR:     return BRIG_VER_MAJOR;
+      case BRIG_VERSION_MINOR:     return BRIG_VER_MINOR;
+      case BRIG_VERSION_BUILD:     return BRIG_VER_BUILD;
+   }
+   return 0;
 }

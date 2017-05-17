@@ -72,6 +72,10 @@ void brig_SetWindowText( brig_Widget *pWidget, PBRIG_CHAR lpTitle )
          gtk_window_set_title( GTK_WINDOW( handle ), lpTitle );
          break;
 
+      case TYPE_LABEL:
+         gtk_label_set_text( ( GtkLabel * ) g_object_get_data( ( GObject * ) handle, "label" ) , lpTitle );
+         break;
+
       case TYPE_EDIT:
          if( g_object_get_data( ( GObject * ) handle, "multi" ) )
          {
