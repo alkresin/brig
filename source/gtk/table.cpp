@@ -9,6 +9,9 @@
 
 #include "brig.h"
 
+extern PangoContext *pangoContext;
+extern PangoLayout *pangoLayout;
+
 extern void brig_SetEvent( gpointer handle, char * cSignal, long int p1, long int p2, long int p3 );
 extern void brig_SetSignal( gpointer handle, char * cSignal, long int p1, long int p2, long int p3 );
 
@@ -25,15 +28,15 @@ BRIG_HANDLE brig_CreateTable( brig_Table *pTable, int iWidgId,
 
    if( hFont && iRows )
    {
-      cairo_t * cr = gdk_cairo_create( area->window );
-      PangoLayout *layout = pango_cairo_create_layout( cr );
-      PangoContext * context = pango_layout_get_context( layout );
-      PangoFontMetrics * metrics = pango_context_get_metrics( context, hFont->hFont, NULL );
+      //cairo_t * cr = gdk_cairo_create( area->window );
+      //PangoLayout *layout = pango_cairo_create_layout( cr );
+      //PangoContext * context = pango_layout_get_context( layout );
+      PangoFontMetrics * metrics = pango_context_get_metrics( pangoContext, hFont->hFont, NULL );
       int iHeight =  ( pango_font_metrics_get_ascent( metrics ) +
                pango_font_metrics_get_descent( metrics ) ) / PANGO_SCALE;
 
-      g_object_unref( (GObject*) layout );
-      cairo_destroy( cr );
+      //g_object_unref( (GObject*) layout );
+      //cairo_destroy( cr );
 
       iHeight = (iHeight + pTable->pPadding[1] + pTable->pPadding[3]) * iRows + 2;
       if( iHeight < nHeight )

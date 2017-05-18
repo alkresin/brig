@@ -8,6 +8,7 @@
  */
 
 #include "brig.h"
+#include "fontconfig/fontconfig.h"
 
 #define WM_DESTROY                        2
 #define WM_MOVE                           3
@@ -27,6 +28,9 @@ static BRIG_HANDLE hMainWindow = NULL;
 static GtkWidget *pWidgAlloc;
 
 brig_Application brigApp;
+
+PangoContext *pangoContext;
+PangoLayout *pangoLayout;
 
 static long prevp2 = -1;
 
@@ -691,6 +695,24 @@ void brig_gtk_init( void )
    gtk_init( 0,0 );
    setlocale( LC_NUMERIC, "C" );
    setlocale( LC_CTYPE, "" );
+
+   PangoFontMap* fontMap = pango_cairo_font_map_new();
+   pangoContext = pango_font_map_create_context( fontMap );
+   pangoLayout = pango_layout_new( pangoContext );
+
+   FcPattern *p = FcPatternCreate();
+   FcObjectSet *os = FcObjectSetBuild(FC_FAMILY,NULL);
+   FcFontSet *fs = FcFontList(NULL, p, os);
+   FcPatternDestroy( p );
+   FcObjectSetDestroy( os );
+   for( int i = 0; i < fs->nfont; ++i )
+   {
+       guchar* fontName = FcNameUnparse( fs->fonts[i] );
+       PangoFontDescription* fontDesc = pango_font_description_from_string( (gchar*)fontName );
+       pango_font_map_load_font( fontMap, pangoContext, fontDesc );
+       pango_font_description_free( fontDesc );
+       g_free(fontName);
+   }
 }
 
 
