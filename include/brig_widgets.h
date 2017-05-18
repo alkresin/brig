@@ -25,7 +25,7 @@ extern BRIG_HANDLE brig_CreatePanel( brig_Panel *pPanel, int iWidgId,
 extern BRIG_HANDLE brig_CreateQButton( brig_QButton *pQBtn, int iWidgId,
           int x, int y, int nWidth, int nHeight );
 extern BRIG_HANDLE brig_CreateTable( brig_Table *pTable, int iWidgId,
-          int x, int y, int nWidth, int nHeight, unsigned long ulStyle );
+          int x, int y, int nWidth, int nHeight, unsigned long ulStyle, PBRIG_FONT hFont, unsigned int iRows );
 extern BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
           int x, int y, int nWidth, int nHeight, bool bEdit );
 extern void brig_ComboSetArray( brig_Widget *pWidget, char **pArray, int iLen );
@@ -219,8 +219,8 @@ public:
 
    brig_Table();
 
-   BRIG_HANDLE New( brig_Container *pParent,
-          int x, int y, int nWidth, int nHeight, unsigned long ulStyle = 0 );
+   BRIG_HANDLE New( brig_Container *pParent, int x, int y, int nWidth, int nHeight,
+         unsigned long ulStyle = 0, PBRIG_FONT hFont = NULL, unsigned int iRows = 0 );
 
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
    void AddColumn( PBRIG_CHAR szHead, int iWidth, brig_fnc_column pfValue );

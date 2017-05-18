@@ -171,8 +171,6 @@ BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
           int x, int y, int nWidth, int nHeight, bool bEdit )
 {
 
-   SYMBOL_UNUSED( ulStyle );
-
    BRIG_HANDLE hCombo = CreateWindow( TEXT( "COMBOBOX" ), TEXT( "" ),
          WS_CHILD | WS_VISIBLE | ( (bEdit)? CBS_DROPDOWN:CBS_DROPDOWNLIST ),
          x, y, nWidth, nHeight,

@@ -99,6 +99,15 @@ long int  brig_Widget::SetBackColor( long int lColor, bool bRepaint )
 
 void brig_Widget::Move( int iLeft, int iTop, int iWidth, int iHeight )
 {
+   if( iLeft >= 0 )
+      this->iLeft = iLeft;
+   if( iTop >= 0 )
+      this->iTop = iTop;
+   if( iWidth >= 0 )
+      this->iWidth = iWidth;
+   if( iHeight >= 0 )
+      this->iHeight = iHeight;
+
    brig_MoveWindow( this, iLeft, iTop, iWidth, iHeight );
 }
 

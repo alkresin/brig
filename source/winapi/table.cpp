@@ -49,17 +49,40 @@ static void reg_Table( void )
    }
 }
 
-HWND brig_CreateTable( brig_Table *pTable, int iWidgId,
-          int x, int y, int nWidth, int nHeight, unsigned long ulStyle )
+BRIG_HANDLE brig_CreateTable( brig_Table *pTable, int iWidgId,
+          int x, int y, int nWidth, int nHeight, unsigned long ulStyle, PBRIG_FONT hFont, unsigned int iRows )
 {
-   HWND hTable;
+   BRIG_HANDLE hTable;
+   BRIG_HANDLE handle = pTable->pParent->Handle();
 
    reg_Table();
+
+   if( hFont && iRows )
+   {
+      HDC hDC = GetDC( handle );
+      PBRIG_FONT hFontOld = (PBRIG_FONT) SelectObject( hDC, ( HGDIOBJ ) hFont );
+      TEXTMETRIC tm;
+      int iHeight;
+
+      GetTextMetrics( hDC, &tm );
+      SelectObject( hDC, ( HGDIOBJ ) hFontOld );
+      ReleaseDC( handle, hDC );
+
+      iHeight = (tm.tmHeight + pTable->pPadding[1] + pTable->pPadding[3]) * iRows + 2;
+      if( iHeight < nHeight )
+      {
+         nHeight = iHeight;
+         pTable->iHeight = iHeight;
+      }
+      else if( iHeight > nHeight )
+         ulStyle |= WS_VSCROLL;
+   }
+
    hTable = CreateWindow( TEXT( "Table" ),
-         NULL,                          /* no window title   */
+         NULL,                         /* no window title   */
          WS_CHILD | WS_VISIBLE | SS_OWNERDRAW | CCS_TOP | ulStyle,
          x, y, nWidth, nHeight,
-         pTable->pParent->Handle(),    /* parent window    */
+         handle,                       /* parent window    */
          ( HMENU ) iWidgId,            /* button       ID  */
          GetModuleHandle( NULL ), NULL );
 

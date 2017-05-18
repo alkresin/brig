@@ -76,6 +76,6 @@ extern void brigDelStyle( brig_Style * pStyle );
 extern PBRIG_FONT brig_ChooseFont( PBRIG_FONT hFontPrev, BRIGAPP_FONT *pbf = NULL );
 
 extern int brigChoice( std::vector<char*> &pList, PBRIG_CHAR lpTitle, unsigned int iLeft,
-      unsigned int iTop, unsigned int iWidth, unsigned int iHeight );
+      unsigned int iTop, unsigned int iWidth, unsigned int iHeight, PBRIG_FONT hFont = NULL );
 
 #endif // BRIG_APP_H_

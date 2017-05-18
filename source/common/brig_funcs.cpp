@@ -18,7 +18,7 @@ static bool fncChoic( brig_Table *pTable )
    return 1;
 }
 
-static bool fncCloseDlg( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
+static bool fncCloseDlg1( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
 {
    brig_Table *pTable = (brig_Table *)((brig_Dialog*)(pBtn->pParent))->avWidgets[0];
 
@@ -26,6 +26,17 @@ static bool fncCloseDlg( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
    SYMBOL_UNUSED( lParam );
 
    ((brig_Dialog*)(pBtn->pParent))->pResult = (void*) pTable->ulRecCurr;
+   ((brig_Dialog*)(pBtn->pParent))->Close();
+   return 1;
+}
+
+static bool fncCloseDlg2( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
+{
+
+   SYMBOL_UNUSED( wParam );
+   SYMBOL_UNUSED( lParam );
+
+   ((brig_Dialog*)(pBtn->pParent))->pResult = (void*) 0;
    ((brig_Dialog*)(pBtn->pParent))->Close();
    return 1;
 }
@@ -85,20 +96,23 @@ static PBRIG_CHAR fncCellValue( brig_Table *pTable, int iCol )
 }
 
 int brigChoice( std::vector<char*> &pList, PBRIG_CHAR lpTitle, unsigned int iLeft,
-      unsigned int iTop, unsigned int iWidth, unsigned int iHeight )
+      unsigned int iTop, unsigned int iWidth, unsigned int iHeight, PBRIG_FONT hFont )
 {
    brig_Dialog oDlg;
-   brig_Button oBtn;
+   brig_Button oBtn1, oBtn2;
    brig_Table oTable;
 
    brig_Style * pStyle = brigAddStyle( 0xdddddd );
    brig_Style * pStyleSel = brigAddStyle( 0xeeeeee );
 
    oDlg.New( NULL, iLeft, iTop, iWidth, iHeight, lpTitle, WS_BORDER );
-   if( brigApp.pMainWindow && brigApp.pMainWindow->hFont )
+
+   if( hFont )
+      oDlg.hFont = hFont;
+   else if( brigApp.pMainWindow && brigApp.pMainWindow->hFont )
       oDlg.hFont = brigApp.pMainWindow->hFont;
 
-   oTable.New( &oDlg, 0, 0, iWidth, iHeight - 80 );
+   oTable.New( &oDlg, 0, 0, iWidth, iHeight - 80, 0, oDlg.hFont, pList.size() );
 
    oTable.pStyle = pStyle;
    oTable.pStyleSel = pStyleSel;
@@ -108,8 +122,14 @@ int brigChoice( std::vector<char*> &pList, PBRIG_CHAR lpTitle, unsigned int iLef
    oTable.AddColumn( NULL, iWidth, fncCellValue );
    oTable.pfOnDblClick = fncChoic;
 
-   oBtn.New( &oDlg, (iWidth-100)/2, iHeight-72, 100, 32, (PBRIG_CHAR) "Ok" );
-   oBtn.pfOnClick = fncCloseDlg;
+   iHeight = oTable.iHeight + 80;
+   oDlg.Move( -1, -1, iWidth, iHeight );
+
+   oBtn1.New( &oDlg, 20, iHeight-68, 60, 28, (PBRIG_CHAR) "Ok" );
+   oBtn1.pfOnClick = fncCloseDlg1;
+
+   oBtn2.New( &oDlg, iWidth-80, iHeight-68, 60, 28, (PBRIG_CHAR) "X" );
+   oBtn2.pfOnClick = fncCloseDlg2;
 
    brig_SetFocus( &oTable );
    oDlg.Activate();

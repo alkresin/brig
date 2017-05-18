@@ -20,17 +20,18 @@ brig_Table::brig_Table():brig_Widget(), pfOnPaint(NULL), pfDataSet(NULL), pfOnDb
    pStyle = pStyleSel = pStyleHead = pStyleFoot = pStyleCell = NULL;
 }
 
-BRIG_HANDLE brig_Table::New( brig_Container *pParent,
-          int x, int y, int nWidth, int nHeight, unsigned long ulStyle )
+BRIG_HANDLE brig_Table::New( brig_Container *pParent, int x, int y,
+      int nWidth, int nHeight, unsigned long ulStyle, PBRIG_FONT hFont, unsigned int iRows )
 {
 
    brig_Widget::New( pParent, x, y, nWidth, nHeight );
 
-   handle = brig_CreateTable( this, iWidgId,
-             x, y, nWidth, nHeight, ulStyle );
+   handle = brig_CreateTable( this, iWidgId, x, y, nWidth, nHeight, ulStyle, hFont, iRows );
 
-   if( !hFont )
-      hFont = pParent->hFont;
+   if( hFont )
+      this->hFont = hFont;
+   else
+      this->hFont = pParent->hFont;
    brig_SetWidgetData( this );
 
    return handle;

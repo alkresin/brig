@@ -137,8 +137,10 @@ void brig_MoveWindow( brig_Widget *pWidget, int iLeft, int iTop, int iWidth, int
 
    if( g_object_get_data( ( GObject * ) handle, "window" ) )
    {
-      gtk_window_move( GTK_WINDOW( handle ), iLeft, iTop );
-      gtk_window_resize( GTK_WINDOW( handle ), iWidth, iHeight );
+      if( iLeft >= 0 )
+         gtk_window_move( GTK_WINDOW( handle ), iLeft, iTop );
+      if( iWidth >= 0 )
+         gtk_window_resize( GTK_WINDOW( handle ), iWidth, iHeight );
    }
    else
    {

@@ -13,17 +13,40 @@ extern void brig_SetEvent( gpointer handle, char * cSignal, long int p1, long in
 extern void brig_SetSignal( gpointer handle, char * cSignal, long int p1, long int p2, long int p3 );
 
 BRIG_HANDLE brig_CreateTable( brig_Table *pTable, int iWidgId,
-          int x, int y, int nWidth, int nHeight, unsigned long ulStyle )
+          int x, int y, int nWidth, int nHeight, unsigned long ulStyle, PBRIG_FONT hFont, unsigned int iRows )
 {
+   BRIG_HANDLE handle = pTable->pParent->Handle();
    GtkWidget *vbox, *hbox;
    GtkWidget *vscroll, *hscroll;
    GtkWidget *area;
    GtkFixed *box;
 
+   area = gtk_drawing_area_new();
+
+   if( hFont && iRows )
+   {
+      cairo_t * cr = gdk_cairo_create( area->window );
+      PangoLayout *layout = pango_cairo_create_layout( cr );
+      PangoContext * context = pango_layout_get_context( layout );
+      PangoFontMetrics * metrics = pango_context_get_metrics( context, hFont->hFont, NULL );
+      int iHeight =  ( pango_font_metrics_get_ascent( metrics ) +
+               pango_font_metrics_get_descent( metrics ) ) / PANGO_SCALE;
+
+      g_object_unref( (GObject*) layout );
+      cairo_destroy( cr );
+
+      iHeight = (iHeight + pTable->pPadding[1] + pTable->pPadding[3]) * iRows + 2;
+      if( iHeight < nHeight )
+      {
+         nHeight = iHeight;
+         pTable->iHeight = iHeight;
+      }
+      else if( iHeight > nHeight )
+         ulStyle |= WS_VSCROLL;
+   }
+
    hbox = gtk_hbox_new( FALSE, 0 );
    vbox = gtk_vbox_new( FALSE, 0 );
-
-   area = gtk_drawing_area_new(  );
 
    gtk_box_pack_start( GTK_BOX( hbox ), vbox, TRUE, TRUE, 0 );
    if( ulStyle & WS_VSCROLL )
@@ -38,7 +61,7 @@ BRIG_HANDLE brig_CreateTable( brig_Table *pTable, int iWidgId,
       //hb_itemRelease( temp );
 
       //SetWindowObject( ( GtkWidget * ) adjV, pObject );
-      brig_SetSignal( ( gpointer ) adjV, "value_changed", WM_VSCROLL, 0, 0 );
+      brig_SetSignal( ( gpointer ) adjV, (char*)"value_changed", WM_VSCROLL, 0, 0 );
    }
 
    gtk_box_pack_start( GTK_BOX( vbox ), area, TRUE, TRUE, 0 );
@@ -54,10 +77,10 @@ BRIG_HANDLE brig_CreateTable( brig_Table *pTable, int iWidgId,
       //hb_itemRelease( temp );
 
       //SetWindowObject( ( GtkWidget * ) adjH, pObject );
-      brig_SetSignal( ( gpointer ) adjH, "value_changed", WM_HSCROLL, 0, 0 );
+      brig_SetSignal( ( gpointer ) adjH, (char*)"value_changed", WM_HSCROLL, 0, 0 );
    }
 
-   box = ( GtkFixed * ) g_object_get_data( ( GObject * ) pTable->pParent->Handle(), "fbox" );
+   box = ( GtkFixed * ) g_object_get_data( ( GObject * ) handle, "fbox" );
    if( box )
       gtk_fixed_put( box, hbox, x, y );
    g_object_set_data( ( GObject * ) area, "pbox", ( gpointer ) hbox );
@@ -68,19 +91,19 @@ BRIG_HANDLE brig_CreateTable( brig_Table *pTable, int iWidgId,
    //hb_itemRelease( temp );
 
    //SetWindowObject( area, pObject );
-   brig_SetEvent( ( gpointer ) area, "expose_event", WM_PAINT, 0, 0 );
+   brig_SetEvent( ( gpointer ) area, (char*)"expose_event", WM_PAINT, 0, 0 );
 
    GTK_WIDGET_SET_FLAGS( area, GTK_CAN_FOCUS );
 
    gtk_widget_add_events( area, GDK_BUTTON_PRESS_MASK |
          GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK |
          GDK_POINTER_MOTION_MASK | GDK_SCROLL_MASK );
-   brig_SetEvent( ( gpointer ) area, "button_press_event", 0, 0, 0 );
-   brig_SetEvent( ( gpointer ) area, "button_release_event", 0, 0, 0 );
-   brig_SetEvent( ( gpointer ) area, "motion_notify_event", 0, 0, 0 );
-   brig_SetEvent( ( gpointer ) area, "key_press_event", 0, 0, 0 );
-   brig_SetEvent( ( gpointer ) area, "key_release_event", 0, 0, 0 );
-   brig_SetEvent( ( gpointer ) area, "scroll_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) area, (char*)"button_press_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) area, (char*)"button_release_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) area, (char*)"motion_notify_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) area, (char*)"key_press_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) area, (char*)"key_release_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) area, (char*)"scroll_event", 0, 0, 0 );
 
    //all_signal_connect( ( gpointer ) area );
 
