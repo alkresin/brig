@@ -189,40 +189,37 @@ BRIG_HANDLE brig_CreateEdit( brig_Edit *pEdit, int iWidgId,
 /* -------- Combobox --------- */
 
 BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
-          int x, int y, int nWidth, int nHeight, unsigned long ulStyle )
+          int x, int y, int nWidth, int nHeight, bool bEdit )
 {
-   GtkWidget *hCtrl = gtk_combo_new();
+   GtkWidget *hCtrl;
+
+   if( bEdit )
+      hCtrl = gtk_combo_box_entry_new_text();
+   else
+      hCtrl = gtk_combo_box_new_text();
+
    GtkFixed *box = ( GtkFixed * ) g_object_get_data( ( GObject * ) pCombo->pParent->Handle(), "fbox" );
    if( box )
       gtk_fixed_put( box, hCtrl, x, y );
    gtk_widget_set_size_request( hCtrl, nWidth, nHeight );
-   if( hCtrl )
-   {
-      if( ulStyle & 1 )
-         gtk_entry_set_editable (GTK_ENTRY (GTK_COMBO (hCtrl)->entry), FALSE);
-   }
+
    return hCtrl;
 }
 
 void brig_ComboSetArray( brig_Widget *pWidget, char **pArray, int iLen )
 {
-   GList *glist = NULL;
-
    for( int i = 0; i < iLen; i++ )
-      glist = g_list_append( glist, pArray[i] );
-
-   gtk_combo_set_popdown_strings( GTK_COMBO( pWidget->Handle() ), glist );
-
+      gtk_combo_box_append_text( GTK_COMBO_BOX(pWidget->Handle()), pArray[i] );
 }
 
 int brig_ComboGetValue( brig_Widget *pWidget )
 {
-   //return SendMessage( hCombo, CB_GETCURSEL, 0, 0 );
+   return gtk_combo_box_get_active( (GtkComboBox*) (pWidget->Handle()) );
 }
 
 void brig_ComboSetValue( brig_Widget *pWidget, int iSelected )
 {
-   //SendMessage( hCombo, CB_SETCURSEL, iSelected, 0 );
+   gtk_combo_box_set_active( (GtkComboBox*) (pWidget->Handle()), iSelected );
 }
 
 /* -------- Panel --------- */

@@ -27,7 +27,7 @@ extern BRIG_HANDLE brig_CreateQButton( brig_QButton *pQBtn, int iWidgId,
 extern BRIG_HANDLE brig_CreateTable( brig_Table *pTable, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle );
 extern BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
-          int x, int y, int nWidth, int nHeight, unsigned long ulStyle );
+          int x, int y, int nWidth, int nHeight, bool bEdit );
 extern void brig_ComboSetArray( brig_Widget *pWidget, char **pArray, int iLen );
 extern int brig_ComboGetValue( brig_Widget *pWidget );
 extern void brig_ComboSetValue( brig_Widget *pWidget, int iSelected );
@@ -140,7 +140,7 @@ public:
    brig_Combo();
 
    BRIG_HANDLE New( brig_Container *pParent,
-          int x, int y, int nWidth, int nHeight, unsigned long ulStyle = 0, char **pArray = NULL, int iLen = 0 );
+          int x, int y, int nWidth, int nHeight, bool bEdit = 0, char **pArray = NULL, int iLen = 0 );
    void Set( char **pArray, int iLen );
 
    int  GetValue( void );

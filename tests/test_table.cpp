@@ -84,7 +84,7 @@ int brig_Main( int argc, char *argv[] )
 
    oDlg.New( NULL, 200, 200, 400, 300, (PBRIG_CHAR) "A table test" );
 
-   oTable.New( &oDlg, 20, 20, 360, 160 );
+   oTable.New( &oDlg, 20, 20, 360, 160, WS_VSCROLL );
 
    oTable.lTextColor = 0xff0000;
    oTable.lSelTColor = 0x000000;

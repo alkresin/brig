@@ -156,7 +156,6 @@ static void brig_paint_Table( brig_Table *pTable )
 
    if( !pTable->hBrush )
       pTable->SetBackColor( COLOR_WHITE, 0 );
-   brig_FillRect( pps->hDC, rc.left, rc.top, rc.right, rc.bottom, pTable->hBrush );
 
    if( !pTable->pfDataSet )
    {
@@ -216,10 +215,10 @@ static void brig_paint_Table( brig_Table *pTable )
 
    if( ulRecCount )
    {
-      unsigned int iLeft = 0;
+      unsigned int ui, iLeft = 0;
 
       brig_SelectObject( pps->hDC, pTable->pPenSep );
-      for( unsigned int ui = 0; ui<pTable->avColumns.size(); ui++ )
+      for( ui = 0; ui<pTable->avColumns.size(); ui++ )
       {
          iLeft += pTable->avColumns[ui]->iWidth;
          if( iLeft > pTable->uiClientWidth || ui+1 == pTable->avColumns.size() )
@@ -227,17 +226,22 @@ static void brig_paint_Table( brig_Table *pTable )
          brig_moveto( pps->hDC, iLeft-2, y1 );
          brig_lineto( pps->hDC, iLeft-2, y1 + pTable->uiRowCount*uiRowHeight );
       }
-      for( unsigned int ui = 1; ui<=pTable->uiRowCount; ui++ )
+      for( ui = 1; ui<=pTable->uiRowCount; ui++ )
       {
          brig_moveto( pps->hDC, 0, y1 + uiRowHeight*ui );
          brig_lineto( pps->hDC, pTable->uiClientWidth, y1 + uiRowHeight*ui );
       }
+      ui --;
+      if( y1 + uiRowHeight*ui < (unsigned int) rc.bottom )
+         brig_FillRect( pps->hDC, rc.left, y1 + uiRowHeight*ui + 1, rc.right, rc.bottom, pTable->hBrush );
    }
+   else
+      brig_FillRect( pps->hDC, rc.left, y1, rc.right, rc.bottom, pTable->hBrush );
    brig_EndPaint( pTable, pps );
 
 }
 
-static void brig_OnBtnDown( brig_Table *pTable, LPARAM lParam )
+static int brig_OnBtnDown( brig_Table *pTable, LPARAM lParam )
 {
    unsigned int uixPos = ( (unsigned long) lParam ) & 0xFFFF;
    int iyPos = ( ( (unsigned long) lParam ) >> 16 ) & 0xFFFF;
@@ -250,6 +254,10 @@ static void brig_OnBtnDown( brig_Table *pTable, LPARAM lParam )
    {
       unsigned int uiWidth = 0;
       unsigned int uiRow = iyPos / uiHeight + 1;
+
+      if( uiRow > pTable->uiRowCount )
+         return 0;
+
       if( pTable->uiRowSel != uiRow )
       {
          pTable->ulRecCurr += ( uiRow-pTable->uiRowSel );
@@ -271,6 +279,7 @@ static void brig_OnBtnDown( brig_Table *pTable, LPARAM lParam )
          brig_RedrawWindow( pTable );
    }
    brig_SetFocus( pTable );
+   return 1;
 }
 
 void brig_Table::Down( void )
@@ -369,8 +378,7 @@ bool brig_Table::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
          break;
 
       case WM_LBUTTONDBLCLK:
-         brig_OnBtnDown( this, lParam );
-         if( pfOnDblClick )
+         if( brig_OnBtnDown( this, lParam ) && pfOnDblClick )
             pfOnDblClick( this );
          break;
       case WM_RBUTTONDOWN:
