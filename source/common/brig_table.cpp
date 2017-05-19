@@ -18,6 +18,7 @@ brig_Table::brig_Table():brig_Widget(), pfOnPaint(NULL), pfDataSet(NULL), pfOnDb
    pHeadPadding[0] = pHeadPadding[2] = pPadding[0] = pPadding[2] = 4;
    pHeadPadding[1] = pHeadPadding[3] = pPadding[1] = pPadding[3] = 2;
    pStyle = pStyleSel = pStyleHead = pStyleFoot = pStyleCell = NULL;
+   bBodyOnly = 0;
 }
 
 BRIG_HANDLE brig_Table::New( brig_Container *pParent, int x, int y,
@@ -143,7 +144,7 @@ static void paint_row( brig_Table *pTable, PBRIG_DC hDC, unsigned int y, bool bS
    }
 }
 
-static void brig_paint_Table( brig_Table *pTable )
+static void paint_table( brig_Table *pTable )
 {
    PBRIG_PPS pps = brig_BeginPaint( pTable );
    RECT rc;
@@ -211,8 +212,11 @@ static void brig_paint_Table( brig_Table *pTable )
    else
       pTable->uiRowCount = 0;
 
-   paint_head( pTable, pps->hDC );
-   paint_foot( pTable, pps->hDC );
+   if( !pTable->bBodyOnly )
+   {
+      paint_head( pTable, pps->hDC );
+      paint_foot( pTable, pps->hDC );
+   }
 
    if( ulRecCount )
    {
@@ -238,11 +242,13 @@ static void brig_paint_Table( brig_Table *pTable )
    }
    else
       brig_FillRect( pps->hDC, rc.left, y1, rc.right, rc.bottom, pTable->hBrush );
+
+   pTable->bBodyOnly = 0;
    brig_EndPaint( pTable, pps );
 
 }
 
-static int brig_OnBtnDown( brig_Table *pTable, LPARAM lParam )
+static int table_OnBtnDown( brig_Table *pTable, LPARAM lParam )
 {
    unsigned int uixPos = ( (unsigned long) lParam ) & 0xFFFF;
    int iyPos = ( ( (unsigned long) lParam ) >> 16 ) & 0xFFFF;
@@ -292,6 +298,7 @@ void brig_Table::Down( void )
    if( uiRowSel < uiRowCount )
       uiRowSel++;
 
+   bBodyOnly = 1;
    brig_RedrawWindow( this );
 }
 
@@ -304,6 +311,7 @@ void brig_Table::Up( void )
    if( uiRowSel > 1 )
       uiRowSel--;
 
+   bBodyOnly = 1;
    brig_RedrawWindow( this );
 }
 
@@ -312,6 +320,7 @@ void brig_Table::Top( void )
    pfDataSet( this, TDS_TOP, 0 );
    uiRowSel = 1;
 
+   bBodyOnly = 1;
    brig_RedrawWindow( this );
 }
 
@@ -321,6 +330,7 @@ void brig_Table::Bottom( void )
    pfDataSet( this, TDS_BOTTOM, 0 );
    uiRowSel = ( ulRecs > uiRowCount )? uiRowCount : ulRecs;
 
+   bBodyOnly = 1;
    brig_RedrawWindow( this );
 }
 
@@ -344,12 +354,16 @@ bool brig_Table::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
             brig_EndPaint( this, pps );
          }
          else
-            brig_paint_Table( this );
+            paint_table( this );
 
          break;
 
+      case WM_ERASEBKGND:
+         return 1;
+
       case WM_KEYUP:
          return 1;
+
       case WM_KEYDOWN:
          switch( wParam ) {
             case VK_DOWN:
@@ -372,18 +386,32 @@ bool brig_Table::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
          return 1;
 
       case WM_LBUTTONDOWN:
-         brig_OnBtnDown( this, lParam );
+         table_OnBtnDown( this, lParam );
          return 1;
 
       case WM_LBUTTONUP:
          break;
 
       case WM_LBUTTONDBLCLK:
-         if( brig_OnBtnDown( this, lParam ) && pfOnDblClick )
+         if( table_OnBtnDown( this, lParam ) && pfOnDblClick )
             pfOnDblClick( this );
          break;
+
       case WM_RBUTTONDOWN:
          break;
+
+      case WM_VSCROLL:
+         brig_table_OnVScroll( this, wParam );
+         break;
+
+      case WM_HSCROLL:
+         brig_table_OnHScroll( this, wParam );
+         break;
+
+      case WM_MOUSEWHEEL:
+         brig_table_OnWheel( this, wParam );
+         break;
+
    }
   
    return 0;

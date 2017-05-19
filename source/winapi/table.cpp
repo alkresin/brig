@@ -9,6 +9,78 @@
 
 #include "brig.h"
 
+void brig_table_OnVScroll( brig_Table *pTable, WPARAM wParam )
+{
+   unsigned int uiCode = ( (unsigned long) wParam ) & 0xFFFF;
+
+   switch (uiCode) {
+
+      case SB_LINEDOWN:
+         pTable->Down();
+         break;
+
+      case SB_LINEUP:
+         pTable->Up();
+         break;
+
+      case SB_TOP:
+         pTable->Top();
+         break;
+
+      case SB_BOTTOM:
+         pTable->Bottom();
+         break;
+
+      case SB_PAGEDOWN:
+         break;
+
+      case SB_PAGEUP:
+         break;
+
+      case SB_THUMBPOSITION:
+         break;
+
+      case SB_THUMBTRACK:
+         break;
+
+   }
+}
+
+void brig_table_OnHScroll( brig_Table *pTable, WPARAM wParam )
+{
+
+   unsigned int uiCode = ( (unsigned long) wParam ) & 0xFFFF;
+
+   SYMBOL_UNUSED( pTable );
+
+   switch (uiCode) {
+
+      case SB_LINELEFT:
+         break;
+   }
+}
+
+void brig_table_OnWheel( brig_Table *pTable, WPARAM wParam )
+{
+   unsigned int uiCode = ( (unsigned long) wParam ) & 0xFFFF;
+   unsigned int uiHiWord = ( ( (unsigned long) wParam ) >> 16 ) & 0xFFFF;
+   int iDelta = ( uiHiWord>32768 )? uiHiWord - 65535 : uiHiWord;
+
+   if( uiCode & MK_MBUTTON )
+   {
+      if( iDelta > 0 )
+      {
+      }
+   }
+   else
+   {
+      if( iDelta > 0 )
+         pTable->Up();
+      else
+         pTable->Down();
+   }
+}
+
 static LRESULT CALLBACK s_TableProc( HWND hDlg, UINT message,
       WPARAM wParam, LPARAM lParam )
 {

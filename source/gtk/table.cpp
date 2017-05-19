@@ -15,6 +15,43 @@ extern PangoLayout *pangoLayout;
 extern void brig_SetEvent( gpointer handle, char * cSignal, long int p1, long int p2, long int p3 );
 extern void brig_SetSignal( gpointer handle, char * cSignal, long int p1, long int p2, long int p3 );
 
+void brig_table_OnVScroll( brig_Table *pTable, WPARAM wParam )
+{
+   GtkAdjustment *adj = ( GtkAdjustment * ) g_object_get_data( (GObject*) pTable->Handle(), "adjv" );
+   int iScrollV = adj->value;
+   int iScrV = (int) g_object_get_data( (GObject*) pTable->Handle(), "iscrv" );
+
+   SYMBOL_UNUSED( wParam );
+}
+
+void brig_table_OnHScroll( brig_Table *pTable, WPARAM wParam )
+{
+   SYMBOL_UNUSED( pTable );
+   SYMBOL_UNUSED( wParam );
+}
+
+void brig_table_OnWheel( brig_Table *pTable, WPARAM wParam )
+{
+   unsigned int uiCode = ( (unsigned long) wParam ) & 0xFFFF;
+   unsigned int uiHiWord = ( ( (unsigned long) wParam ) >> 16 ) & 0xFFFF;
+   int iDelta = ( uiHiWord>32768 )? uiHiWord - 65535 : uiHiWord;
+
+   if( uiCode & MK_MBUTTON )
+   {
+      if( iDelta > 0 )
+      {
+      }
+   }
+   else
+   {
+      if( iDelta > 0 )
+         pTable->Up();
+      else
+         pTable->Down();
+   }
+
+}
+
 BRIG_HANDLE brig_CreateTable( brig_Table *pTable, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle, PBRIG_FONT hFont, unsigned int iRows )
 {
@@ -58,12 +95,10 @@ BRIG_HANDLE brig_CreateTable( brig_Table *pTable, int iWidgId,
       adjV = gtk_adjustment_new( 0.0, 0.0, 101.0, 1.0, 10.0, 10.0 );
       vscroll = gtk_vscrollbar_new( GTK_ADJUSTMENT( adjV ) );
       gtk_box_pack_end( GTK_BOX( hbox ), vscroll, FALSE, FALSE, 0 );
+      g_object_set_data( ( GObject * ) area, "adjv", ( gpointer ) adjV );
+      g_object_set_data( ( GObject * ) area, "iscrv", ( gpointer ) 0 );
 
-      //temp = HB_PUTHANDLE( NULL, adjV );
-      //SetObjectVar( pObject, "_HSCROLLV", temp );
-      //hb_itemRelease( temp );
-
-      //SetWindowObject( ( GtkWidget * ) adjV, pObject );
+      g_object_set_data( (GObject*) adjV, "obj", (gpointer) pTable );
       brig_SetSignal( ( gpointer ) adjV, (char*)"value_changed", WM_VSCROLL, 0, 0 );
    }
 
@@ -74,12 +109,10 @@ BRIG_HANDLE brig_CreateTable( brig_Table *pTable, int iWidgId,
       adjH = gtk_adjustment_new( 0.0, 0.0, 101.0, 1.0, 10.0, 10.0 );
       hscroll = gtk_hscrollbar_new( GTK_ADJUSTMENT( adjH ) );
       gtk_box_pack_end( GTK_BOX( vbox ), hscroll, FALSE, FALSE, 0 );
+      g_object_set_data( ( GObject * ) area, "adjh", ( gpointer ) adjH );
+      g_object_set_data( ( GObject * ) area, "iscrh", ( gpointer ) 0 );
 
-      //temp = HB_PUTHANDLE( NULL, adjH );
-      //SetObjectVar( pObject, "_HSCROLLH", temp );
-      //hb_itemRelease( temp );
-
-      //SetWindowObject( ( GtkWidget * ) adjH, pObject );
+      g_object_set_data( (GObject*) adjH, "obj", (gpointer) pTable );
       brig_SetSignal( ( gpointer ) adjH, (char*)"value_changed", WM_HSCROLL, 0, 0 );
    }
 

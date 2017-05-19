@@ -24,8 +24,13 @@ extern BRIG_HANDLE brig_CreatePanel( brig_Panel *pPanel, int iWidgId,
           int x, int y, int nWidth, int nHeight );
 extern BRIG_HANDLE brig_CreateQButton( brig_QButton *pQBtn, int iWidgId,
           int x, int y, int nWidth, int nHeight );
+
 extern BRIG_HANDLE brig_CreateTable( brig_Table *pTable, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle, PBRIG_FONT hFont, unsigned int iRows );
+extern void brig_table_OnVScroll( brig_Table *pTable, WPARAM wParam );
+extern void brig_table_OnHScroll( brig_Table *pTable, WPARAM wParam );
+extern void brig_table_OnWheel( brig_Table *pTable, WPARAM wParam );
+
 extern BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
           int x, int y, int nWidth, int nHeight, bool bEdit );
 extern void brig_ComboSetArray( brig_Widget *pWidget, char **pArray, int iLen );
@@ -246,6 +251,7 @@ public:
    unsigned int uiRowSel;      // A selected row in a table
    unsigned int uiColumnSel;   // A selected column in a table. If 0, the columns aren't selected.
    unsigned int uiClientWidth, uiClientHeight;
+   bool bBodyOnly;
 
    unsigned int pPadding[4], pHeadPadding[4];
    PBRIG_PEN pPenSep, pPenHdr;

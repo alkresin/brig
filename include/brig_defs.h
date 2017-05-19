@@ -141,6 +141,7 @@ using std::vector;
    #define WM_MOVE              3
    #define WM_SIZE              5
    #define WM_PAINT            15
+   #define WM_ERASEBKGND       20
    #define WM_KEYDOWN         256
    #define WM_KEYUP           257
    #define WM_CHAR            258
@@ -152,6 +153,7 @@ using std::vector;
    #define WM_LBUTTONUP       514
    #define WM_LBUTTONDBLCLK   515
    #define WM_RBUTTONDOWN     516
+   #define WM_MOUSEWHEEL   0x020A
 
    #define BS_AUTOCHECKBOX      3
    #define BS_RADIOBUTTON       4
@@ -235,6 +237,7 @@ using std::vector;
    #define VK_DECIMAL   GDK_KP_Decimal
    #define VK_DIVIDE    GDK_KP_Divide
 
+   #define MK_MBUTTON          16
 #endif
 
 #define PBRIG_WCHAR   BRIG_WCHAR*

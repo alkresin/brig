@@ -710,6 +710,7 @@ void brig_gtk_init( void )
        guchar* fontName = FcNameUnparse( fs->fonts[i] );
        PangoFontDescription* fontDesc = pango_font_description_from_string( (gchar*)fontName );
        pango_font_map_load_font( fontMap, pangoContext, fontDesc );
+       pango_font_description_set_size( fontDesc, 12 );
        pango_font_description_free( fontDesc );
        g_free(fontName);
    }
