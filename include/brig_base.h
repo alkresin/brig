@@ -35,6 +35,7 @@ extern void brig_EndPaint( brig_Widget *pWidget, PBRIG_PPS pps );
 extern PBRIG_DC brig_GetDC( brig_Widget *pWidget );
 extern void brig_ReleaseDC( brig_Widget *pWidget, PBRIG_DC hDC );
 extern void brig_GetClientRect( brig_Widget *pWidget, RECT *prc );
+extern void brig_InvalidateRect( brig_Widget *pWidget, int iLeft, int iTop, int iRight, int iBottom, bool bErase );
 extern void brig_RedrawWindow( brig_Widget *pWidget );
 extern void brig_SetFont( brig_Widget *pWidget, PBRIG_FONT pFont );
 extern void brig_SetFgColor( brig_Widget *pWidget, long lColor );

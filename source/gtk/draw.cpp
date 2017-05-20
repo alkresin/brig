@@ -99,6 +99,15 @@ void brig_ReleaseDC( brig_Widget *pWidget, PBRIG_DC hDC )
 
 }
 
+void brig_InvalidateRect( brig_Widget *pWidget, int iLeft, int iTop, int iRight, int iBottom, bool bErase )
+{
+
+   SYMBOL_UNUSED( bErase );
+
+   gtk_widget_queue_draw_area( pWidget->Handle(), iLeft, iTop,
+        iRight - iLeft + 1, iBottom - iTop + 1 );
+}
+
 void brig_moveto( PBRIG_DC hDC, int iLeft, int iTop )
 {
    cairo_move_to( hDC->cr, (gdouble)iLeft, (gdouble)iTop );
@@ -151,6 +160,17 @@ void brig_Ellipse( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom )
 {
 
    cairo_arc( hDC->cr, (double)iLeft+(iRight-iLeft)/2, (double)iTop+(iBottom-iTop)/2, (double) (iRight-iLeft)/2, 0, 6.28 );
+   cairo_stroke( hDC->cr );
+
+}
+
+void brig_RoundRect( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom, int iRadius )
+{
+   cairo_arc( hDC->cr, iLeft+iRadius, iTop+iRadius, iRadius, M_PI, 3*M_PI/2 );
+   cairo_arc( hDC->cr, iRight-iRadius, iTop+iRadius, iRadius, 3*M_PI/2, 0 );
+   cairo_arc( hDC->cr, iRight-iRadius, iBottom-iRadius, iRadius, 0, M_PI/2 );
+   cairo_arc( hDC->cr, iLeft+iRadius, iBottom-iRadius, iRadius, M_PI/2, M_PI );
+   cairo_close_path(hDC->cr);
    cairo_stroke( hDC->cr );
 
 }

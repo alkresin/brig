@@ -17,11 +17,19 @@ extern void brig_SetSignal( gpointer handle, char * cSignal, long int p1, long i
 
 void brig_table_OnVScroll( brig_Table *pTable, WPARAM wParam )
 {
-   GtkAdjustment *adj = ( GtkAdjustment * ) g_object_get_data( (GObject*) pTable->Handle(), "adjv" );
+   GObject *handle = (GObject*) pTable->Handle();
+   GtkAdjustment *adj = ( GtkAdjustment * ) g_object_get_data( handle, "adjv" );
    int iScrollV = adj->value;
-   int iScrV = (int) g_object_get_data( (GObject*) pTable->Handle(), "iscrv" );
+   int iScrV = (int) g_object_get_data( handle, "iscrv" );
 
    SYMBOL_UNUSED( wParam );
+
+   if( iScrollV - iScrV == 1 )
+      pTable->Down();
+   else if( iScrollV - iScrV == -1 )
+      pTable->Up();
+
+   g_object_set_data( handle, "iscrv", ( gpointer ) iScrollV );
 }
 
 void brig_table_OnHScroll( brig_Table *pTable, WPARAM wParam )

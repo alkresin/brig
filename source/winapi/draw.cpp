@@ -59,6 +59,18 @@ void brig_ReleaseDC( brig_Widget *pWidget, PBRIG_DC hDC )
    ReleaseDC( pWidget->Handle(), hDC );
 }
 
+void brig_InvalidateRect( brig_Widget *pWidget, int iLeft, int iTop, int iRight, int iBottom, bool bErase )
+{
+   RECT rc;
+
+   rc.left = iLeft;
+   rc.top = iTop;
+   rc.right = iRight;
+   rc.bottom = iBottom;
+
+   InvalidateRect( pWidget->Handle(), ( iLeft >= 0 )? &rc : NULL, bErase );
+}
+
 void brig_moveto( PBRIG_DC hDC, int iLeft, int iTop )
 {
    MoveToEx( hDC, iLeft, iTop, NULL );
@@ -106,6 +118,11 @@ void brig_Ellipse( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom )
 
    Ellipse( hDC, iLeft, iTop, iRight, iBottom );
 
+}
+
+void brig_RoundRect( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom, int iRadius )
+{
+   RoundRect( hDC, iLeft, iTop, iRight, iBottom, iRadius, iRadius );
 }
 
 PBRIG_BITMAP brig_OpenImage( PBRIG_CHAR lpName, bool bString, int iType )
