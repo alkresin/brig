@@ -11,6 +11,7 @@
 
 static WNDPROC wpOrigEditProc = NULL;
 static WNDPROC wpOrigBtnProc = NULL;
+static WNDPROC wpOrigComboProc = NULL;
 
 /* -------- Label ---------
  */
@@ -72,7 +73,6 @@ BRIG_HANDLE brig_CreateButton( brig_Widget *pWidget, int iWidgId,
       if( !wpOrigBtnProc )
          wpOrigBtnProc = ( WNDPROC ) hProc;
    }
-   //brig_writelog( NULL, "btn: %lu %d %s\r\n", (unsigned long)hBtn, iWidgId, lpCaption );
 
    brig_free( wcCaption );
 
@@ -167,6 +167,19 @@ BRIG_HANDLE brig_CreateEdit( brig_Edit *pEdit, int iWidgId,
 
 /* -------- Combobox ---------  */
 
+static LRESULT CALLBACK s_ComboProc( BRIG_HANDLE hCombo, UINT message,
+      WPARAM wParam, LPARAM lParam )
+{
+
+   brig_Combo *pObject = ( brig_Combo * ) GetWindowLongPtr( hCombo, GWLP_USERDATA );
+   //brig_writelog( NULL, "btnmsg %lu %lu %u\r\n", (unsigned long)pObject, (unsigned long)hBtn, message );
+
+   if( !pObject || !( pObject->onEvent( message, wParam, lParam ) ) )
+      return CallWindowProc( wpOrigComboProc, hCombo, message, wParam, lParam );
+   else
+      return 0;
+}
+
 BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
           int x, int y, int nWidth, int nHeight, bool bEdit )
 {
@@ -178,6 +191,15 @@ BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
          ( HMENU ) iWidgId,
          GetModuleHandle( NULL ),
          NULL );
+
+   if( hCombo )
+   {
+      LONG_PTR hProc;
+      SetWindowLongPtr( hCombo, GWLP_USERDATA, NULL );
+      hProc = SetWindowLongPtr( hCombo, GWLP_WNDPROC, ( LONG_PTR ) s_ComboProc );
+      if( !wpOrigComboProc )
+         wpOrigComboProc = ( WNDPROC ) hProc;
+   }
 
    return hCombo;
 

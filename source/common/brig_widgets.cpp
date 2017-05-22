@@ -54,13 +54,8 @@ BRIG_HANDLE brig_Edit::New( brig_Container * pParent,
 bool brig_Edit::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 {
 
-   SYMBOL_UNUSED( message );
-   SYMBOL_UNUSED( wParam );
-   SYMBOL_UNUSED( lParam );
+   return brig_Widget::onEvent( message, wParam, lParam );
 
-   //brig_writelog( NULL, "edit_onEvent %u\r\n", message );
-
-   return 0;
 }
 
 /* -------- Button --------- */
@@ -268,7 +263,7 @@ BRIG_HANDLE brig_GroupBox::New( brig_Container *pParent,
 }
 
 /* -------- Combobox --------- */
-brig_Combo::brig_Combo():brig_Widget()
+brig_Combo::brig_Combo():brig_Widget(), pfOnChange(NULL)
 {
    uiType = TYPE_COMBO;
 }
@@ -289,6 +284,25 @@ BRIG_HANDLE brig_Combo::New( brig_Container *pParent,
    brig_SetWidgetData( this );
 
    return handle;
+}
+
+bool brig_Combo::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
+{
+
+   SYMBOL_UNUSED( wParam );
+   SYMBOL_UNUSED( lParam );
+
+   //brig_writelog( NULL, "btn_onEvent %u\r\n", message );
+   switch( message ) {
+
+      case CBN_SELCHANGE:
+         //brig_writelog( NULL, "combo_onChange: %lu %lu\r\n", (unsigned long)wParam, (unsigned long)lParam );
+         if( pfOnChange )
+            pfOnChange( this );
+         break;
+   }
+   
+   return 0;
 }
 
 void brig_Combo::Set( char **pArray, int iLen )

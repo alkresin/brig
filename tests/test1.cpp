@@ -42,6 +42,22 @@ bool fncOnSize( brig_Widget *pPanel, WPARAM wParam, LPARAM lParam )
 
 }
 
+bool fncFocusIn1( brig_Widget *pEdit )
+{
+   SYMBOL_UNUSED( pEdit );
+
+   oLabel.SetText( "In" );
+   return 1;
+}
+
+bool fncFocusOu1( brig_Widget *pEdit )
+{
+   SYMBOL_UNUSED( pEdit );
+
+   oLabel.SetText( "Out" );
+   return 1;
+}
+
 void fncMenu1b( void )
 {
    int iRes;
@@ -119,7 +135,6 @@ int brig_Main( int argc, char *argv[] )
 
    char *pCombo[3] = { "one", "two", "three" };
    long pColors1[2] = {0x333333, 0xcccccc};
-   PBRIG_PEN pPen2;
    PBRIG_XMLITEM pXmlDoc;
    
    SYMBOL_UNUSED( argc );
@@ -128,17 +143,6 @@ int brig_Main( int argc, char *argv[] )
    for( int i = 0; i < argc; ++i ) {
       brig_writelog( NULL, "arg%d: %s\r\n", i, argv[i] );
    }
-   */
-   /*
-   brigAddPen( 2, 0x333333 );
-   brigAddPen( 2, 0x333333 );
-   pPen2 = brigAddPen( 2, 0x333333, 1 );
-   brigAddPen( 3, 0x333333 );
-   brigAddPen( 3, 0x333333 );
-
-   brig_writelog( NULL, "size: %d\r\n", brigApp.avPens.size() );
-   brigDelPen( pPen2 );
-   brig_writelog( NULL, "size: %d\r\n", brigApp.avPens.size() );
    */
    
    pXmlDoc = brigxml_GetDoc( "test1.xml" );
@@ -180,6 +184,9 @@ int brig_Main( int argc, char *argv[] )
    oQBtn.SetFont( brigAddFont( "Georgia", 18, 400, 0, 1 ) );
 
    oEdit.New( &oMain, 20, 60, 100, 28 );
+   oEdit.pfOnFocusIn  = fncFocusIn1;
+   oEdit.pfOnFocusOut = fncFocusOu1;
+
    oCheck.New( &oMain, 160, 60, 100, 28, "Mark me" );
    oLabel.New( &oMain, 264, 60, 120, 24, "" );
 

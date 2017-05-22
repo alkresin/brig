@@ -10,7 +10,7 @@
 
 /* -------- Widget --------- */
 
-brig_Widget::brig_Widget():lTextColor(0), lBackColor(-1), hFont(NULL), hBrush(NULL), pfOnSize(NULL) {}
+brig_Widget::brig_Widget():lTextColor(0), lBackColor(-1), hFont(NULL), hBrush(NULL), pfOnSize(NULL), pfOnFocusIn(NULL), pfOnFocusOut(NULL) {}
 
 brig_Widget::~brig_Widget()
 {
@@ -21,9 +21,22 @@ brig_Widget::~brig_Widget()
 
 bool brig_Widget::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 {
-   SYMBOL_UNUSED( message );
    SYMBOL_UNUSED( wParam );
    SYMBOL_UNUSED( lParam );
+
+   switch( message ) {
+
+      case WM_SETFOCUS:
+         if( pfOnFocusIn && !pfOnFocusIn( this ) )
+            return 1;
+         break;
+
+      case WM_KILLFOCUS:
+         if( pfOnFocusOut && !pfOnFocusOut( this ) )
+            return 1;
+         break;
+   }
+
    return 0;
 }
 
@@ -184,9 +197,6 @@ bool brig_MainWindow::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 
    int iParLow;
 
-   SYMBOL_UNUSED( wParam );
-   SYMBOL_UNUSED( lParam );
-
    switch( message ) {
 
       case WM_SIZE:
@@ -208,6 +218,9 @@ bool brig_MainWindow::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
          if( wParam == SC_CLOSE && pfOnClose && !pfOnClose( this ) )
             return 1;
          break;
+
+      default:
+         return brig_Widget::onEvent( message, wParam, lParam );
    }
    
    return 0;
@@ -249,9 +262,6 @@ void brig_Dialog::Activate( bool bMode )
 bool brig_Dialog::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 {
 
-   SYMBOL_UNUSED( wParam );
-   SYMBOL_UNUSED( lParam );
-
    //brig_writelog( NULL, "DialogOnEvent-0 %d\r\n", message );
    switch( message ) {
 
@@ -261,6 +271,8 @@ bool brig_Dialog::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
          brig_Container::OnSize( wParam, lParam );
          break;
 
+      default:
+         return brig_Widget::onEvent( message, wParam, lParam );
    }
    
    return 0;

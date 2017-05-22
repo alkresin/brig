@@ -146,10 +146,12 @@ public:
 
    BRIG_HANDLE New( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, bool bEdit = 0, char **pArray = NULL, int iLen = 0 );
+   bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
    void Set( char **pArray, int iLen );
 
    int  GetValue( void );
    void SetValue( int iSelected );
+   brig_fnc_mess_1 pfOnChange;
 
 };
 

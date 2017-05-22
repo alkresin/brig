@@ -203,6 +203,8 @@ BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
       gtk_fixed_put( box, hCtrl, x, y );
    gtk_widget_set_size_request( hCtrl, nWidth, nHeight );
 
+   brig_SetSignal( hCtrl, (char*)"changed", CBN_SELCHANGE, 0, 0 );
+
    return hCtrl;
 }
 

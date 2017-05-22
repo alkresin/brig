@@ -93,6 +93,8 @@ public:
 
    brig_fnc_mess pfOnSize;
    brig_fnc_mess_1 pfOnClose;
+   brig_fnc_mess_1 pfOnFocusIn;
+   brig_fnc_mess_1 pfOnFocusOut;
 
 protected:
    BRIG_HANDLE handle;
