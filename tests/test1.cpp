@@ -98,13 +98,13 @@ void fncMenu2( void )
    brig_Button oBtnD;
    brig_Edit oEdit1, oEdit2, oEdit3;
 
-   oDlg.New( &oMain, 200, 200, 200, 250, (PBRIG_CHAR) "A test dialog" );
+   oDlg.Create( &oMain, 200, 200, 200, 250, (PBRIG_CHAR) "A test dialog" );
 
-   oEdit1.New( &oDlg, 20, 20, 100, 28, NULL, WS_TABSTOP );
-   oEdit2.New( &oDlg, 20, 50, 100, 28, NULL, WS_TABSTOP );
-   oEdit3.New( &oDlg, 20, 80, 100, 28, NULL, WS_TABSTOP );
+   oEdit1.Create( &oDlg, 20, 20, 100, 28, NULL, WS_TABSTOP );
+   oEdit2.Create( &oDlg, 20, 50, 100, 28, NULL, WS_TABSTOP );
+   oEdit3.Create( &oDlg, 20, 80, 100, 28, NULL, WS_TABSTOP );
 
-   oBtnD.New( &oDlg, 50, 170, 100, 32, (PBRIG_CHAR) "Ok" );
+   oBtnD.Create( &oDlg, 50, 170, 100, 32, (PBRIG_CHAR) "Ok" );
    oBtnD.pfOnClick = fncCloseDlg;
 
    oDlg.Activate();
@@ -157,7 +157,7 @@ int brig_Main( int argc, char *argv[] )
          }
    }
    
-   oMain.New( 100, 100, 500, 300, (PBRIG_CHAR) "First Brig Window" );
+   oMain.Create( 100, 100, 500, 300, (PBRIG_CHAR) "First Brig Window" );
    oMain.pfOnClose = fncOnClose;
    oMain.hFont = brigAddFont( "Georgia", 20 );
    
@@ -176,28 +176,28 @@ int brig_Main( int argc, char *argv[] )
 
    brigMenuEnd();
    
-   oPanel.New( &oMain, 0, 0, 500, 40, brigAddStyle( 2, pColors1 ) );
+   oPanel.Create( &oMain, 0, 0, 500, 40, brigAddStyle( 2, pColors1 ) );
    oPanel.pfOnSize = fncOnSize;
 
-   oQBtn.New( &oPanel, 0, 0, 48, 40, "Ok" );
+   oQBtn.Create( &oPanel, 0, 0, 48, 40, "Ok" );
    oQBtn.lBackColor = oQBtn.lBackClr1 = 0xcccccc;
    oQBtn.SetFont( brigAddFont( "Georgia", 18, 400, 0, 1 ) );
 
-   oEdit.New( &oMain, 20, 60, 100, 28 );
+   oEdit.Create( &oMain, 20, 60, 100, 28 );
    oEdit.pfOnFocusIn  = fncFocusIn1;
    oEdit.pfOnFocusOut = fncFocusOu1;
 
-   oCheck.New( &oMain, 160, 60, 100, 28, "Mark me" );
-   oLabel.New( &oMain, 264, 60, 120, 24, "" );
+   oCheck.Create( &oMain, 160, 60, 100, 28, "Mark me" );
+   oLabel.Create( &oMain, 264, 60, 120, 24, "" );
 
    oRG.Begin( &oMain, 20, 100, 220, 90, "Radio group" );
-   oR1.New( &oRG, 30, 120, 150, 24, "radio1" );
-   oR2.New( &oRG, 30, 150, 150, 24, "radio2" );
+   oR1.Create( &oRG, 30, 120, 150, 24, "radio1" );
+   oR2.Create( &oRG, 30, 150, 150, 24, "radio2" );
    oRG.End( 1 );
 
-   oCombo.New( &oMain, 264, 100, 120, 28, 0, pCombo, 3 );
+   oCombo.Create( &oMain, 264, 100, 120, 28, 0, pCombo, 3 );
 
-   oBtn.New( &oMain, 100, 210, 100, 32, (PBRIG_CHAR) "Помощь" );
+   oBtn.Create( &oMain, 100, 210, 100, 32, (PBRIG_CHAR) "Помощь" );
    oBtn.pfOnClick = fncOnClick;
 
    //brig_writelog( NULL, "edit id: %d\r\n", oEdit.iControlId );

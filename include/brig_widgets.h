@@ -42,7 +42,7 @@ class brig_Label : public brig_Widget
 {
 public:
    brig_Label();
-   BRIG_HANDLE New( brig_Container *pParent,
+   BRIG_HANDLE Create( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption, unsigned long ulStyle = 0, unsigned long ulExStyle = 0 );
 };
 
@@ -51,7 +51,7 @@ class brig_Edit : public brig_Widget
 public:
 
    brig_Edit();
-   BRIG_HANDLE New( brig_Container *pParent,
+   BRIG_HANDLE Create( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption = NULL, unsigned long ulStyle = WS_BORDER, unsigned long ulExStyle = 0 );
 
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
@@ -63,7 +63,7 @@ public:
 
    brig_GroupBox();
 
-   BRIG_HANDLE New( brig_Container *pParent,
+   BRIG_HANDLE Create( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption );
 };
 
@@ -73,7 +73,7 @@ public:
 
    brig_Button();
 
-   BRIG_HANDLE New( brig_Container *pParent,
+   BRIG_HANDLE Create( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption, unsigned long ulStyle = 0 );
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
 
@@ -86,7 +86,7 @@ public:
 
    brig_CheckButton();
 
-   BRIG_HANDLE New( brig_Container *pParent,
+   BRIG_HANDLE Create( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption, unsigned long ulStyle = 0 );
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
 
@@ -126,7 +126,7 @@ public:
 
    brig_RadioButton();
 
-   BRIG_HANDLE New( brig_RadioGroup *pGroup,
+   BRIG_HANDLE Create( brig_RadioGroup *pGroup,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption, unsigned long ulStyle = 0 );
 
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
@@ -144,7 +144,7 @@ public:
 
    brig_Combo();
 
-   BRIG_HANDLE New( brig_Container *pParent,
+   BRIG_HANDLE Create( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, bool bEdit = 0, char **pArray = NULL, int iLen = 0 );
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
    void Set( char **pArray, int iLen );
@@ -163,7 +163,7 @@ public:
    brig_Panel();
    ~brig_Panel();
 
-   BRIG_HANDLE New( brig_Container *pParent, int x, int y, int nWidth, int nHeight, brig_Style *ps = NULL );
+   BRIG_HANDLE Create( brig_Container *pParent, int x, int y, int nWidth, int nHeight, brig_Style *ps = NULL );
 
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
 
@@ -180,7 +180,7 @@ public:
    brig_QButton();
    ~brig_QButton();
 
-   BRIG_HANDLE New( brig_Container *pParent,
+   BRIG_HANDLE Create( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption = NULL,
           brig_Style *psNormal = NULL, brig_Style *psOver = NULL, brig_Style *psPress = NULL );
 
@@ -226,7 +226,7 @@ public:
 
    brig_Table();
 
-   BRIG_HANDLE New( brig_Container *pParent, int x, int y, int nWidth, int nHeight,
+   BRIG_HANDLE Create( brig_Container *pParent, int x, int y, int nWidth, int nHeight,
          unsigned long ulStyle = 0, PBRIG_FONT hFont = NULL, unsigned int iRows = 0 );
 
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );

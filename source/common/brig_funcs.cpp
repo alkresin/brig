@@ -105,14 +105,14 @@ int brigChoice( std::vector<char*> &pList, PBRIG_CHAR lpTitle, unsigned int iLef
    brig_Style * pStyle = brigAddStyle( 0xdddddd );
    brig_Style * pStyleSel = brigAddStyle( 0xeeeeee );
 
-   oDlg.New( NULL, iLeft, iTop, iWidth, iHeight, lpTitle, WS_BORDER );
+   oDlg.Create( NULL, iLeft, iTop, iWidth, iHeight, lpTitle, WS_BORDER );
 
    if( hFont )
       oDlg.hFont = hFont;
    else if( brigApp.pMainWindow && brigApp.pMainWindow->hFont )
       oDlg.hFont = brigApp.pMainWindow->hFont;
 
-   oTable.New( &oDlg, 0, 0, iWidth, iHeight - 80, 0, oDlg.hFont, pList.size() );
+   oTable.Create( &oDlg, 0, 0, iWidth, iHeight - 80, 0, oDlg.hFont, pList.size() );
 
    oTable.pStyle = pStyle;
    oTable.pStyleSel = pStyleSel;
@@ -125,10 +125,10 @@ int brigChoice( std::vector<char*> &pList, PBRIG_CHAR lpTitle, unsigned int iLef
    iHeight = oTable.iHeight + 80;
    oDlg.Move( -1, -1, iWidth, iHeight );
 
-   oBtn1.New( &oDlg, 20, iHeight-68, 60, 28, (PBRIG_CHAR) "Ok" );
+   oBtn1.Create( &oDlg, 20, iHeight-68, 60, 28, (PBRIG_CHAR) "Ok" );
    oBtn1.pfOnClick = fncCloseDlg1;
 
-   oBtn2.New( &oDlg, iWidth-80, iHeight-68, 60, 28, (PBRIG_CHAR) "X" );
+   oBtn2.Create( &oDlg, iWidth-80, iHeight-68, 60, 28, (PBRIG_CHAR) "X" );
    oBtn2.pfOnClick = fncCloseDlg2;
 
    brig_SetFocus( &oTable );

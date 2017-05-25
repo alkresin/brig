@@ -58,7 +58,7 @@ PBRIG_CHAR brig_Widget::GetText( void )
    return brig_GetWindowText( this );
 }
 
-void brig_Widget::New( brig_Container *pParent, int x, int y, int width, int height )
+void brig_Widget::Create( brig_Container *pParent, int x, int y, int width, int height )
 {
 
    iLeft = x;
@@ -170,7 +170,7 @@ brig_MainWindow::brig_MainWindow():brig_Container(), szAppName((PBRIG_CHAR)"Brig
    uiType = TYPE_WINDOW;
 }
 
-void brig_MainWindow::New( int x, int y, int width, int height, PBRIG_CHAR lpTitle,
+void brig_MainWindow::Create( int x, int y, int width, int height, PBRIG_CHAR lpTitle,
          long int lStyle, PBRIG_ICON hIcon, PBRIG_BRUSH hBrush )
 {
    iLeft = x;
@@ -239,7 +239,7 @@ brig_Dialog::brig_Dialog():brig_Container(), pResult(NULL)
    uiType = TYPE_DIALOG;
 }
 
-void brig_Dialog::New( brig_Container * pParent,
+void brig_Dialog::Create( brig_Container * pParent,
       int x, int y, int width, int height, PBRIG_CHAR lpTitle, long int lStyle )
 {
    iLeft = x;

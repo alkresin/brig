@@ -85,9 +85,9 @@ int brig_Main( int argc, char *argv[] )
    SYMBOL_UNUSED( argc );
    SYMBOL_UNUSED( argv );
 
-   oDlg.New( NULL, 200, 200, 400, 280, (PBRIG_CHAR) "A table test" );
+   oDlg.Create( NULL, 200, 200, 400, 280, (PBRIG_CHAR) "A table test" );
 
-   oTable.New( &oDlg, 20, 20, 360, 160, WS_VSCROLL );
+   oTable.Create( &oDlg, 20, 20, 360, 160, WS_VSCROLL );
 
    oTable.lTextColor = 0xff0000;
    oTable.lSelTColor = 0x000000;
@@ -102,7 +102,7 @@ int brig_Main( int argc, char *argv[] )
    oTable.AddColumn( "Second", 80, fncCellValue );
    oTable.AddColumn( "Third", 100, fncCellValue );
 
-   oBtn.New( &oDlg, 150, 200, 100, 32, (PBRIG_CHAR) "Ok" );
+   oBtn.Create( &oDlg, 150, 200, 100, 32, (PBRIG_CHAR) "Ok" );
    oBtn.pfOnClick = fncCloseDlg;
 
    oDlg.Activate( 0 );

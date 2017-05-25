@@ -15,11 +15,11 @@ brig_Label::brig_Label():brig_Widget()
    uiType = TYPE_LABEL;
 }
 
-BRIG_HANDLE brig_Label::New( brig_Container *pParent,
+BRIG_HANDLE brig_Label::Create( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption, unsigned long ulStyle, unsigned long ulExStyle )
 {
 
-   brig_Widget::New( pParent, x, y, nWidth, nHeight );
+   brig_Widget::Create( pParent, x, y, nWidth, nHeight );
    
    handle = brig_CreateLabel( this, iWidgId,
              x, y, nWidth, nHeight, ulStyle, lpCaption, ulExStyle );
@@ -35,11 +35,11 @@ brig_Edit::brig_Edit():brig_Widget()
    uiType = TYPE_EDIT;
 }
 
-BRIG_HANDLE brig_Edit::New( brig_Container * pParent,
+BRIG_HANDLE brig_Edit::Create( brig_Container * pParent,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption, unsigned long ulStyle, unsigned long ulExStyle )
 {
 
-   brig_Widget::New( pParent, x, y, nWidth, nHeight );
+   brig_Widget::Create( pParent, x, y, nWidth, nHeight );
 
    handle = brig_CreateEdit( this, iWidgId,
              x, y, nWidth, nHeight, ulStyle, lpCaption, ulExStyle );
@@ -64,11 +64,11 @@ brig_Button::brig_Button():brig_Widget(), pfOnClick(NULL)
    uiType = TYPE_BUTTON;
 }
 
-BRIG_HANDLE brig_Button::New( brig_Container *pParent,
+BRIG_HANDLE brig_Button::Create( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption, unsigned long ulStyle )
 {
 
-   brig_Widget::New( pParent, x, y, nWidth, nHeight );
+   brig_Widget::Create( pParent, x, y, nWidth, nHeight );
 
    handle = brig_CreateButton( this, iWidgId,
              x, y, nWidth, nHeight, ulStyle, lpCaption );
@@ -106,11 +106,11 @@ brig_CheckButton::brig_CheckButton():brig_Widget(), pfOnClick(NULL)
    uiType = TYPE_CHECK;
 }
 
-BRIG_HANDLE brig_CheckButton::New( brig_Container *pParent,
+BRIG_HANDLE brig_CheckButton::Create( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption, unsigned long ulStyle )
 {
 
-   brig_Widget::New( pParent, x, y, nWidth, nHeight );
+   brig_Widget::Create( pParent, x, y, nWidth, nHeight );
 
    handle = brig_CreateButton( this, iWidgId,
              x, y, nWidth, nHeight, ulStyle | BS_AUTOCHECKBOX, lpCaption );
@@ -169,7 +169,7 @@ void brig_RadioGroup::Begin( brig_Container *pParent,
    if( x > 0 && y > 0 && nWidth > 0 && nHeight > 0 )
    {
       pBox = new brig_GroupBox;
-      pBox->New( pParent, x, y, nWidth, nHeight, lpCaption );
+      pBox->Create( pParent, x, y, nWidth, nHeight, lpCaption );
    }
 }
 
@@ -195,11 +195,11 @@ brig_RadioButton::brig_RadioButton():brig_Widget(), pfOnClick(NULL)
    uiType = TYPE_RADIO;
 }
 
-BRIG_HANDLE brig_RadioButton::New( brig_RadioGroup *pGroup,
+BRIG_HANDLE brig_RadioButton::Create( brig_RadioGroup *pGroup,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption, unsigned long ulStyle )
 {
 
-   brig_Widget::New( (brig_Container *) (pGroup->pParent), x, y, nWidth, nHeight );
+   brig_Widget::Create( (brig_Container *) (pGroup->pParent), x, y, nWidth, nHeight );
    this->pGroup = pGroup;
 
    if( pGroup->avButtons.empty() )
@@ -248,11 +248,11 @@ brig_GroupBox::brig_GroupBox():brig_Widget()
    uiType = TYPE_GROUP;
 }
 
-BRIG_HANDLE brig_GroupBox::New( brig_Container *pParent,
+BRIG_HANDLE brig_GroupBox::Create( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption )
 {
 
-   brig_Widget::New( pParent, x, y, nWidth, nHeight );
+   brig_Widget::Create( pParent, x, y, nWidth, nHeight );
 
    handle = brig_CreateButton( this, iWidgId,
              x, y, nWidth, nHeight, BS_GROUPBOX, lpCaption );
@@ -268,11 +268,11 @@ brig_Combo::brig_Combo():brig_Widget(), pfOnChange(NULL)
    uiType = TYPE_COMBO;
 }
 
-BRIG_HANDLE brig_Combo::New( brig_Container *pParent,
+BRIG_HANDLE brig_Combo::Create( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, bool bEdit, char **pArray, int iLen )
 {
 
-   brig_Widget::New( pParent, x, y, nWidth, nHeight );
+   brig_Widget::Create( pParent, x, y, nWidth, nHeight );
 
    handle = brig_CreateCombo( this, iWidgId, x, y, nWidth, nHeight, bEdit );
 
@@ -333,11 +333,11 @@ brig_Panel::~brig_Panel()
    //brig_Container::~brig_Container();
 }
 
-BRIG_HANDLE brig_Panel::New( brig_Container *pParent,
+BRIG_HANDLE brig_Panel::Create( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, brig_Style *ps )
 {
 
-   brig_Widget::New( pParent, x, y, nWidth, nHeight );
+   brig_Widget::Create( pParent, x, y, nWidth, nHeight );
 
    handle = brig_CreatePanel( this, iWidgId, x, y, nWidth, nHeight );
 
@@ -415,12 +415,12 @@ brig_QButton::~brig_QButton()
 
 }
 
-BRIG_HANDLE brig_QButton::New( brig_Container *pParent,
+BRIG_HANDLE brig_QButton::Create( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption,
           brig_Style *psNormal, brig_Style *psOver, brig_Style *psPress )
 {
 
-   brig_Widget::New( pParent, x, y, nWidth, nHeight );
+   brig_Widget::Create( pParent, x, y, nWidth, nHeight );
    szCaption = lpCaption;
    handle = brig_CreateQButton( this, iWidgId,
              x, y, nWidth, nHeight );

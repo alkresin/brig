@@ -21,11 +21,11 @@ brig_Table::brig_Table():brig_Widget(), pfOnPaint(NULL), pfDataSet(NULL), pfOnDb
    bBodyOnly = 0;
 }
 
-BRIG_HANDLE brig_Table::New( brig_Container *pParent, int x, int y,
+BRIG_HANDLE brig_Table::Create( brig_Container *pParent, int x, int y,
       int nWidth, int nHeight, unsigned long ulStyle, PBRIG_FONT hFont, unsigned int iRows )
 {
 
-   brig_Widget::New( pParent, x, y, nWidth, nHeight );
+   brig_Widget::Create( pParent, x, y, nWidth, nHeight );
 
    handle = brig_CreateTable( this, iWidgId, x, y, nWidth, nHeight, ulStyle, hFont, iRows );
 

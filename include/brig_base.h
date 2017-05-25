@@ -68,13 +68,13 @@ class brig_Widget
 public:
 
    brig_Widget();
-   ~brig_Widget();
+   virtual ~brig_Widget();
 
    void SetText( PBRIG_CHAR lpTitle );
    PBRIG_CHAR GetText();
    BRIG_HANDLE Handle( void ) const;
 
-   void New( brig_Container *pParent, int x, int y, int width, int height );
+   void Create( brig_Container *pParent, int x, int y, int width, int height );
    void SetFont( PBRIG_FONT hFontNew );
    long int SetTextColor( long int lColor = -1, bool bRepaint = 1 );
    long int SetBackColor( long int lColor = -1, bool bRepaint = 1 );
@@ -122,7 +122,7 @@ class brig_MainWindow : public brig_Container
 {
 public:
    brig_MainWindow();
-   void New( int x, int y, int width, int height,
+   void Create( int x, int y, int width, int height,
          PBRIG_CHAR lpTitle, long int lStyle = WS_OVERLAPPEDWINDOW,
          PBRIG_ICON hIcon = NULL, PBRIG_BRUSH hBrush = NULL );
    void Activate( void );
@@ -137,7 +137,7 @@ class brig_Dialog : public brig_Container
 {
 public:
    brig_Dialog();
-   void New( brig_Container * pParent, int x, int y, int width, int height,
+   void Create( brig_Container * pParent, int x, int y, int width, int height,
          PBRIG_CHAR lpTitle, long int lStyle = WS_OVERLAPPEDWINDOW );
    void Activate( bool bMode = 1 );
    void Close();
