@@ -156,6 +156,17 @@ public:
 };
 
 
+class brig_Tab : public brig_Container
+{
+public:
+
+   brig_Tab();
+
+   BRIG_HANDLE Create( brig_Container *pParent,
+          int x, int y, int nWidth, int nHeight );
+
+};
+
 class brig_Panel : public brig_Container
 {
 public:

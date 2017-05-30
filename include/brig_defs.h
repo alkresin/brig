@@ -257,6 +257,7 @@ using std::vector;
 #define TYPE_RADIO        15
 #define TYPE_GROUP        16
 #define TYPE_COMBO        17
+#define TYPE_TAB          18
 #define TYPE_PANEL        51
 #define TYPE_QBTN         52
 #define TYPE_TABLE        53
