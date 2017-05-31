@@ -233,6 +233,46 @@ void brig_ComboSetValue( brig_Widget *pWidget, int iSelected )
 }
 
 
+/* -------- Tab ---------  */
+
+BRIG_HANDLE brig_CreateTab( brig_Tab *pTab, int iWidgId,
+          int x, int y, int nWidth, int nHeight )
+{
+
+   BRIG_HANDLE hTab = CreateWindow( WC_TABCONTROL, NULL, WS_CHILD | WS_VISIBLE,
+         x, y, nWidth, nHeight,
+         pTab->pParent->Handle(),
+         ( HMENU ) iWidgId,
+         GetModuleHandle( NULL ),
+         NULL );
+
+   /*
+   if( hTab )
+   {
+      LONG_PTR hProc;
+      SetWindowLongPtr( hCombo, GWLP_USERDATA, NULL );
+      hProc = SetWindowLongPtr( hCombo, GWLP_WNDPROC, ( LONG_PTR ) s_ComboProc );
+      if( !wpOrigComboProc )
+         wpOrigComboProc = ( WNDPROC ) hProc;
+   }
+   */
+   return hTab;
+
+}
+
+void brig_TabAddPage( brig_Tab *pTab, int iPage, PBRIG_CHAR lpName )
+{
+   TC_ITEM tie;
+   PBRIG_WCHAR wcName = brig_str2WC( lpName );
+
+   tie.mask = TCIF_TEXT | TCIF_IMAGE;
+   tie.iImage = -1;
+   tie.pszText = wcName;
+   TabCtrl_InsertItem( pTab->Handle(), iPage, &tie );
+   brig_free( wcName );
+
+}
+
 /* -------- Panel ---------  */
 
 static LRESULT CALLBACK s_PanelProc( BRIG_HANDLE hDlg, UINT message,

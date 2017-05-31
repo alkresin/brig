@@ -322,7 +322,7 @@ void brig_Combo::SetValue( int iSelected )
 
 
 /* -------- Tab --------- */
-brig_Tab::brig_Tab():brig_Container()
+brig_Tab::brig_Tab():brig_Container(), iPages(0)
 {
    uiType = TYPE_TAB;
 }
@@ -333,7 +333,7 @@ BRIG_HANDLE brig_Tab::Create( brig_Container *pParent,
 
    brig_Widget::Create( pParent, x, y, nWidth, nHeight );
 
-   //handle = brig_CreateTab( this, iWidgId, x, y, nWidth, nHeight );
+   handle = brig_CreateTab( this, iWidgId, x, y, nWidth, nHeight );
 
    if( !hFont && pParent->hFont )
       SetFont( pParent->hFont );
@@ -342,6 +342,11 @@ BRIG_HANDLE brig_Tab::Create( brig_Container *pParent,
    return handle;
 }
 
+void brig_Tab::AddPage( PBRIG_CHAR lpName )
+{
+   brig_TabAddPage( this, iPages, lpName );
+   iPages ++;
+}
 
 /* -------- Panel --------- */
 brig_Panel::brig_Panel():brig_Container(), pfOnPaint(NULL)

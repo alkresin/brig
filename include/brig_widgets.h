@@ -9,6 +9,7 @@
 class brig_Label;
 class brig_Edit;
 class brig_Combo;
+class brig_Tab;
 class brig_Panel;
 class brig_QButton;
 class brig_Table;
@@ -36,6 +37,10 @@ extern BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
 extern void brig_ComboSetArray( brig_Widget *pWidget, char **pArray, int iLen );
 extern int brig_ComboGetValue( brig_Widget *pWidget );
 extern void brig_ComboSetValue( brig_Widget *pWidget, int iSelected );
+
+extern BRIG_HANDLE brig_CreateTab( brig_Tab *pTab, int iWidgId,
+          int x, int y, int nWidth, int nHeight );
+extern void brig_TabAddPage( brig_Tab *pTab, int iPage, PBRIG_CHAR lpName );
 
 
 class brig_Label : public brig_Widget
@@ -164,6 +169,9 @@ public:
 
    BRIG_HANDLE Create( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight );
+   void AddPage( PBRIG_CHAR lpName );
+
+   int iPages;
 
 };
 

@@ -224,6 +224,39 @@ void brig_ComboSetValue( brig_Widget *pWidget, int iSelected )
    gtk_combo_box_set_active( (GtkComboBox*) (pWidget->Handle()), iSelected );
 }
 
+/* -------- Tab --------- */
+
+BRIG_HANDLE brig_CreateTab( brig_Tab *pTab, int iWidgId,
+          int x, int y, int nWidth, int nHeight )
+{
+   GtkWidget *hCtrl = gtk_notebook_new(  );
+   GtkFixed *box = ( GtkFixed * ) g_object_get_data( ( GObject * ) pTab->pParent->Handle(), "fbox" );
+
+   if( box )
+      gtk_fixed_put( box, hCtrl, x, y );
+   gtk_widget_set_size_request( hCtrl, nWidth, nHeight );
+
+   g_signal_connect( hCtrl, "switch-page",
+                      G_CALLBACK (cb_signal_tab), NULL );
+
+   return hCtrl;
+}
+
+void brig_TabAddPage( brig_Tab *pTab, int iPage, PBRIG_CHAR lpName )
+{
+
+   GtkNotebook *nb = ( GtkNotebook * ) pTab->Handle();
+   GtkWidget *box = gtk_fixed_new();
+   GtkWidget *hLabel = gtk_label_new( lpName );
+
+   SYMBOL_UNUSED( iPage );
+
+   gtk_notebook_append_page( nb, box, hLabel );
+
+   g_object_set_data( ( GObject * ) nb, "fbox", ( gpointer ) box );
+
+}
+
 /* -------- Panel --------- */
 
 BRIG_HANDLE brig_CreatePanel( brig_Panel *pPanel, int iWidgId,
