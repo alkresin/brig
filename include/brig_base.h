@@ -111,6 +111,7 @@ public:
    int iIdCount;
 
    void AddWidget( brig_Widget *pWidget );
+   brig_Widget* FindWidget( unsigned int uiType, unsigned int uiNum = 1 );
    void OnSize( WPARAM wParam, LPARAM lParam );
 
    PBRIG_MITEM pMenu;

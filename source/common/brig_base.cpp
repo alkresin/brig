@@ -153,12 +153,31 @@ void brig_Container::AddWidget( brig_Widget *pWidget )
    avWidgets.push_back( pWidget );
 }
 
+brig_Widget* brig_Container::FindWidget( unsigned int uiType, unsigned int uiNum )
+{
+
+   unsigned int ui, uiCurr = 0;
+
+   if( !uiNum )
+      uiNum++;
+
+   for( ui = 0; ui < avWidgets.size(); ui++ )
+      if( avWidgets[ui]->uiType == uiType )
+      {
+         uiCurr ++;
+         if( uiCurr == uiNum )
+            return avWidgets[ui];
+      }
+
+   return NULL;
+}
+
 void brig_Container::OnSize( WPARAM wParam, LPARAM lParam )
 {
    //unsigned long iWidth = ((unsigned long)lParam) & 0xFFFF;
    //unsigned long iHeight = ( ((unsigned long)lParam) >> 16 ) & 0xFFFF;
 
-   for ( unsigned int i = 0; i < avWidgets.size(); i++ )
+   for( unsigned int i = 0; i < avWidgets.size(); i++ )
       if( avWidgets[i]->pfOnSize )
          avWidgets[i]->pfOnSize( avWidgets[i], wParam, lParam );
 }
