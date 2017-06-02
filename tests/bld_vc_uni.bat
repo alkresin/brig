@@ -16,6 +16,3 @@ rem brc32 -r hwgui_xp -fohwgui_xp
 link -SUBSYSTEM:WINDOWS %1.obj %BRIG_LIBS% user32.lib gdi32.lib comdlg32.lib shell32.lib comctl32.lib winspool.lib OleAut32.Lib Ole32.Lib >>err.out
 
 del *.obj
-del *.map
-del *.tds
-del *.res

@@ -10,7 +10,7 @@
 
 /* -------- Widget --------- */
 
-brig_Widget::brig_Widget():lTextColor(0), lBackColor(-1), hFont(NULL), hBrush(NULL), pfOnSize(NULL), pfOnFocusIn(NULL), pfOnFocusOut(NULL) {}
+brig_Widget::brig_Widget():lTextColor(0), lBackColor(-1), hFont(NULL), hBrush(NULL), pfOnSize(NULL), pfOnClose(NULL), pfOnFocusIn(NULL), pfOnFocusOut(NULL) {}
 
 brig_Widget::~brig_Widget()
 {
@@ -136,7 +136,7 @@ void brig_Widget::Show( bool bShow )
 
 /* -------- Container --------- */
 
-brig_Container::brig_Container():brig_Widget(), iIdCount(100) {};
+brig_Container::brig_Container():brig_Widget(), iIdCount(100), pMenu(NULL) {};
 
 brig_Container::~brig_Container()
 {
@@ -215,7 +215,9 @@ bool brig_MainWindow::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 {
 
    int iParLow;
+   bool b;
 
+   //brig_writelog( NULL, "win_onevent-1 %d\r\n", message );
    switch( message ) {
 
       case WM_SIZE:
@@ -235,13 +237,19 @@ bool brig_MainWindow::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 
       case WM_SYSCOMMAND:
          if( wParam == SC_CLOSE && pfOnClose && !pfOnClose( this ) )
+         {
+            //brig_writelog( NULL, "win_onevent-5A\r\n" );
             return 1;
+         }
          break;
 
       default:
-         return brig_Widget::onEvent( message, wParam, lParam );
+         b = brig_Widget::onEvent( message, wParam, lParam );
+         //brig_writelog( NULL, "win_onevent-5B\r\n" );
+         return b;
    }
-   
+
+   //brig_writelog( NULL, "win_onevent-5C\r\n" ); 
    return 0;
 }
 
