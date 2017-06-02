@@ -522,7 +522,7 @@ void brig_DrawGradient( PBRIG_DC hDC, int x1, int y1, int x2, int y2, int type,
          isR = 1;
          x_center = (x2 - x1) / 2 + x1;
          y_center = (y2 - y1) / 2 + y1;
-         gr_radius = sqrt( pow(x2-x1,2) + pow(y2-y1,2) ) / 2;
+         gr_radius = sqrt( pow((double)(x2-x1),2) + pow((double)(y2-y1),2) ) / 2;
       }
 
       // calculate stops and colors for our gradient
@@ -830,8 +830,8 @@ void brig_DrawGradient( PBRIG_DC hDC, int x1, int y1, int x2, int y2, int type,
                min_delta = 1000000;
                for( k = 0; k < 4; k++ )
                {
-                  delta = abs( pow( candidates[k].x, 2 ) + pow( candidates[k].y, 2 ) -
-                     pow( radius[i], 2 ) );
+                  delta = abs( pow( (double)(candidates[k].x), 2 ) + pow( (double)(candidates[k].y), 2 ) -
+                     pow( (double)(radius[i]), 2 ) );
                   if ( delta < min_delta )
                   {
                      nearest_coord = k;

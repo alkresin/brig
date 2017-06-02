@@ -1,0 +1,109 @@
+# $Id$
+# makefile for Visual C++ 32 bits
+# Building of Leto binaries
+
+#.SUFFIXESS: .prg .lib .c .obj
+
+INC_DIR = include
+!IFDEF UNICODE
+OBJ_DIR = obj\vc32\uni
+!ELSE
+OBJ_DIR = obj\vc32
+!ENDIF
+LIB_DIR = lib\vc32
+
+
+WINAPI_DIR = source\winapi
+COMMON_DIR = source\common
+
+CFLAGS = -Ot2b1 -EHsc -FD -Gs -W3 -nologo -D__WINDOWS__ -DWIN32 -D__WIN32__ -D_CRT_SECURE_NO_DEPRECATE
+
+!IFDEF UNICODE
+all: \
+   $(LIB_DIR)\brig.lib
+
+$(LIB_DIR)\brig.lib : \
+   $(OBJ_DIR)\brig_app.obj \
+   $(OBJ_DIR)\brig_base.obj \
+   $(OBJ_DIR)\brig_funcs.obj \
+   $(OBJ_DIR)\brig_menu.obj \
+   $(OBJ_DIR)\brig_style.obj \
+   $(OBJ_DIR)\brig_table.obj \
+   $(OBJ_DIR)\brig_widgets.obj \
+   $(OBJ_DIR)\brig_xml.obj \
+   $(OBJ_DIR)\commond.obj \
+   $(OBJ_DIR)\control.obj \
+   $(OBJ_DIR)\draw.obj \
+   $(OBJ_DIR)\menu.obj \
+   $(OBJ_DIR)\message.obj \
+   $(OBJ_DIR)\strings.obj \
+   $(OBJ_DIR)\table.obj \
+   $(OBJ_DIR)\window.obj
+  lib /out:$@ $**
+
+!ELSE
+all: \
+   $(LIB_DIR)\brig_ansi.lib
+
+$(LIB_DIR)\brig_ansi.lib : \
+   $(OBJ_DIR)\brig_app.obj \
+   $(OBJ_DIR)\brig_base.obj \
+   $(OBJ_DIR)\brig_funcs.obj \
+   $(OBJ_DIR)\brig_menu.obj \
+   $(OBJ_DIR)\brig_style.obj \
+   $(OBJ_DIR)\brig_table.obj \
+   $(OBJ_DIR)\brig_widgets.obj \
+   $(OBJ_DIR)\brig_xml.obj \
+   $(OBJ_DIR)\commond.obj \
+   $(OBJ_DIR)\control.obj \
+   $(OBJ_DIR)\draw.obj \
+   $(OBJ_DIR)\menu.obj \
+   $(OBJ_DIR)\message.obj \
+   $(OBJ_DIR)\strings.obj \
+   $(OBJ_DIR)\table.obj \
+   $(OBJ_DIR)\window.obj
+  lib /out:$@ $**
+!ENDIF
+
+#$(OBJ_DIR)\brig_app.obj  : $(COMMON_DIR)\brig_app.c
+#  cl $(CFLAGS) /c /I$(INC_DIR) /Fo$@ $**
+#$(OBJ_DIR)\brig_base.obj  : $(COMMON_DIR)\brig_base.c
+#  cl $(CFLAGS) /c /I$(INC_DIR) /Fo$@ $**
+#$(OBJ_DIR)\brig_funcs.obj  : $(COMMON_DIR)\brig_funcs.c
+#  cl $(CFLAGS) /c /I$(INC_DIR) /Fo$@ $**
+#$(OBJ_DIR)\brig_menu.obj  : $(COMMON_DIR)\brig_menu.c
+#  cl $(CFLAGS) /c /I$(INC_DIR) /Fo$@ $**
+#$(OBJ_DIR)\brig_style.obj  : $(COMMON_DIR)\brig_style.c
+#  cl $(CFLAGS) /c /I$(INC_DIR) /Fo$@ $**
+#$(OBJ_DIR)\brig_table.obj  : $(COMMON_DIR)\brig_table.c
+#  cl $(CFLAGS) /c /I$(INC_DIR) /Fo$@ $**
+#$(OBJ_DIR)\brig_widgets.obj  : $(COMMON_DIR)\brig_widgets.c
+#  cl $(CFLAGS) /c /I$(INC_DIR) /Fo$@ $**
+#$(OBJ_DIR)\brig_xml.obj  : $(COMMON_DIR)\brig_xml.c
+#  cl $(CFLAGS) /c /I$(INC_DIR) /Fo$@ $**
+#
+#$(OBJ_DIR)\commond.obj  : $(WINAPI_DIR)\commond.c
+#  cl $(CFLAGS) /c /I$(INC_DIR) /Fo$@ $**
+#$(OBJ_DIR)\control.obj  : $(WINAPI_DIR)\control.c
+#  cl $(CFLAGS) /c /I$(INC_DIR) /Fo$@ $**
+#$(OBJ_DIR)\draw.obj  : $(WINAPI_DIR)\draw.c
+#  cl $(CFLAGS) /c /I$(INC_DIR) /Fo$@ $**
+#$(OBJ_DIR)\menu.obj  : $(WINAPI_DIR)\menu.c
+#  cl $(CFLAGS) /c /I$(INC_DIR) /Fo$@ $**
+#$(OBJ_DIR)\message.obj  : $(WINAPI_DIR)\message.c
+#  cl $(CFLAGS) /c /I$(INC_DIR) /Fo$@ $**
+#$(OBJ_DIR)\strings.obj  : $(WINAPI_DIR)\strings.c
+#  cl $(CFLAGS) /c /I$(INC_DIR) /Fo$@ $**
+#$(OBJ_DIR)\table.obj  : $(WINAPI_DIR)\table.c
+  cl $(CFLAGS) /c /I$(INC_DIR) /Fo$@ $**
+#$(OBJ_DIR)\window.obj  : $(WINAPI_DIR)\window.c
+#  cl $(CFLAGS) /c /I$(INC_DIR) /Fo$@ $**
+
+{$(COMMON_DIR)}.cpp{$(OBJ_DIR)}.obj:
+  cl $(CFLAGS) /c /I$(INC_DIR) /Fo$@ $**
+
+{$(WINAPI_DIR)}.cpp{$(OBJ_DIR)}.obj:
+  cl $(CFLAGS) /c /I$(INC_DIR) /Fo$@ $**
+
+.cpp.obj:
+  cl $(CFLAGS) /c /I$(INC_DIR) /Fo$@ $**

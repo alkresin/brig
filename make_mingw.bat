@@ -5,6 +5,7 @@ if "%1" == "CLEAN" goto CLEAN
 :BUILD
 
 if not exist lib md lib
+if not exist lib\w32 md lib\w32
 if not exist obj md obj
 if not exist obj\w32 md obj\w32
 if not exist obj\w32\uni md obj\w32\uni

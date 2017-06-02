@@ -21,7 +21,7 @@ OBJ_DIR = obj\b32\uni
 !else
 OBJ_DIR = obj\b32
 !endif
-LIB_DIR = lib
+LIB_DIR = lib\b32
 
 # This is needed, otherwise the libs may overflow when
 # debug info is requested with -v -y

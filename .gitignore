@@ -10,3 +10,4 @@ obj/*
 *.o
 *.obj
 *.log
+*.idb

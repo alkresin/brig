@@ -7,7 +7,7 @@ OBJ_DIR = obj\w32
 else
 OBJ_DIR = obj\w32\uni
 endif
-LIB_DIR = lib
+LIB_DIR = lib\w32
 WINAPI_DIR = source\winapi
 COMMON_DIR = source\common
 
