@@ -431,3 +431,29 @@ void brig_SetBgColor( brig_Widget *pWidget, long lColor )
    SYMBOL_UNUSED( pWidget );
    SYMBOL_UNUSED( lColor );
 }
+
+
+static void CALLBACK s_timerProc( HWND hWnd, UINT message, UINT idTimer, DWORD dwTime )
+{
+
+   SYMBOL_UNUSED( hWnd );
+   SYMBOL_UNUSED( message );
+   SYMBOL_UNUSED( dwTime );
+
+   brigRunTimerFunc( idTimer );
+
+}
+
+unsigned int brig_SetTimer( unsigned int uiId, unsigned int uiValue )
+{
+
+   return SetTimer( NULL, uiId, uiValue, s_timerProc );
+
+}
+
+void brig_KillTimer( unsigned int uiId )
+{
+
+   KillTimer( NULL, uiId );
+
+}

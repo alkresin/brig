@@ -5,11 +5,49 @@
 brig_MainWindow oMain;
 brig_Edit oEdit;
 brig_Label oLabel;
+unsigned int idTimer = 0, idCount;
 
 bool fncOnClose( brig_Widget *pDlg )
 {
    SYMBOL_UNUSED( pDlg );
    return brig_MsgYesNo( (PBRIG_CHAR) "Really close window?", (PBRIG_CHAR) "Warning" );
+}
+
+void fncTimer( void )
+{
+   BRIG_CHAR szText[10];
+
+   idCount++;
+   sprintf( szText, "%d", idCount );
+   oLabel.SetText( szText );
+}
+
+bool fncStart( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
+{
+   SYMBOL_UNUSED( pBtn );
+   SYMBOL_UNUSED( wParam );
+   SYMBOL_UNUSED( lParam );
+
+   if( !idTimer )
+   {
+      idCount = 0;
+      idTimer = brigSetTimer( 1000, fncTimer );
+   }
+   return 0;
+}
+
+bool fncStop( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
+{
+   SYMBOL_UNUSED( pBtn );
+   SYMBOL_UNUSED( wParam );
+   SYMBOL_UNUSED( lParam );
+
+   if( idTimer )
+   {
+      brigKillTimer( idTimer );
+      idTimer = 0;
+   }
+   return 0;
 }
 
 bool fncOnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
@@ -126,7 +164,7 @@ int brig_Main( int argc, char *argv[] )
 {
    
    brig_Panel oPanel;
-   brig_Button oBtn;
+   brig_Button oBtn, oBtn1, oBtn2;
    brig_QButton oQBtn;
    brig_RadioGroup oRG;
    brig_RadioButton oR1, oR2;
@@ -157,7 +195,7 @@ int brig_Main( int argc, char *argv[] )
          }
    }
    
-   oMain.Create( 100, 100, 500, 300, (PBRIG_CHAR) "First Brig Window" );
+   oMain.Create( 100, 100, 500, 320, (PBRIG_CHAR) "First Brig Window" );
    oMain.pfOnClose = fncOnClose;
    oMain.hFont = brigAddFont( "Georgia", 20 );
    
@@ -195,7 +233,13 @@ int brig_Main( int argc, char *argv[] )
    oR2.Create( &oRG, 30, 150, 150, 24, "radio2" );
    oRG.End( 1 );
 
-   oCombo.Create( &oMain, 264, 100, 120, 28, 0, pCombo, 3 );
+   oBtn1.Create( &oMain, 264, 100, 76, 28, (PBRIG_CHAR) "Start" );
+   oBtn1.pfOnClick = fncStart;
+
+   oBtn2.Create( &oMain, 348, 100, 76, 28, (PBRIG_CHAR) "Stop" );
+   oBtn2.pfOnClick = fncStop;
+
+   oCombo.Create( &oMain, 264, 160, 120, 28, 0, pCombo, 3 );
 
    oBtn.Create( &oMain, 100, 210, 100, 32, (PBRIG_CHAR) "Помощь" );
    oBtn.pfOnClick = fncOnClick;

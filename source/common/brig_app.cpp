@@ -292,3 +292,50 @@ void brigDelStyle( brig_Style * pStyle )
          break;
       }
 }
+
+unsigned int brigSetTimer( unsigned int uiValue, brig_fnc_menu pfAction, bool bOnce )
+{
+
+   BRIGAPP_TIMER bt;
+   unsigned int uiId = TIMER_FIRST_ID;
+
+   if( !brigApp.avTimers.empty() )
+      uiId = brigApp.avTimers.back().uiId + 1;
+
+   bt.uiId = brig_SetTimer( uiId, uiValue );
+   bt.bOnce = bOnce;
+   bt.uiVal = uiValue;
+   bt.pfAction = pfAction;
+
+   brigApp.avTimers.push_back( bt );
+
+   return bt.uiId;
+}
+
+void brigRunTimerFunc( unsigned int uiId )
+{
+   for( unsigned int i = 0; i < brigApp.avTimers.size(); i++ )
+      if( brigApp.avTimers[i].uiId == uiId )
+      {
+         brigApp.avTimers[i].pfAction();
+         if( brigApp.avTimers[i].bOnce )
+            brigKillTimer( uiId );
+         break;
+      }
+
+}
+
+void brigKillTimer( unsigned int uiId )
+{
+   brig_KillTimer( uiId );
+
+   unsigned int i;
+
+   for( i = 0; i < brigApp.avTimers.size(); i++ )
+      if( brigApp.avTimers[i].uiId == uiId )
+      {
+         brigApp.avTimers.erase( brigApp.avTimers.begin()+i );
+         break;
+      }
+
+}

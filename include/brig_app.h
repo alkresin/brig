@@ -13,6 +13,8 @@
 #define BRIGAPP_BRUSH_LIMIT     50
 #define BRIGAPP_STYLE_LIMIT     50
 
+#define TIMER_FIRST_ID       33900
+
 struct BRIGAPP_FONT
 {
    PBRIG_FONT  pFont;
@@ -45,6 +47,14 @@ struct BRIGAPP_STYLE
    int          iCount;
 };
 
+struct BRIGAPP_TIMER
+{
+   unsigned int   uiId;
+   unsigned int  uiVal;
+   bool          bOnce;
+   brig_fnc_menu pfAction;
+};
+
 class brig_Application
 {
 public:
@@ -58,6 +68,7 @@ public:
    vector<BRIGAPP_PEN> avPens;
    vector<BRIGAPP_BRUSH> avBrushes;
    vector<BRIGAPP_STYLE> avStyles;
+   vector<BRIGAPP_TIMER> avTimers;
 };
 
 extern PBRIG_FONT brigAddFont( PBRIG_CHAR fontName, int fnHeight, int fnWeight = 400,
@@ -77,5 +88,11 @@ extern PBRIG_FONT brig_ChooseFont( PBRIG_FONT hFontPrev, BRIGAPP_FONT *pbf = NUL
 
 extern int brigChoice( std::vector<char*> &pList, PBRIG_CHAR lpTitle, unsigned int iLeft,
       unsigned int iTop, unsigned int iWidth, unsigned int iHeight, PBRIG_FONT hFont = NULL );
+
+extern unsigned int brigSetTimer( unsigned int uiValue, brig_fnc_menu pfAction, bool bOnce = false );
+extern void brigRunTimerFunc( unsigned int uiId );
+extern void brigKillTimer( unsigned int uiId );
+extern unsigned int brig_SetTimer( unsigned int uiId, unsigned int uiValue );
+extern void brig_KillTimer( unsigned int uiId );
 
 #endif // BRIG_APP_H_
