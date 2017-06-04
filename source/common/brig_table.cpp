@@ -130,6 +130,8 @@ static void paint_row( brig_Table *pTable, PBRIG_DC hDC, unsigned int y, bool bS
          pStyle = (pColumn->pStyle)? pColumn->pStyle : pTable->pStyle;
       if( pStyle )
          pStyle->Draw( hDC, x, y, x+uiWidth-1, y+uiHeight-1 );
+      else
+         brig_FillRect( hDC, x, y, x+uiWidth-1, y+uiHeight-1, pTable->hBrush );
 
       if( uiWidth >= pColumn->iWidth && ( pCellValue = pColumn->pfValue( pTable, ui+1 ) ) != NULL )
       {

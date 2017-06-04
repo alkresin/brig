@@ -29,6 +29,10 @@ brig_Application::~brig_Application()
       if( brigApp.avFonts[i].bNeedToFree )
          free( brigApp.avFonts[i].pName );
    }
+   for( i = 0; i < brigApp.avTimers.size(); i++ )
+   {
+      brigKillTimer( brigApp.avTimers[i].uiId );
+   }
 
 }
 

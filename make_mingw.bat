@@ -15,7 +15,7 @@ if not exist obj\w32\uni md obj\w32\uni
 
    if errorlevel 1 goto BUILD_ERR
 
-   set CFLAGS=-DUNICODE -D_UNICODE
+   set CFLAGS=-DUNICODE
    set UNICODE=yes
    mingw32-make.exe -f makefile.gcc >>make_mingw.log 2>>make_mingw_err.log
 
