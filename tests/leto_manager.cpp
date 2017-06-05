@@ -193,10 +193,10 @@ void Show1( void )
       fLetoGetCmdItem( &ptr, pTable1Data[1][1] ); ptr ++;   // Tables current
       fLetoGetCmdItem( &ptr, pTable1Data[1][2] ); ptr ++;   // Tables max
 
-      fLetoGetCmdItem( &ptr, pTable1Data[3][1] ); ptr ++;   //
-      fLetoGetCmdItem( &ptr, pTable1Data[4][1] ); ptr ++;   // Operations
-      fLetoGetCmdItem( &ptr, pTable1Data[5][1] ); ptr ++;   // Kbytes sent
-      fLetoGetCmdItem( &ptr, pTable1Data[6][1] ); ptr ++;   // KBytes read
+      fLetoGetCmdItem( &ptr, pTable1Data[3][2] ); ptr ++;   //
+      fLetoGetCmdItem( &ptr, pTable1Data[4][2] ); ptr ++;   // Operations
+      fLetoGetCmdItem( &ptr, pTable1Data[5][2] ); ptr ++;   // Kbytes sent
+      fLetoGetCmdItem( &ptr, pTable1Data[6][2] ); ptr ++;   // KBytes read
    }
    brig_RedrawWindow( pTable );
 }
@@ -237,6 +237,19 @@ bool fncOnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
    return 0;
 }
 
+bool tblOnSize( brig_Widget *pTable, WPARAM wParam, LPARAM lParam )
+{
+   unsigned long iWidth = ((unsigned long)lParam) & 0xFFFF;
+   unsigned long iHeight = ( ((unsigned long)lParam) >> 16 ) & 0xFFFF;
+
+   SYMBOL_UNUSED( wParam );
+
+   pTable->Move( pTable->iLeft, pTable->iTop, iWidth-(pTable->iLeft*2), iHeight-pTable->iTop-20 );
+   return 0;
+
+}
+
+
 int brig_Main( int argc, char *argv[] )
 {
 
@@ -247,6 +260,7 @@ int brig_Main( int argc, char *argv[] )
    brig_Table oTable;
 
    pMain->Create( 100, 100, 500, 400, (PBRIG_CHAR) "LetoDb Manager" );
+   pMain->hFont = brigAddFont( "Georgia", 20 );
 
    oEditIp.Create( pMain, 12, 8, 120, 26 );
 
@@ -264,6 +278,7 @@ int brig_Main( int argc, char *argv[] )
    oBtn3.Create( pMain, 212, 40, 80, 28, (PBRIG_CHAR) "Tables" );
 
    oTable.Create( pMain, 12, 76, 460, 260, WS_BORDER );
+   oTable.pfOnSize = tblOnSize;
 
    pMain->Activate();
 

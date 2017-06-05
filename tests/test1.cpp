@@ -239,7 +239,7 @@ int brig_Main( int argc, char *argv[] )
    oBtn2.Create( &oMain, 348, 100, 76, 28, (PBRIG_CHAR) "Stop" );
    oBtn2.pfOnClick = fncStop;
 
-   oCombo.Create( &oMain, 264, 160, 120, 28, 0, pCombo, 3 );
+   oCombo.Create( &oMain, 264, 160, 120, 28, 4, 0, pCombo, 3 );
 
    oBtn.Create( &oMain, 100, 210, 100, 32, (PBRIG_CHAR) "Помощь" );
    oBtn.pfOnClick = fncOnClick;

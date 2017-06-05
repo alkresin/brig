@@ -181,7 +181,7 @@ static LRESULT CALLBACK s_ComboProc( BRIG_HANDLE hCombo, UINT message,
 }
 
 BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
-          int x, int y, int nWidth, int nHeight, bool bEdit )
+          int x, int y, int nWidth, int nHeight, int iDisplay, bool bEdit )
 {
 
    BRIG_HANDLE hCombo = CreateWindow( TEXT( "COMBOBOX" ), TEXT( "" ),
@@ -194,8 +194,13 @@ BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
 
    if( hCombo )
    {
+      int iHeightBox = SendMessage( hCombo, CB_GETITEMHEIGHT, - 1, 0 );
+      int iHeightItem = SendMessage( hCombo, CB_GETITEMHEIGHT, - 1, 0 );
       LONG_PTR hProc;
       SetWindowLongPtr( hCombo, GWLP_USERDATA, NULL );
+
+      MoveWindow( hCombo, x, y, nWidth, iHeightBox + iHeightItem * iDisplay, TRUE );
+
       hProc = SetWindowLongPtr( hCombo, GWLP_WNDPROC, ( LONG_PTR ) s_ComboProc );
       if( !wpOrigComboProc )
          wpOrigComboProc = ( WNDPROC ) hProc;

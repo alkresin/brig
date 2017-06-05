@@ -33,7 +33,7 @@ extern void brig_table_OnHScroll( brig_Table *pTable, WPARAM wParam );
 extern void brig_table_OnWheel( brig_Table *pTable, WPARAM wParam );
 
 extern BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
-          int x, int y, int nWidth, int nHeight, bool bEdit );
+          int x, int y, int nWidth, int nHeight, int iDisplay, bool bEdit );
 extern void brig_ComboSetArray( brig_Widget *pWidget, char **pArray, int iLen );
 extern int brig_ComboGetValue( brig_Widget *pWidget );
 extern void brig_ComboSetValue( brig_Widget *pWidget, int iSelected );
@@ -150,7 +150,7 @@ public:
    brig_Combo();
 
    BRIG_HANDLE Create( brig_Container *pParent,
-          int x, int y, int nWidth, int nHeight, bool bEdit = 0, char **pArray = NULL, int iLen = 0 );
+          int x, int y, int nWidth, int nHeight, int iDisplay = 2, bool bEdit = 0, char **pArray = NULL, int iLen = 0 );
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
    void Set( char **pArray, int iLen );
 

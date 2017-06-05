@@ -189,9 +189,11 @@ BRIG_HANDLE brig_CreateEdit( brig_Edit *pEdit, int iWidgId,
 /* -------- Combobox --------- */
 
 BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
-          int x, int y, int nWidth, int nHeight, bool bEdit )
+          int x, int y, int nWidth, int nHeight, int iDisplay, bool bEdit )
 {
    GtkWidget *hCtrl;
+
+   SYMBOL_UNUSED( iDisplay );
 
    if( bEdit )
       hCtrl = gtk_combo_box_entry_new_text();
@@ -456,4 +458,30 @@ void brig_SetBgColor( brig_Widget *pWidget, long lColor )
    brig_parse_color( lColor, &(style->base[GTK_STATE_NORMAL]) );
    gtk_widget_set_style( hCtrl, style ); */
 
+}
+
+static gint cb_timer( gchar * data )
+{
+   unsigned int idTimer;
+
+   sscanf( ( char * ) data, "%u", &idTimer );
+
+   brigRunTimerFunc( idTimer );
+   return 1;
+}
+
+unsigned int brig_SetTimer( unsigned int uiId, unsigned int uiValue )
+{
+
+   char buf[10] = { 0 };
+   sprintf( buf, "%u", uiId );
+   hb_retni( ( gint ) gtk_timeout_add( ( guint32 ) uiValue,
+               ( GtkFunction ) cb_timer, g_strdup( buf ) ) );
+
+}
+
+void brig_KillTimer( unsigned int uiId )
+{
+
+   gtk_timeout_remove( ( gint ) uiId );
 }

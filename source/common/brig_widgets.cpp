@@ -269,12 +269,12 @@ brig_Combo::brig_Combo():brig_Widget(), pfOnChange(NULL)
 }
 
 BRIG_HANDLE brig_Combo::Create( brig_Container *pParent,
-          int x, int y, int nWidth, int nHeight, bool bEdit, char **pArray, int iLen )
+          int x, int y, int nWidth, int nHeight, int iDisplay, bool bEdit, char **pArray, int iLen )
 {
 
    brig_Widget::Create( pParent, x, y, nWidth, nHeight );
 
-   handle = brig_CreateCombo( this, iWidgId, x, y, nWidth, nHeight, bEdit );
+   handle = brig_CreateCombo( this, iWidgId, x, y, nWidth, nHeight, iDisplay, bEdit );
 
    if( pArray && iLen > 0 )
       brig_ComboSetArray( this, pArray, iLen );
