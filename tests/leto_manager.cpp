@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #define  DATA1_LEN    8
+unsigned long ulDataLen;
 
 LETOCONNECTION * pConnection = NULL;
 unsigned int uiMode = 0;
@@ -127,20 +128,20 @@ unsigned long fncTable1( brig_Table *pTable, int iOp, unsigned long ulData )
    switch( iOp ) {
 
       case TDS_COUNT:
-         return DATA1_LEN;
+         return ulDataLen;
 
       case TDS_TOP:
          pTable->ulRecCurr = 1;
          break;
 
       case TDS_BOTTOM:
-         pTable->ulRecCurr = DATA1_LEN;
+         pTable->ulRecCurr = ulDataLen;
          break;
 
       case TDS_FORWARD:
          pTable->ulRecCurr += ulData;
-         if( pTable->ulRecCurr > DATA1_LEN )
-            pTable->ulRecCurr = DATA1_LEN;
+         if( pTable->ulRecCurr > ulDataLen )
+            pTable->ulRecCurr = ulDataLen;
          break;
 
       case TDS_BACK:
@@ -153,13 +154,13 @@ unsigned long fncTable1( brig_Table *pTable, int iOp, unsigned long ulData )
          return ( pTable->ulRecCurr == 1 );
 
       case TDS_EOF:
-         return ( pTable->ulRecCurr == DATA1_LEN );
+         return ( pTable->ulRecCurr == ulDataLen );
 
       case TDS_RECNO:
          return pTable->ulRecCurr;
 
       case TDS_GOTO:
-         pTable->ulRecCurr = (ulData>DATA1_LEN)? DATA1_LEN : ulData;
+         pTable->ulRecCurr = (ulData>ulDataLen)? ulDataLen : ulData;
          break;
    }
    return 0;
@@ -179,6 +180,7 @@ void Show1( void )
 
    if( pTable->avColumns.empty() )
    {
+      ulDataLen = DATA1_LEN;
       pTable->pData = (void*) pTable1Data;
       pTable->pfDataSet = fncTable1;
       pTable->AddColumn( NULL, 160, fncCellValue );
@@ -199,6 +201,33 @@ void Show1( void )
       fLetoGetCmdItem( &ptr, pTable1Data[6][2] ); ptr ++;   // KBytes read
    }
    brig_RedrawWindow( pTable );
+}
+
+void Show2( void )
+{
+}
+
+void Show3( void )
+{
+}
+
+void ShowInfo( void )
+{
+   switch( uiMode ) {
+
+      case 1:
+         Show1();
+         break;
+
+      case 2:
+         Show2();
+         break;
+
+      case 3:
+         Show3();
+         break;
+
+   }
 }
 
 bool fncOnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
@@ -231,7 +260,7 @@ bool fncOnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
 
       uiMode = 1;
       Show1();
-      brigSetTimer( 2000, Show1 );
+      brigSetTimer( 2000, ShowInfo );
    }
 
    return 0;
@@ -264,7 +293,7 @@ int brig_Main( int argc, char *argv[] )
 
    oEditIp.Create( pMain, 12, 8, 120, 26 );
 
-   oEditPort.Create( pMain, 140, 8, 60, 26 );
+   oEditPort.Create( pMain, 140, 8, 60, 26, (PBRIG_CHAR) "2812" );
 
    oBtnGo.Create( pMain, 204, 8, 60, 26, (PBRIG_CHAR) "Go" );
    oBtnGo.pfOnClick = fncOnClick;
