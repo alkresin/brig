@@ -184,15 +184,23 @@ unsigned long fncTable1( brig_Table *pTable, int iOp, unsigned long ulData )
 PBRIG_CHAR fnc1CellValue( brig_Table *pTable, int iCol )
 {
    char (*ptr)[3][20] = (char(*)[3][20]) pTable->pData;
-   return (pTable->ulRecCurr <= DATA1_LEN && pTable->ulRecCurr > 0)?
+   return (pTable->ulRecCurr <= ulDataLen && pTable->ulRecCurr > 0)?
          ptr[pTable->ulRecCurr-1][iCol-1] : NULL;
 }
 
 PBRIG_CHAR fnc2CellValue( brig_Table *pTable, int iCol )
 {
    char (*ptr)[4][20] = (char(*)[4][20]) pTable->pData;
-   return (pTable->ulRecCurr <= DATA1_LEN && pTable->ulRecCurr > 0)?
+   return (pTable->ulRecCurr <= ulDataLen && pTable->ulRecCurr > 0)?
          ptr[pTable->ulRecCurr-1][iCol-1] : NULL;
+}
+
+PBRIG_CHAR fnc3CellValue( brig_Table *pTable, int iCol )
+{
+   char (*ptr)[20] = (char(*)[20]) pTable->pData;
+   SYMBOL_UNUSED( iCol );
+   return (pTable->ulRecCurr <= ulDataLen && pTable->ulRecCurr > 0)?
+         ptr[pTable->ulRecCurr-1] : NULL;
 }
 
 void Show1( void )
@@ -246,16 +254,19 @@ void Show2( void )
    {
       char szData[64];
       int iUsers, i;
+      long lTime;
 
       fLetoGetCmdItem( &ptr, szData ); ptr ++;
-      sscanf( szData, "%d", &iUsers );
+      iUsers = atoi( szData );
       for ( i = 0; i < iUsers; i++ )
       {
          fLetoGetCmdItem( &ptr, szData ); ptr ++;
          fLetoGetCmdItem( &ptr, pTable2Data[i][0] ); ptr ++;
          fLetoGetCmdItem( &ptr, pTable2Data[i][1] ); ptr ++;
          fLetoGetCmdItem( &ptr, pTable2Data[i][2] ); ptr ++;
-         fLetoGetCmdItem( &ptr, pTable2Data[i][3] ); ptr ++;
+         fLetoGetCmdItem( &ptr, szData ); ptr ++;
+         lTime = atol( szData );
+         sprintf( pTable2Data[i][3], "%02d:%02d:%02d", (lTime%86400)/3600, (lTime%3600)/60, lTime%60 );
       }
       ulDataLen = (unsigned long) iUsers;
 
@@ -265,8 +276,33 @@ void Show2( void )
 
 void Show3( void )
 {
+   brig_Table * pTable = (brig_Table *) brigApp.pMainWindow->FindWidget( TYPE_TABLE );
+   char * ptr;
 
-   //brig_RedrawWindow( pTable );
+   ulDataLen = 0;
+   if( pTable->avColumns.empty() )
+   {
+      pTable->pData = (void*) pTable3Data;
+      pTable->pfDataSet = fncTable1;
+      pTable->AddColumn( NULL, 160, fnc3CellValue );
+   }
+   if( ( ptr = fLetoMgGetUsers( pConnection, NULL ) ) != NULL && *(ptr-1) == '+' )
+   {
+      char szData[64];
+      int iTables, i;
+
+      fLetoGetCmdItem( &ptr, szData ); ptr ++;
+      iTables = atoi( szData );
+      for ( i = 0; i < iTables; i++ )
+      {
+         fLetoGetCmdItem( &ptr, szData ); ptr ++;
+         fLetoGetCmdItem( &ptr, pTable3Data[i] ); ptr ++;
+      }
+      ulDataLen = (unsigned long) iTables;
+
+   }
+
+   brig_RedrawWindow( pTable );
 }
 
 void ShowInfo( void )
@@ -342,6 +378,7 @@ bool btn1OnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
    pTable->pfDataSet = NULL;
 
    uiMode = 1;
+   return 1;
 }
 
 bool btn2OnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
@@ -365,6 +402,7 @@ bool btn2OnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
       pTable2Data = (char(*)[4][20]) malloc( 100 * 4 * 20 );
 
    uiMode = 2;
+   return 1;
 }
 
 bool btn3OnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
@@ -384,7 +422,11 @@ bool btn3OnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
    pTable->pData = NULL;
    pTable->pfDataSet = NULL;
 
+   if( !pTable3Data )
+      pTable3Data = (char(*)[20]) malloc( 100 * 20 );
+
    uiMode = 3;
+   return 1;
 }
 
 bool tblOnSize( brig_Widget *pTable, WPARAM wParam, LPARAM lParam )

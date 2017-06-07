@@ -177,6 +177,7 @@ int brig_Main( int argc, char *argv[] )
    
    SYMBOL_UNUSED( argc );
    SYMBOL_UNUSED( argv );
+   brig_writelog( NULL, "test %02d\r\n", 3 );
    /*
    for( int i = 0; i < argc; ++i ) {
       brig_writelog( NULL, "arg%d: %s\r\n", i, argv[i] );

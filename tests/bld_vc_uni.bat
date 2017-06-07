@@ -8,7 +8,7 @@
 set BRIG_DIR=\papps\brig
 set BRIG_LIBS=brig.lib
 
-cl /c /TP /W3 /nologo /Fo -I%BRIG_DIR%\include -DUNICODE -D_UNICODE %1.cpp >err.out
+cl /c /TP /W3 /nologo /Fo /EHsc -I%BRIG_DIR%\include -DUNICODE %1.cpp >err.out
 
 rem echo 1 24 "..\include\WindowsXP.Manifest" > hwgui_xp.rc
 rem brc32 -r hwgui_xp -fohwgui_xp
