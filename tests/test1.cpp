@@ -182,7 +182,6 @@ int brig_Main( int argc, char *argv[] )
       brig_writelog( NULL, "arg%d: %s\r\n", i, argv[i] );
    }
    */
-   
    pXmlDoc = brigxml_GetDoc( "test1.xml" );
    if( !brigxml_Error() )
    {

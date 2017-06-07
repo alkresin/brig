@@ -11,6 +11,9 @@ unsigned int uiMode = 0;
 char pTable1Data[DATA1_LEN][3][20] = { {"users","","" }, { "Tables","","" }, { "Indexes","","" }, { "Time elapsed","","" },
    { "Operations","","" }, { "KBytes sent","","" }, { "KBytes read","","" }, { "Transactions","","" } };
 
+char (*pTable2Data)[4][20] = NULL;
+char (*pTable3Data)[20] = NULL;
+
 #if defined( WINNT ) || defined( _Windows ) || defined( __NT__ ) || defined( _WIN32 ) || defined( _WINDOWS_ ) || defined( __WINDOWS_386__ ) || defined( __WIN32__ )
    #define _OS_WIN
    #define PDYN WINAPI*
@@ -28,6 +31,8 @@ typedef void ( PDYN LPLetoConnectionClose) ( LETOCONNECTION * pConnection );
 typedef char * ( PDYN LPLetoGetServerVer) ( LETOCONNECTION * pConnection );
 typedef char * ( PDYN LPLetoMgGetInfo ) ( LETOCONNECTION * pConnection );
 typedef int ( PDYN LPLetoGetCmdItem )( char ** pptr, char * szDest );
+typedef char * ( PDYN LPLetoMgGetUsers) ( LETOCONNECTION * pConnection, const char * szTable );
+typedef char * ( PDYN LPLetoMgGetTables) ( LETOCONNECTION * pConnection, const char * szUser );
 
 LPLetoInit fLetoInit = NULL;
 LPLetoExit fLetoExit = NULL;
@@ -36,6 +41,8 @@ LPLetoConnectionClose fLetoConnectionClose = NULL;
 LPLetoGetServerVer fLetoGetServerVer = NULL;
 LPLetoMgGetInfo fLetoMgGetInfo = NULL;
 LPLetoGetCmdItem fLetoGetCmdItem = NULL;
+LPLetoMgGetUsers fLetoMgGetUsers = NULL;
+LPLetoMgGetTables fLetoMgGetTables = NULL;
 
 #if defined( _OS_WIN )
 static int leto_LoadLib( void )
@@ -53,6 +60,8 @@ static int leto_LoadLib( void )
          fLetoGetServerVer = ( LPLetoGetServerVer ) GetProcAddress( hLeto, "_LetoGetServerVer" );
          fLetoMgGetInfo = ( LPLetoMgGetInfo ) GetProcAddress( hLeto, "_LetoMgGetInfo" );
          fLetoGetCmdItem = ( LPLetoGetCmdItem ) GetProcAddress( hLeto, "_LetoGetCmdItem" );
+         fLetoMgGetUsers = ( LPLetoMgGetUsers ) GetProcAddress( hLeto, "_LetoMgGetUsers" );
+         fLetoMgGetTables = ( LPLetoMgGetTables ) GetProcAddress( hLeto, "_LetoMgGetTables" );
          //brig_writelog( NULL, "leto: %d %d %d %d %d %d\r\n", (hLeto)? 1:0, (fLetoInit)? 1:0, (fLetoExit)? 1:0, (fLetoConnectionNew)? 1:0, (fLetoConnectionClose)? 1:0, (fLetoGetServerVer)? 1:0 );
          fLetoInit();
          return 1;
@@ -76,6 +85,8 @@ static void leto_UnLoadLib( void )
       fLetoGetServerVer = NULL;
       fLetoMgGetInfo = NULL;
       fLetoGetCmdItem = NULL;
+      fLetoMgGetUsers = NULL;
+      fLetoMgGetTables = NULL;
    }
 }
 #else
@@ -95,6 +106,8 @@ static int leto_LoadLib( void )
          fLetoGetServerVer = ( LPLetoGetServerVer ) dlsym( hLeto, "LetoGetServerVer" );
          fLetoMgGetInfo = ( LPLetoMgGetInfo ) dlsym( hLeto, "LetoMgGetInfo" );
          fLetoGetCmdItem = ( LPLetoGetCmdItem ) dlsym( hLeto, "LetoGetCmdItem" );
+         fLetoMgGetUsers = ( LPLetoMgGetUsers ) dlsym( hLeto, "LetoMgGetUsers" );
+         fLetoMgGetTables = ( LPLetoMgGetTables ) dlsym( hLeto, "LetoMgGetTables" );
 
          fLetoInit();
          return 1;
@@ -118,6 +131,8 @@ static void leto_UnLoadLib( void )
       fLetoGetServerVer = NULL;
       fLetoMgGetInfo = NULL;
       fLetoGetCmdItem = NULL;
+      fLetoMgGetUsers = NULL;
+      fLetoMgGetTables = NULL;
    }
 }
 
@@ -166,9 +181,16 @@ unsigned long fncTable1( brig_Table *pTable, int iOp, unsigned long ulData )
    return 0;
 }
 
-PBRIG_CHAR fncCellValue( brig_Table *pTable, int iCol )
+PBRIG_CHAR fnc1CellValue( brig_Table *pTable, int iCol )
 {
    char (*ptr)[3][20] = (char(*)[3][20]) pTable->pData;
+   return (pTable->ulRecCurr <= DATA1_LEN && pTable->ulRecCurr > 0)?
+         ptr[pTable->ulRecCurr-1][iCol-1] : NULL;
+}
+
+PBRIG_CHAR fnc2CellValue( brig_Table *pTable, int iCol )
+{
+   char (*ptr)[4][20] = (char(*)[4][20]) pTable->pData;
    return (pTable->ulRecCurr <= DATA1_LEN && pTable->ulRecCurr > 0)?
          ptr[pTable->ulRecCurr-1][iCol-1] : NULL;
 }
@@ -183,9 +205,9 @@ void Show1( void )
       ulDataLen = DATA1_LEN;
       pTable->pData = (void*) pTable1Data;
       pTable->pfDataSet = fncTable1;
-      pTable->AddColumn( NULL, 160, fncCellValue );
-      pTable->AddColumn( NULL, 120, fncCellValue );
-      pTable->AddColumn( NULL, 120, fncCellValue );
+      pTable->AddColumn( NULL, 160, fnc1CellValue );
+      pTable->AddColumn( NULL, 120, fnc1CellValue );
+      pTable->AddColumn( NULL, 120, fnc1CellValue );
    }
 
    if( ( ptr = fLetoMgGetInfo( pConnection ) ) != NULL && *(ptr-1) == '+' )
@@ -205,10 +227,46 @@ void Show1( void )
 
 void Show2( void )
 {
+
+   brig_Table * pTable = (brig_Table *) brigApp.pMainWindow->FindWidget( TYPE_TABLE );
+   char * ptr;
+
+   ulDataLen = 0;
+   if( pTable->avColumns.empty() )
+   {
+      pTable->pData = (void*) pTable2Data;
+      pTable->pfDataSet = fncTable1;
+      pTable->AddColumn( NULL, 160, fnc2CellValue );
+      pTable->AddColumn( NULL, 120, fnc2CellValue );
+      pTable->AddColumn( NULL, 120, fnc2CellValue );
+      pTable->AddColumn( NULL, 120, fnc2CellValue );
+   }
+
+   if( ( ptr = fLetoMgGetUsers( pConnection, NULL ) ) != NULL && *(ptr-1) == '+' )
+   {
+      char szData[64];
+      int iUsers, i;
+
+      fLetoGetCmdItem( &ptr, szData ); ptr ++;
+      sscanf( szData, "%d", &iUsers );
+      for ( i = 0; i < iUsers; i++ )
+      {
+         fLetoGetCmdItem( &ptr, szData ); ptr ++;
+         fLetoGetCmdItem( &ptr, pTable2Data[i][0] ); ptr ++;
+         fLetoGetCmdItem( &ptr, pTable2Data[i][1] ); ptr ++;
+         fLetoGetCmdItem( &ptr, pTable2Data[i][2] ); ptr ++;
+         fLetoGetCmdItem( &ptr, pTable2Data[i][3] ); ptr ++;
+      }
+      ulDataLen = (unsigned long) iUsers;
+
+   }
+   brig_RedrawWindow( pTable );
 }
 
 void Show3( void )
 {
+
+   //brig_RedrawWindow( pTable );
 }
 
 void ShowInfo( void )
@@ -230,7 +288,7 @@ void ShowInfo( void )
    }
 }
 
-bool fncOnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
+bool btnGoOnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
 {
 
    SYMBOL_UNUSED( pBtn );
@@ -266,6 +324,69 @@ bool fncOnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
    return 0;
 }
 
+bool btn1OnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
+{
+
+   brig_Table * pTable;
+
+   SYMBOL_UNUSED( pBtn );
+   SYMBOL_UNUSED( wParam );
+   SYMBOL_UNUSED( lParam );
+
+   if( !hLeto || uiMode == 1 )
+      return 0;
+
+   pTable = (brig_Table *) brigApp.pMainWindow->FindWidget( TYPE_TABLE );
+   pTable->avColumns.clear();
+   pTable->pData = NULL;
+   pTable->pfDataSet = NULL;
+
+   uiMode = 1;
+}
+
+bool btn2OnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
+{
+
+   brig_Table * pTable;
+
+   SYMBOL_UNUSED( pBtn );
+   SYMBOL_UNUSED( wParam );
+   SYMBOL_UNUSED( lParam );
+
+   if( !hLeto || uiMode == 2 )
+      return 0;
+
+   pTable = (brig_Table *) brigApp.pMainWindow->FindWidget( TYPE_TABLE );
+   pTable->avColumns.clear();
+   pTable->pData = NULL;
+   pTable->pfDataSet = NULL;
+
+   if( !pTable2Data )
+      pTable2Data = (char(*)[4][20]) malloc( 100 * 4 * 20 );
+
+   uiMode = 2;
+}
+
+bool btn3OnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
+{
+
+   brig_Table * pTable;
+
+   SYMBOL_UNUSED( pBtn );
+   SYMBOL_UNUSED( wParam );
+   SYMBOL_UNUSED( lParam );
+
+   if( !hLeto || uiMode == 3 )
+      return 0;
+
+   pTable = (brig_Table *) brigApp.pMainWindow->FindWidget( TYPE_TABLE );
+   pTable->avColumns.clear();
+   pTable->pData = NULL;
+   pTable->pfDataSet = NULL;
+
+   uiMode = 3;
+}
+
 bool tblOnSize( brig_Widget *pTable, WPARAM wParam, LPARAM lParam )
 {
    unsigned long iWidth = ((unsigned long)lParam) & 0xFFFF;
@@ -287,28 +408,36 @@ int brig_Main( int argc, char *argv[] )
    brig_Label oLabelVer;
    brig_Button oBtnGo, oBtn1, oBtn2, oBtn3;
    brig_Table oTable;
+   char * pIp = NULL;
+
+   if( argc > 1 )
+      pIp = argv[1];
 
    pMain->Create( 100, 100, 500, 400, (PBRIG_CHAR) "LetoDb Manager" );
    pMain->hFont = brigAddFont( "Georgia", 20 );
 
-   oEditIp.Create( pMain, 12, 8, 120, 26 );
+   oEditIp.Create( pMain, 12, 8, 120, 26, pIp );
 
    oEditPort.Create( pMain, 140, 8, 60, 26, (PBRIG_CHAR) "2812" );
 
    oBtnGo.Create( pMain, 204, 8, 60, 26, (PBRIG_CHAR) "Go" );
-   oBtnGo.pfOnClick = fncOnClick;
+   oBtnGo.pfOnClick = btnGoOnClick;
 
    oLabelVer.Create( pMain, 270, 8, 200, 24, (PBRIG_CHAR)"" );
 
    oBtn1.Create( pMain, 12, 40, 80, 28, (PBRIG_CHAR) "Main" );
+   oBtn1.pfOnClick = btn1OnClick;
 
    oBtn2.Create( pMain, 112, 40, 80, 28, (PBRIG_CHAR) "Users" );
+   oBtn2.pfOnClick = btn2OnClick;
 
    oBtn3.Create( pMain, 212, 40, 80, 28, (PBRIG_CHAR) "Tables" );
+   oBtn3.pfOnClick = btn3OnClick;
 
    oTable.Create( pMain, 12, 76, 460, 260, WS_BORDER );
    oTable.pfOnSize = tblOnSize;
 
+   brig_SetFocus( &oEditIp );
    pMain->Activate();
 
    if( hLeto )
@@ -317,6 +446,10 @@ int brig_Main( int argc, char *argv[] )
       fLetoExit( 1 );
       leto_UnLoadLib();
    }
+   if( pTable2Data )
+      free( pTable2Data );
+   if( pTable3Data )
+      free( pTable3Data );
 
    return 0;
 }
