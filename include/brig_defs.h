@@ -159,6 +159,7 @@ using std::vector;
    #define BS_RADIOBUTTON       4
    #define BS_GROUPBOX          7
    #define BS_AUTORADIOBUTTON   9
+   #define DT_LEFT              0
    #define DT_CENTER            1
    #define DT_RIGHT             2
    #define DT_VCENTER           4

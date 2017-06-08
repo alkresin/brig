@@ -233,6 +233,7 @@ typedef struct BRIG_TCOLUMN_STRU
  
    PBRIG_CHAR    szHead, szFoot;
    unsigned int  iWidth;
+   unsigned int  iAlign;
    brig_fnc_column pfValue;
    brig_Style  *pStyle, *pStyleSel, *pStyleHead, *pStyleFoot;
 
@@ -249,7 +250,7 @@ public:
          unsigned long ulStyle = 0, PBRIG_FONT hFont = NULL, unsigned int iRows = 0 );
 
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
-   void AddColumn( PBRIG_CHAR szHead, int iWidth, brig_fnc_column pfValue );
+   void AddColumn( PBRIG_CHAR szHead, unsigned int iWidth, brig_fnc_column pfValue, unsigned int iAlign = DT_LEFT );
 
    void Down( void );
    void Up( void );

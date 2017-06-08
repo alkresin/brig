@@ -12,7 +12,7 @@ char pTable1Data[DATA1_LEN][3][20] = { {"users","","" }, { "Tables","","" }, { "
    { "Operations","","" }, { "KBytes sent","","" }, { "KBytes read","","" }, { "Transactions","","" } };
 
 char (*pTable2Data)[4][20] = NULL;
-char (*pTable3Data)[20] = NULL;
+char (*pTable3Data)[100] = NULL;
 
 #if defined( WINNT ) || defined( _Windows ) || defined( __NT__ ) || defined( _WIN32 ) || defined( _WINDOWS_ ) || defined( __WINDOWS_386__ ) || defined( __WIN32__ )
    #define _OS_WIN
@@ -184,6 +184,7 @@ unsigned long fncTable1( brig_Table *pTable, int iOp, unsigned long ulData )
 PBRIG_CHAR fnc1CellValue( brig_Table *pTable, int iCol )
 {
    char (*ptr)[3][20] = (char(*)[3][20]) pTable->pData;
+
    return (pTable->ulRecCurr <= ulDataLen && pTable->ulRecCurr > 0)?
          ptr[pTable->ulRecCurr-1][iCol-1] : NULL;
 }
@@ -191,13 +192,15 @@ PBRIG_CHAR fnc1CellValue( brig_Table *pTable, int iCol )
 PBRIG_CHAR fnc2CellValue( brig_Table *pTable, int iCol )
 {
    char (*ptr)[4][20] = (char(*)[4][20]) pTable->pData;
+
    return (pTable->ulRecCurr <= ulDataLen && pTable->ulRecCurr > 0)?
          ptr[pTable->ulRecCurr-1][iCol-1] : NULL;
 }
 
 PBRIG_CHAR fnc3CellValue( brig_Table *pTable, int iCol )
 {
-   char (*ptr)[20] = (char(*)[20]) pTable->pData;
+   char (*ptr)[100] = (char(*)[100]) pTable->pData;
+
    SYMBOL_UNUSED( iCol );
    return (pTable->ulRecCurr <= ulDataLen && pTable->ulRecCurr > 0)?
          ptr[pTable->ulRecCurr-1] : NULL;
@@ -207,6 +210,7 @@ void Show1( void )
 {
    brig_Table * pTable = (brig_Table *) brigApp.pMainWindow->FindWidget( TYPE_TABLE );
    char * ptr;
+   bool bFirst = 0;
 
    if( pTable->avColumns.empty() )
    {
@@ -216,6 +220,7 @@ void Show1( void )
       pTable->AddColumn( NULL, 160, fnc1CellValue );
       pTable->AddColumn( NULL, 120, fnc1CellValue );
       pTable->AddColumn( NULL, 120, fnc1CellValue );
+      bFirst = 1;
    }
 
    if( ( ptr = fLetoMgGetInfo( pConnection ) ) != NULL && *(ptr-1) == '+' )
@@ -230,6 +235,8 @@ void Show1( void )
       fLetoGetCmdItem( &ptr, pTable1Data[5][2] ); ptr ++;   // Kbytes sent
       fLetoGetCmdItem( &ptr, pTable1Data[6][2] ); ptr ++;   // KBytes read
    }
+   if( bFirst )
+      pTable->Top();
    brig_RedrawWindow( pTable );
 }
 
@@ -238,6 +245,7 @@ void Show2( void )
 
    brig_Table * pTable = (brig_Table *) brigApp.pMainWindow->FindWidget( TYPE_TABLE );
    char * ptr;
+   bool bFirst = 0;
 
    ulDataLen = 0;
    if( pTable->avColumns.empty() )
@@ -248,6 +256,7 @@ void Show2( void )
       pTable->AddColumn( NULL, 120, fnc2CellValue );
       pTable->AddColumn( NULL, 120, fnc2CellValue );
       pTable->AddColumn( NULL, 120, fnc2CellValue );
+      bFirst = 1;
    }
 
    if( ( ptr = fLetoMgGetUsers( pConnection, NULL ) ) != NULL && *(ptr-1) == '+' )
@@ -271,6 +280,8 @@ void Show2( void )
       ulDataLen = (unsigned long) iUsers;
 
    }
+   if( bFirst )
+      pTable->Top();
    brig_RedrawWindow( pTable );
 }
 
@@ -278,15 +289,17 @@ void Show3( void )
 {
    brig_Table * pTable = (brig_Table *) brigApp.pMainWindow->FindWidget( TYPE_TABLE );
    char * ptr;
+   bool bFirst = 0;
 
    ulDataLen = 0;
    if( pTable->avColumns.empty() )
    {
       pTable->pData = (void*) pTable3Data;
       pTable->pfDataSet = fncTable1;
-      pTable->AddColumn( NULL, 160, fnc3CellValue );
+      pTable->AddColumn( NULL, 300, fnc3CellValue );
+      bFirst = 1;
    }
-   if( ( ptr = fLetoMgGetUsers( pConnection, NULL ) ) != NULL && *(ptr-1) == '+' )
+   if( ( ptr = fLetoMgGetTables( pConnection, NULL ) ) != NULL && *(ptr-1) == '+' )
    {
       char szData[64];
       int iTables, i;
@@ -302,6 +315,8 @@ void Show3( void )
 
    }
 
+   if( bFirst )
+      pTable->Top();
    brig_RedrawWindow( pTable );
 }
 
@@ -352,9 +367,12 @@ bool btnGoOnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
       free( pPort );
       free( pAddr );
 
-      uiMode = 1;
-      Show1();
-      brigSetTimer( 2000, ShowInfo );
+      if( pConnection )
+      {
+         uiMode = 1;
+         Show1();
+         brigSetTimer( 2000, ShowInfo );
+      }
    }
 
    return 0;
@@ -369,7 +387,7 @@ bool btn1OnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
    SYMBOL_UNUSED( wParam );
    SYMBOL_UNUSED( lParam );
 
-   if( !hLeto || uiMode == 1 )
+   if( !pConnection || uiMode == 1 )
       return 0;
 
    pTable = (brig_Table *) brigApp.pMainWindow->FindWidget( TYPE_TABLE );
@@ -390,7 +408,7 @@ bool btn2OnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
    SYMBOL_UNUSED( wParam );
    SYMBOL_UNUSED( lParam );
 
-   if( !hLeto || uiMode == 2 )
+   if( !pConnection || uiMode == 2 )
       return 0;
 
    pTable = (brig_Table *) brigApp.pMainWindow->FindWidget( TYPE_TABLE );
@@ -414,7 +432,7 @@ bool btn3OnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
    SYMBOL_UNUSED( wParam );
    SYMBOL_UNUSED( lParam );
 
-   if( !hLeto || uiMode == 3 )
+   if( !pConnection || uiMode == 3 )
       return 0;
 
    pTable = (brig_Table *) brigApp.pMainWindow->FindWidget( TYPE_TABLE );
@@ -423,7 +441,7 @@ bool btn3OnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
    pTable->pfDataSet = NULL;
 
    if( !pTable3Data )
-      pTable3Data = (char(*)[20]) malloc( 100 * 20 );
+      pTable3Data = (char(*)[100]) malloc( 100 * 100 );
 
    uiMode = 3;
    return 1;

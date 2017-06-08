@@ -38,13 +38,14 @@ BRIG_HANDLE brig_Table::Create( brig_Container *pParent, int x, int y,
    return handle;
 }
 
-void brig_Table::AddColumn( PBRIG_CHAR szHead, int iWidth, brig_fnc_column pfValue )
+void brig_Table::AddColumn( PBRIG_CHAR szHead, unsigned int iWidth, brig_fnc_column pfValue, unsigned int iAlign )
 {
    PBRIG_TCOL pColumn = new BRIG_TCOL;
 
    pColumn->szHead = szHead;
    pColumn->szFoot = NULL;
    pColumn->iWidth = iWidth;
+   pColumn->iAlign = iAlign;
    pColumn->pfValue = pfValue;
    pColumn->pStyle = pColumn->pStyleSel = pColumn->pStyleHead = pColumn->pStyleFoot = NULL;
 
@@ -138,7 +139,7 @@ static void paint_row( brig_Table *pTable, PBRIG_DC hDC, unsigned int y, bool bS
          brig_SetTextColor( hDC, (bSel)? pTable->lSelTColor : pTable->lTextColor );
          brig_SetTransparentMode( hDC, 1 );
          brig_DrawText( hDC, pCellValue, x+pTable->pPadding[0], y+pTable->pPadding[1],
-            x+pColumn->iWidth-pTable->pPadding[2]-1, y+pTable->uiTextHeight + pTable->pPadding[1], DT_SINGLELINE | DT_VCENTER | DT_CENTER );
+            x+pColumn->iWidth-pTable->pPadding[2]-1, y+pTable->uiTextHeight + pTable->pPadding[1], DT_SINGLELINE | DT_VCENTER | pColumn->iAlign );
          brig_SetTransparentMode( hDC, 0 );
       }
 
