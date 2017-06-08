@@ -560,3 +560,58 @@ bool brig_QButton::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
   
    return 0;
 }
+
+
+/* -------- Splitter --------- */
+brig_Splitter::brig_Splitter():brig_Widget(), pfOnPaint(NULL)
+{
+   uiType = TYPE_SPLITTER;
+}
+
+brig_Splitter::~brig_Splitter()
+{
+}
+
+BRIG_HANDLE brig_Splitter::Create( brig_Container *pParent, int x, int y, int nWidth,
+         int nHeight, vector<brig_Widget*> *pArrLeft, vector<brig_Widget*> *pArrRight )
+{
+
+   bVertical = ( nHeight > nWidth );
+
+   brig_Widget::Create( pParent, x, y, nWidth, nHeight );
+
+   handle = brig_CreateSplitter( this, iWidgId, x, y, nWidth, nHeight );
+
+   avLeft = *pArrLeft;
+   avRight = *pArrRight;
+
+   return handle;
+}
+
+bool brig_Splitter::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
+{
+
+   SYMBOL_UNUSED( wParam );
+   SYMBOL_UNUSED( lParam );
+
+   switch( message ) {
+
+      case WM_PAINT:
+
+         if( pfOnPaint )
+         {
+            PBRIG_PPS pps = brig_BeginPaint( this );
+
+            pfOnPaint( this, pps->hDC );
+
+            brig_EndPaint( this, pps );
+         }
+         //else
+         //   brig_paint_QButton( this );
+
+         break;
+
+   }
+  
+   return 0;
+}

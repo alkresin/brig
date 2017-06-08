@@ -425,6 +425,24 @@ BRIG_HANDLE brig_CreateQButton( brig_QButton *pQBtn, int iWidgId,
    return hQButton;
 }
 
+BRIG_HANDLE brig_CreateSplitter( brig_Splitter *pSplitter, int iWidgId,
+          int x, int y, int nWidth, int nHeight )
+{
+   BRIG_HANDLE hSplitter = 
+         CreateWindowEx( 0,   /* extended style */
+         TEXT( "STATIC" ),
+         NULL,                   /* title   */
+         WS_CHILD | WS_VISIBLE | SS_OWNERDRAW,
+         x, y, nWidth, nHeight,
+         pSplitter->pParent->Handle(),
+         ( HMENU ) iWidgId,           /* widget ID  */
+         GetModuleHandle( NULL ), NULL );
+
+   return hSplitter;
+
+}
+
+
 void brig_SetFgColor( brig_Widget *pWidget, long lColor )
 {
    SYMBOL_UNUSED( pWidget );

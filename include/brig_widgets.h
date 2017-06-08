@@ -13,6 +13,7 @@ class brig_Tab;
 class brig_Panel;
 class brig_QButton;
 class brig_Table;
+class brig_Splitter;
 
 extern BRIG_HANDLE brig_CreateLabel( brig_Label *pLabel, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle, PBRIG_CHAR lpCaption, unsigned long ulExStyle );
@@ -41,6 +42,9 @@ extern void brig_ComboSetValue( brig_Widget *pWidget, int iSelected );
 extern BRIG_HANDLE brig_CreateTab( brig_Tab *pTab, int iWidgId,
           int x, int y, int nWidth, int nHeight );
 extern void brig_TabAddPage( brig_Tab *pTab, int iPage, PBRIG_CHAR lpName );
+
+extern BRIG_HANDLE brig_CreateSplitter( brig_Splitter *pSplitter, int iWidgId,
+          int x, int y, int nWidth, int nHeight );
 
 
 class brig_Label : public brig_Widget
@@ -214,6 +218,26 @@ public:
    PBRIG_BRUSH hBrush1, hBrush2;
    PBRIG_PEN hPen;
    brig_Style *pStyleNormal, *pStyleOver, *pStylePress;
+};
+
+class brig_Splitter : public brig_Widget
+{
+public:
+
+   brig_Splitter();
+   ~brig_Splitter();
+
+   BRIG_HANDLE Create( brig_Container *pParent, int x, int y, int nWidth, int nHeight,
+         vector<brig_Widget*> *pArrLeft, vector<brig_Widget*> *pArrRight );
+
+   bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
+
+   brig_fnc_paint pfOnPaint;
+
+   bool bVertical;
+   vector<brig_Widget*> avLeft;
+   vector<brig_Widget*> avRight;
+
 };
 
 #define  TDS_COUNT   1

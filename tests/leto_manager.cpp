@@ -496,6 +496,8 @@ int brig_Main( int argc, char *argv[] )
 
    oTable.Create( pMain, 12, 76, 460, 260, WS_BORDER );
    oTable.pfOnSize = tblOnSize;
+   oTable.pStyle = brigAddStyle( 0xdddddd );
+   oTable.pStyleSel = brigAddStyle( 0xeeeeee );
 
    brig_SetFocus( &oEditIp );
    pMain->Activate();

@@ -410,6 +410,41 @@ BRIG_HANDLE brig_CreateQButton( brig_QButton *pQBtn, int iWidgId,
    return hQButton;
 }
 
+/* -------- Splitter --------- 
+ */
+
+BRIG_HANDLE brig_CreateSplitter( brig_Splitter *pSplitter, int iWidgId,
+          int x, int y, int nWidth, int nHeight )
+{
+   GtkWidget *hCtrl;
+   GtkFixed *box, *fbox;
+
+   fbox = ( GtkFixed * ) gtk_fixed_new(  );
+
+   hCtrl = gtk_drawing_area_new(  );
+   box = ( GtkFixed * ) g_object_get_data( ( GObject * ) pSplitter->pParent->Handle(), "fbox" );
+
+   if( box )
+   {
+      gtk_fixed_put( box, ( GtkWidget * ) fbox, x, y );
+      gtk_widget_set_size_request( ( GtkWidget * ) fbox, nWidth, nHeight );
+   }
+   gtk_fixed_put( fbox, hCtrl, 0, 0 );
+   gtk_widget_set_size_request( hCtrl, nWidth, nHeight );
+   g_object_set_data( ( GObject * ) hCtrl, "fbox", ( gpointer ) fbox );
+
+   brig_SetEvent( ( gpointer ) hCtrl, (char*)"expose_event", WM_PAINT, 0, 0 );
+   GTK_WIDGET_SET_FLAGS( hCtrl, GTK_CAN_FOCUS );
+
+   gtk_widget_add_events( hCtrl, GDK_BUTTON_PRESS_MASK |
+         GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK );
+   brig_SetEvent( ( gpointer ) hCtrl, (char*)"button_press_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hCtrl, (char*)"button_release_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hCtrl, (char*)"motion_notify_event", 0, 0, 0 );
+
+   return hCtrl;
+}
+
 /* -------- common widget's functions --------- */
 
 void brig_SetFgColor( brig_Widget *pWidget, long lColor )
