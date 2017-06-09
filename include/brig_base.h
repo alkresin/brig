@@ -40,6 +40,9 @@ extern void brig_RedrawWindow( brig_Widget *pWidget );
 extern void brig_SetFont( brig_Widget *pWidget, PBRIG_FONT pFont );
 extern void brig_SetFgColor( brig_Widget *pWidget, long lColor );
 extern void brig_SetBgColor( brig_Widget *pWidget, long lColor );
+extern PBRIG_CURSOR brig_LoadCursor( int iCursorType );
+extern void brig_SetCursor( PBRIG_CURSOR hCursor, brig_Widget *pWidget );
+
 
 extern bool brig_CheckBtnGet( brig_Widget *pWidget );
 extern void brig_CheckBtnSet( brig_Widget *pWidget, bool bValue );

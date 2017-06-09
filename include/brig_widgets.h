@@ -235,8 +235,12 @@ public:
    brig_fnc_paint pfOnPaint;
 
    bool bVertical;
+   bool bCaptured;
    vector<brig_Widget*> avLeft;
    vector<brig_Widget*> avRight;
+   long int lColorInside;
+   PBRIG_PEN hPenEdge, hPenInside;
+   PBRIG_CURSOR hCursor;
 
 };
 
@@ -283,10 +287,12 @@ public:
 
    brig_fnc_paint pfOnPaint;
    bool (*pfOnDblClick)( brig_Table *pTable );
+   void (*pfOnPosChanged)( brig_Table *pTable );
    unsigned long (*pfDataSet)( brig_Table *pTable, int iOp, unsigned long ulData );
 
    void *pData;                // A Data source - an array, data table handle, ...
    unsigned long ulRecCurr;    // A current record number ( in a data source )
+   unsigned long ulRecCurrOld; // A previous value of a current record number ( in a data source )
    unsigned long ulRecFirst;   // A data source record number, displayed in a first row of a table
    unsigned int  uiColFirst;
 

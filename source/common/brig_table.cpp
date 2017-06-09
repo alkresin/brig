@@ -8,12 +8,14 @@
 
 #include "brig.h"
 
-brig_Table::brig_Table():brig_Widget(), pfOnPaint(NULL), pfDataSet(NULL), pfOnDblClick(NULL), pData(NULL), pPenSep(NULL), pPenHdr(NULL)
+brig_Table::brig_Table():brig_Widget(), pfOnPaint(NULL), pfDataSet(NULL),
+   pfOnDblClick(NULL), pfOnPosChanged(NULL), pData(NULL), pPenSep(NULL), pPenHdr(NULL)
 {
    uiType = TYPE_TABLE;
    lSepColor = 0xc0c0c0;
    lSelTColor = lHeadColor = lTextColor;
    uiTextHeight = uiHeadRows = uiFootRows = uiRowCount = uiColumnSel = 0;
+   ulRecCurrOld = 0;
    ulRecCurr = ulRecFirst = uiRowSel = uiColFirst = 1;
    pHeadPadding[0] = pHeadPadding[2] = pPadding[0] = pPadding[2] = 4;
    pHeadPadding[1] = pHeadPadding[3] = pPadding[1] = pPadding[3] = 2;
@@ -211,6 +213,12 @@ static void paint_table( brig_Table *pTable )
       }
 
       pTable->pfDataSet( pTable, TDS_GOTO, ulTemp );
+      if( pTable->ulRecCurrOld != ulTemp )
+      {
+         pTable->ulRecCurrOld = ulTemp;
+         if( pTable->pfOnPosChanged )
+            pTable->pfOnPosChanged( pTable );
+      }
    }
    else
       pTable->uiRowCount = 0;

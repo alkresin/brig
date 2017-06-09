@@ -51,6 +51,15 @@ using std::vector;
    #define PBRIG_FONT    HFONT
    #define PBRIG_BITMAP  HBITMAP
    #define PBRIG_ICON    HICON
+   #define PBRIG_CURSOR  HCURSOR
+
+   #define CURSOR_ARROW    32512
+   #define CURSOR_WAIT     32514
+   #define CURSOR_CROSS    32515
+   #define CURSOR_SIZEWE   32644
+   #define CURSOR_SIZENS   32645
+   #define CURSOR_UPARROW  32516
+   #define CURSOR_HAND     32649
 
    typedef struct BRIG_PPS_STRU
    {
@@ -130,6 +139,16 @@ using std::vector;
       long int  trcolor;
       GdkPixbuf * handle;
    } BRIG_ICON, *PBRIG_ICON;
+
+   #define PBRIG_CURSOR  GdkCursor*
+
+   #define CURSOR_ARROW    GDK_ARROW
+   #define CURSOR_WAIT     GDK_CLOCK
+   #define CURSOR_CROSS    GDK_CROSS
+   #define CURSOR_SIZEWE   GDK_SIZING
+   #define CURSOR_SIZENS   GDK_SIZING
+   #define CURSOR_UPARROW  GDK_BASED_ARROW_UP
+   #define CURSOR_HAND     GDK_HAND1
 
    #define HACCEL        void*
    #define DWORD         int

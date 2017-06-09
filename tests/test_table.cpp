@@ -6,13 +6,16 @@
 #define  DATA_LEN    10
 unsigned long ulDataLen = DATA_LEN;
 
-bool fncCloseDlg( brig_Widget *pDlg, WPARAM wParam, LPARAM lParam )
-{
-   SYMBOL_UNUSED( wParam );
-   SYMBOL_UNUSED( lParam );
+brig_Dialog oDlg;
 
-   ((brig_Dialog*)(pDlg->pParent))->Close();
-   return 1;
+void fncPosChanged( brig_Table *pTable )
+{
+   brig_Edit * pEdit;
+   BRIG_CHAR szInfo[48];
+
+   pEdit = (brig_Edit *) oDlg.FindWidget( TYPE_EDIT );
+   sprintf( szInfo, "Current record number: %lu", pTable->ulRecCurr );
+   pEdit->SetText( szInfo );
 }
 
 unsigned long fncTable( brig_Table *pTable, int iOp, unsigned long ulData )
@@ -72,9 +75,11 @@ PBRIG_CHAR fncCellValue( brig_Table *pTable, int iCol )
 
 int brig_Main( int argc, char *argv[] )
 {
-   brig_Dialog oDlg;
-   brig_Button oBtn;
+
+   brig_Edit oEdit;
    brig_Table oTable;
+   brig_Splitter oSplit;
+   vector<brig_Widget*> avLeft, avRight;
 
    long pColors1[2] = {0xaaaaaa, 0xdddddd};
 
@@ -96,14 +101,19 @@ int brig_Main( int argc, char *argv[] )
    oTable.pStyleSel = brigAddStyle( 0xeeeeee );
    oTable.pfDataSet = fncTable;
    oTable.pData = (void*) pTableData;
-   oTable.AddColumn( "", 28, fncCellValue );
+   oTable.pfOnPosChanged = fncPosChanged;
+   oTable.AddColumn( (PBRIG_CHAR)"", 28, fncCellValue );
    oTable.avColumns[0]->pStyle = oTable.avColumns[0]->pStyleSel = brigAddStyle( 2, pColors1, 3 );
-   oTable.AddColumn( "First", 80, fncCellValue );
-   oTable.AddColumn( "Second", 80, fncCellValue );
-   oTable.AddColumn( "Third", 100, fncCellValue );
+   oTable.AddColumn( (PBRIG_CHAR)"First", 80, fncCellValue );
+   oTable.AddColumn( (PBRIG_CHAR)"Second", 80, fncCellValue );
+   oTable.AddColumn( (PBRIG_CHAR)"Third", 100, fncCellValue );
 
-   oBtn.Create( &oDlg, 150, 200, 100, 32, (PBRIG_CHAR) "Ok" );
-   oBtn.pfOnClick = fncCloseDlg;
+   avLeft.push_back( &oTable );
+   avRight.push_back( &oEdit );
+
+   oSplit.Create( &oDlg, 20, 180, 360, 4, &avLeft, &avRight );
+   //oSplit.lColorInside = 0xaaaaaa;
+   oEdit.Create( &oDlg, 20, 184, 360, 40, (PBRIG_CHAR) "" );
 
    oDlg.Activate( 0 );
 

@@ -68,17 +68,13 @@ PBRIG_CHAR brig_GetWindowText( brig_Widget *pWidget )
    BRIG_HANDLE handle = pWidget->Handle();
    unsigned long ulLen = ( unsigned long ) SendMessage( handle, WM_GETTEXTLENGTH, 0, 0 );
    LPTSTR lpText = ( TCHAR * ) malloc( ( ulLen + 1 ) * sizeof( TCHAR ) );
-   PBRIG_CHAR pResult;
-   //PBRIG_WCHAR lpText = ( PBRIG_WCHAR ) malloc( ( ulLen + 1 ) * sizeof(  ) );
 
-   //brig_writelog( NULL, "1> %u\r\n", ulLen );
    ulLen = ( ULONG ) SendMessage( handle, WM_GETTEXT, ( WPARAM ) ( ulLen + 1 ),
          ( LPARAM ) lpText );
    lpText[ulLen] = '\0';
-   //brig_writelog( NULL, "2> %u %s\r\n", ulLen, lpText );
 
 #if defined(UNICODE)
-   pResult = brig_WC2str( lpText, ulLen );
+   PBRIG_CHAR pResult = brig_WC2str( lpText, ulLen );
    free( lpText );
    return pResult;
 #else

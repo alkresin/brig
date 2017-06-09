@@ -82,7 +82,7 @@ BRIG_HANDLE brig_CreateButton( brig_Widget *pWidget, int iWidgId,
 
 bool brig_CheckBtnGet( brig_Widget *pWidget )
 {
-   return SendMessage( pWidget->Handle(), BM_GETCHECK, 0, 0 );
+   return (SendMessage( pWidget->Handle(), BM_GETCHECK, 0, 0 ))? 1 : 0;
 }
 
 void brig_CheckBtnSet( brig_Widget *pWidget, bool bValue )
@@ -92,7 +92,7 @@ void brig_CheckBtnSet( brig_Widget *pWidget, bool bValue )
 
 bool brig_RadioBtnGet( brig_Widget *pWidget )
 {
-   return SendMessage( pWidget->Handle(), BM_GETCHECK, 0, 0 );
+   return (SendMessage( pWidget->Handle(), BM_GETCHECK, 0, 0 ))? 1 : 0;
 }
 
 void brig_RadioBtnSet( brig_Widget *pWidget, bool bValue )
@@ -425,6 +425,37 @@ BRIG_HANDLE brig_CreateQButton( brig_QButton *pQBtn, int iWidgId,
    return hQButton;
 }
 
+/* -------- Splitter --------- 
+ */
+
+static LRESULT CALLBACK s_SplitterProc( BRIG_HANDLE handle, UINT message,
+      WPARAM wParam, LPARAM lParam )
+{
+
+   brig_Splitter *pObject = ( brig_Splitter * ) GetWindowLongPtr( handle, GWLP_USERDATA );
+
+   //brig_writelog( NULL, "panelmsg %u\r\n", message );
+
+   if( !pObject )
+      return DefWindowProc( handle, message, wParam, lParam );
+
+   switch( message ) {
+
+      case WM_LBUTTONDOWN:
+         SetCapture( handle );
+         break;
+
+      case WM_LBUTTONUP:
+         ReleaseCapture();
+         break;
+   }
+
+   if( !( pObject->onEvent( message, wParam, lParam ) ) )
+      return DefWindowProc( handle, message, wParam, lParam );
+   else
+      return 0;
+}
+
 BRIG_HANDLE brig_CreateSplitter( brig_Splitter *pSplitter, int iWidgId,
           int x, int y, int nWidth, int nHeight )
 {
@@ -438,10 +469,28 @@ BRIG_HANDLE brig_CreateSplitter( brig_Splitter *pSplitter, int iWidgId,
          ( HMENU ) iWidgId,           /* widget ID  */
          GetModuleHandle( NULL ), NULL );
 
+   if( hSplitter )
+   {
+      LONG_PTR hProc;
+      SetWindowLongPtr( hSplitter, GWLP_USERDATA, NULL );
+      SetWindowLongPtr( hSplitter, GWLP_WNDPROC, ( LONG_PTR ) s_SplitterProc );
+   }
+
    return hSplitter;
 
 }
 
+
+PBRIG_CURSOR brig_LoadCursor( int iCursorType )
+{
+   return LoadCursor( NULL, MAKEINTRESOURCE( iCursorType ) );
+}
+
+void brig_SetCursor( PBRIG_CURSOR hCursor, brig_Widget *pWidget )
+{
+   SYMBOL_UNUSED( pWidget );
+   SetCursor( hCursor );
+}
 
 void brig_SetFgColor( brig_Widget *pWidget, long lColor )
 {

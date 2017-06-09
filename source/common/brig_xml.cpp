@@ -131,7 +131,7 @@ static unsigned char* brigxml_pp( unsigned char *ptr, unsigned long ulLen )
    return pResult;
 }
 
-static std::map<std::string,char*> brigxml_getattr( unsigned char **pBuffer, bool * lSingle )
+static std::map<std::string,char*> brigxml_getattr( unsigned char **pBuffer, int * lSingle )
 {
 
    std::map<std::string,char*> amAttr;
@@ -313,7 +313,8 @@ static bool brigxml_readElement( PBRIG_XMLITEM pParent, unsigned char **pBuffer 
    PBRIG_XMLITEM pNode = brigxml_addnode( pParent );
    unsigned char *ptr;
    int iLenNodeName;
-   bool lEmpty, lSingle;
+   bool lEmpty;
+   int lSingle;
 
    ( *pBuffer )++;
    if( **pBuffer == '?' )
@@ -549,7 +550,7 @@ PBRIG_XMLITEM brigxml_GetDoc( PBRIG_CHAR szSource, unsigned long ulLen )
    {
       if( !memcmp( ptr + 1, "?xml", 4 ) )
       {
-         bool bSingle;
+         int bSingle;
          pDoc->amAttr = brigxml_getattr( &ptr, &bSingle );
          if( pDoc->amAttr.empty() || nParseError )
          {

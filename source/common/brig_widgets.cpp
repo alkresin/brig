@@ -468,6 +468,8 @@ static void brig_paint_QButton( brig_QButton *pQButton )
    PBRIG_PPS pps = brig_BeginPaint( pQButton );
    RECT rc;
 
+   brig_GetClientRect( pQButton, &rc );
+
    if( pQButton->pStyleNormal )
    {
       if( !pQButton->pStyleOver )
@@ -489,8 +491,6 @@ static void brig_paint_QButton( brig_QButton *pQButton )
          pQButton->hBrush1 = brigAddBrush( pQButton->lBackClr1 );
       if( !pQButton->hBrush2 )
          pQButton->hBrush2 = brigAddBrush( pQButton->lBackClr2 );
-
-      brig_GetClientRect( pQButton, &rc );
 
       brig_FillRect( pps->hDC, rc.left, rc.top, rc.right, rc.bottom,
          ( (pQButton->iState == 2)? pQButton->hBrush2 : ( (pQButton->iState == 1)? pQButton->hBrush1 : pQButton->hBrush ) ) );
@@ -563,13 +563,19 @@ bool brig_QButton::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 
 
 /* -------- Splitter --------- */
-brig_Splitter::brig_Splitter():brig_Widget(), pfOnPaint(NULL)
+brig_Splitter::brig_Splitter():brig_Widget(), pfOnPaint(NULL), lColorInside(0x555555), hPenEdge(NULL), hPenInside(NULL), hCursor(NULL)
 {
    uiType = TYPE_SPLITTER;
 }
 
 brig_Splitter::~brig_Splitter()
 {
+   if( hPenEdge )
+      brigDelPen( hPenEdge );
+   if( hPenInside )
+      brigDelPen( hPenInside );
+   hPenEdge = hPenInside = NULL;
+
 }
 
 BRIG_HANDLE brig_Splitter::Create( brig_Container *pParent, int x, int y, int nWidth,
@@ -584,8 +590,77 @@ BRIG_HANDLE brig_Splitter::Create( brig_Container *pParent, int x, int y, int nW
 
    avLeft = *pArrLeft;
    avRight = *pArrRight;
+   hCursor = brig_LoadCursor( (bVertical)? CURSOR_SIZEWE : CURSOR_SIZENS );
+   bCaptured = 0;
+   brig_SetWidgetData( this );
 
    return handle;
+}
+
+static void brig_Drag_Splitter( brig_Splitter *pSplitter, int iXPos, int iYPos )
+{
+   if( pSplitter->bVertical )
+   {
+      if( iXPos > 32000 )
+         iXPos -= 65535;
+      iXPos += pSplitter->iLeft;
+   }
+   else
+   {
+      if( iYPos > 32000 )
+         iYPos -= 65535;
+      iXPos += pSplitter->iTop;
+   }
+   pSplitter->Move( iXPos, iYPos, -1, -1 );
+
+}
+
+static void brig_DragAll_Splitter( brig_Splitter *pSplitter, int iXPos, int iYPos )
+{
+   brig_Drag_Splitter( pSplitter, iXPos, iYPos );
+}
+
+static void brig_paint_Splitter( brig_Splitter *pSplitter )
+{
+   PBRIG_PPS pps = brig_BeginPaint( pSplitter );
+   RECT rc;
+
+   if( !pSplitter->hPenEdge )
+      pSplitter->hPenEdge = brigAddPen( 1, pSplitter->lTextColor );
+   if( !pSplitter->hPenInside )
+      pSplitter->hPenInside = brigAddPen( 1, pSplitter->lColorInside );
+
+   brig_GetClientRect( pSplitter, &rc );
+
+   brig_SelectObject( pps->hDC, pSplitter->hPenEdge );
+   brig_moveto( pps->hDC, rc.left, rc.top );
+   if( pSplitter->bVertical )
+   {
+      brig_lineto( pps->hDC, rc.left, rc.bottom );
+      brig_moveto( pps->hDC, rc.right, rc.top );
+      brig_lineto( pps->hDC, rc.right, rc.bottom );
+   }
+   else
+   {
+      brig_lineto( pps->hDC, rc.right, rc.top );
+      brig_moveto( pps->hDC, rc.left, rc.bottom );
+      brig_lineto( pps->hDC, rc.right, rc.bottom );
+   }
+   brig_SelectObject( pps->hDC, pSplitter->hPenInside );
+   if( pSplitter->bVertical )
+      for( int i = rc.left+1; i<rc.right; i++ )
+      {
+         brig_moveto( pps->hDC, i, rc.top );
+         brig_lineto( pps->hDC, i, rc.bottom );
+      }
+   else
+      for( int i = rc.top+1; i<rc.bottom; i++ )
+      {
+         brig_moveto( pps->hDC, rc.left, i );
+         brig_lineto( pps->hDC, rc.right, i );
+      }
+
+   brig_EndPaint( pSplitter, pps );
 }
 
 bool brig_Splitter::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
@@ -594,7 +669,11 @@ bool brig_Splitter::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
    SYMBOL_UNUSED( wParam );
    SYMBOL_UNUSED( lParam );
 
+   //brig_writelog( NULL, "spli_oneve %d\r\n", message );
    switch( message ) {
+
+      case WM_ERASEBKGND:
+         return 1;
 
       case WM_PAINT:
 
@@ -606,11 +685,29 @@ bool brig_Splitter::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 
             brig_EndPaint( this, pps );
          }
-         //else
-         //   brig_paint_QButton( this );
+         else
+            brig_paint_Splitter( this );
 
          break;
 
+      case WM_MOUSEMOVE:
+         brig_SetCursor( hCursor, this );
+         if( bCaptured )
+         {
+            int iXPos = ( (unsigned long) lParam ) & 0xFFFF;
+            int iYPos = ( ( (unsigned long) lParam ) >> 16 ) & 0xFFFF;
+            brig_Drag_Splitter( this, iXPos, iYPos );
+         }
+         break;
+
+      case WM_LBUTTONDOWN:
+         brig_SetCursor( hCursor, this );
+         bCaptured = 1;
+         break;
+
+      case WM_LBUTTONUP:
+         bCaptured = 0;
+         break;
    }
   
    return 0;

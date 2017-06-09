@@ -447,6 +447,21 @@ BRIG_HANDLE brig_CreateSplitter( brig_Splitter *pSplitter, int iWidgId,
 
 /* -------- common widget's functions --------- */
 
+PBRIG_CURSOR brig_LoadCursor( int iCursorType )
+{
+   return gdk_cursor_new( ( GdkCursorType ) iCursorType );
+}
+
+void brig_SetCursor( PBRIG_CURSOR hCursor, brig_Widget *pWidget )
+{
+   GtkWidget *widget;
+
+   if( !pWidget )
+      pWidget = brig_GetActiveWindow();
+   widget = ( pWidget ) ? pWidget->Handle() : NULL;
+   gdk_window_set_cursor( widget->window, hCursor );
+}
+
 void brig_SetFgColor( brig_Widget *pWidget, long lColor )
 {
 
