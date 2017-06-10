@@ -86,13 +86,12 @@ void brig_MoveWindow( brig_Widget *pWidget, int iLeft, int iTop, int iWidth, int
 {
    RECT rc;
 
-   GetWindowRect( pWidget->Handle(), &rc );
    MoveWindow( pWidget->Handle(),
-         ( iLeft < 0 ) ? rc.left : iLeft,                // horizontal position
-         ( iTop < 0 )  ? rc.top : iTop,                  // vertical position
-         ( iWidth < 0 ) ? rc.right - rc.left : iWidth,   // width
-         ( iHeight < 0 ) ? rc.bottom - rc.top : iHeight, // height
-         TRUE                                            // repaint flag
+         ( iLeft < 0 ) ? pWidget->iLeft : iLeft,       // horizontal position
+         ( iTop < 0 )  ? pWidget->iTop : iTop,         // vertical position
+         ( iWidth < 0 ) ? pWidget->iWidth : iWidth,    // width
+         ( iHeight < 0 ) ? pWidget->iHeight : iHeight, // height
+         TRUE                                          // repaint flag
           );
 }
 

@@ -236,6 +236,7 @@ public:
 
    bool bVertical;
    bool bCaptured;
+   int  iOldPos;
    vector<brig_Widget*> avLeft;
    vector<brig_Widget*> avRight;
    long int lColorInside;

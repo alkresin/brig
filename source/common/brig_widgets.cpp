@@ -563,7 +563,7 @@ bool brig_QButton::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 
 
 /* -------- Splitter --------- */
-brig_Splitter::brig_Splitter():brig_Widget(), pfOnPaint(NULL), lColorInside(0x555555), hPenEdge(NULL), hPenInside(NULL), hCursor(NULL)
+brig_Splitter::brig_Splitter():brig_Widget(), pfOnPaint(NULL), lColorInside(0x999999), hPenEdge(NULL), hPenInside(NULL), hCursor(NULL)
 {
    uiType = TYPE_SPLITTER;
 }
@@ -603,13 +603,19 @@ static void brig_Drag_Splitter( brig_Splitter *pSplitter, int iXPos, int iYPos )
    {
       if( iXPos > 32000 )
          iXPos -= 65535;
+      if( iXPos == 0 )
+         return;
       iXPos += pSplitter->iLeft;
+      iYPos = -1;
    }
    else
    {
       if( iYPos > 32000 )
          iYPos -= 65535;
-      iXPos += pSplitter->iTop;
+      if( iYPos == 0 )
+         return;
+      iYPos += pSplitter->iTop;
+      iXPos = -1;
    }
    pSplitter->Move( iXPos, iYPos, -1, -1 );
 
@@ -617,7 +623,41 @@ static void brig_Drag_Splitter( brig_Splitter *pSplitter, int iXPos, int iYPos )
 
 static void brig_DragAll_Splitter( brig_Splitter *pSplitter, int iXPos, int iYPos )
 {
+
+   unsigned int ui;
+   int iDiff;
+
    brig_Drag_Splitter( pSplitter, iXPos, iYPos );
+
+   iDiff = ( (pSplitter->bVertical)? pSplitter->iLeft : pSplitter->iTop ) - pSplitter->iOldPos;
+   if( iDiff )
+   {
+      for( ui = 0; ui<pSplitter->avLeft.size(); ui++ )
+         if( pSplitter->bVertical )
+         {
+            pSplitter->avLeft[ui]->iWidth += iDiff;
+            pSplitter->avLeft[ui]->Move( -1, -1, pSplitter->avLeft[ui]->iWidth, -1 );
+         }
+         else
+         {
+            pSplitter->avLeft[ui]->iHeight += iDiff;
+            pSplitter->avLeft[ui]->Move( -1, -1, -1, pSplitter->avLeft[ui]->iHeight );
+         }
+
+      for( ui = 0; ui<pSplitter->avRight.size(); ui++ )
+         if( pSplitter->bVertical )
+         {
+            pSplitter->avRight[ui]->iLeft += iDiff;
+            pSplitter->avRight[ui]->iWidth -= iDiff;
+            pSplitter->avRight[ui]->Move( pSplitter->avRight[ui]->iLeft, -1, pSplitter->avRight[ui]->iWidth, -1 );
+         }
+         else
+         {
+            pSplitter->avRight[ui]->iTop += iDiff;
+            pSplitter->avRight[ui]->iHeight -= iDiff;
+            pSplitter->avRight[ui]->Move( -1, pSplitter->avRight[ui]->iTop, -1, pSplitter->avRight[ui]->iHeight );
+         }
+   }
 }
 
 static void brig_paint_Splitter( brig_Splitter *pSplitter )
@@ -666,6 +706,8 @@ static void brig_paint_Splitter( brig_Splitter *pSplitter )
 bool brig_Splitter::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 {
 
+   int iXPos, iYPos;
+
    SYMBOL_UNUSED( wParam );
    SYMBOL_UNUSED( lParam );
 
@@ -694,8 +736,8 @@ bool brig_Splitter::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
          brig_SetCursor( hCursor, this );
          if( bCaptured )
          {
-            int iXPos = ( (unsigned long) lParam ) & 0xFFFF;
-            int iYPos = ( ( (unsigned long) lParam ) >> 16 ) & 0xFFFF;
+            iXPos = ( (unsigned long) lParam ) & 0xFFFF;
+            iYPos = ( ( (unsigned long) lParam ) >> 16 ) & 0xFFFF;
             brig_Drag_Splitter( this, iXPos, iYPos );
          }
          break;
@@ -703,10 +745,14 @@ bool brig_Splitter::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
       case WM_LBUTTONDOWN:
          brig_SetCursor( hCursor, this );
          bCaptured = 1;
+         iOldPos = (bVertical)? iLeft : iTop;
          break;
 
       case WM_LBUTTONUP:
          bCaptured = 0;
+         iXPos = ( (unsigned long) lParam ) & 0xFFFF;
+         iYPos = ( ( (unsigned long) lParam ) >> 16 ) & 0xFFFF;
+         brig_DragAll_Splitter( this, iXPos, iYPos );
          break;
    }
   
