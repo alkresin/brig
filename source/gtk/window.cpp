@@ -141,10 +141,10 @@ void brig_MoveWindow( brig_Widget *pWidget, int iLeft, int iTop, int iWidth, int
 
    if( g_object_get_data( ( GObject * ) handle, "window" ) )
    {
-      if( iLeft >= 0 )
-         gtk_window_move( GTK_WINDOW( handle ), iLeft, iTop );
-      if( iWidth >= 0 )
-         gtk_window_resize( GTK_WINDOW( handle ), iWidth, iHeight );
+      if( iLeft >= 0 || iTop >= 0 )
+         gtk_window_move( GTK_WINDOW( handle ), ((iLeft>=0)? iLeft : pWidget->iLeft), ((iTop>=0)? iTop : pWidget->iTop) );
+      if( iWidth >= 0 || iHeight >= 0 )
+         gtk_window_resize( GTK_WINDOW( handle ), ((iWidth>=0)? iWidth : pWidget->iWidth), ((iHeight>=0)? iHeight : pWidget->iHeight) );
    }
    else
    {
@@ -159,11 +159,11 @@ void brig_MoveWindow( brig_Widget *pWidget, int iLeft, int iTop, int iWidth, int
             GtkFixed * fbox = (GtkFixed *) g_object_get_data( ( GObject * )hParent, "fbox" );
             BRIG_HANDLE pbox = (BRIG_HANDLE) g_object_get_data( ( GObject * ) handle, "pbox" );
             //gtk_window_move( GTK_WINDOW( (pbox)? pbox : handle ), iLeft, iTop );
-            if( iLeft >= 0 )
-               gtk_fixed_move( fbox, (pbox)? pbox : handle, iLeft, iTop );
+            if( iLeft >= 0 || iTop >= 0 )
+               gtk_fixed_move( fbox, (pbox)? pbox : handle, ((iLeft>=0)? iLeft : pWidget->iLeft), ((iTop>=0)? iTop : pWidget->iTop) );
          }
-         if( iWidth >= 0 )
-            gtk_widget_set_size_request( handle, iWidth, iHeight );
+         if( iWidth >= 0 || iHeight >= 0 )
+            gtk_widget_set_size_request( handle, ((iWidth>=0)? iWidth : pWidget->iWidth), ((iHeight>=0)? iHeight : pWidget->iHeight) );
       }
 
    }
