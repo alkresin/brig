@@ -159,6 +159,8 @@ using std::vector;
    #define WM_DESTROY           2
    #define WM_MOVE              3
    #define WM_SIZE              5
+   #define WM_SETFOCUS          7
+   #define WM_KILLFOCUS         8
    #define WM_PAINT            15
    #define WM_ERASEBKGND       20
    #define WM_KEYDOWN         256
@@ -168,6 +170,7 @@ using std::vector;
    #define WM_SYSCOMMAND      274
    #define WM_HSCROLL         276
    #define WM_VSCROLL         277
+   #define WM_MOUSEMOVE       512
    #define WM_LBUTTONDOWN     513
    #define WM_LBUTTONUP       514
    #define WM_LBUTTONDBLCLK   515
@@ -178,6 +181,7 @@ using std::vector;
    #define BS_RADIOBUTTON       4
    #define BS_GROUPBOX          7
    #define BS_AUTORADIOBUTTON   9
+   #define CBN_SELCHANGE        1
    #define DT_LEFT              0
    #define DT_CENTER            1
    #define DT_RIGHT             2

@@ -114,7 +114,7 @@ int brig_Main( int argc, char *argv[] )
    oSplit.Create( &oDlg, 20, 180, 360, 4, &avLeft, &avRight );
    oEdit.Create( &oDlg, 20, 184, 360, 40, (PBRIG_CHAR) "" );
 
-   oDlg.Activate( 0 );
+   oDlg.Activate();
 
    return 0;
 }

@@ -238,8 +238,8 @@ BRIG_HANDLE brig_CreateTab( brig_Tab *pTab, int iWidgId,
       gtk_fixed_put( box, hCtrl, x, y );
    gtk_widget_set_size_request( hCtrl, nWidth, nHeight );
 
-   g_signal_connect( hCtrl, "switch-page",
-                      G_CALLBACK (cb_signal_tab), NULL );
+   //g_signal_connect( hCtrl, "switch-page",
+   //                   G_CALLBACK (cb_signal_tab), NULL );
 
    return hCtrl;
 }
@@ -525,8 +525,8 @@ unsigned int brig_SetTimer( unsigned int uiId, unsigned int uiValue )
 
    char buf[10] = { 0 };
    sprintf( buf, "%u", uiId );
-   hb_retni( ( gint ) gtk_timeout_add( ( guint32 ) uiValue,
-               ( GtkFunction ) cb_timer, g_strdup( buf ) ) );
+   return ( gint ) gtk_timeout_add( ( guint32 ) uiValue,
+               ( GtkFunction ) cb_timer, g_strdup( buf ) );
 
 }
 
