@@ -417,21 +417,16 @@ BRIG_HANDLE brig_CreateSplitter( brig_Splitter *pSplitter, int iWidgId,
           int x, int y, int nWidth, int nHeight )
 {
    GtkWidget *hCtrl;
-   GtkFixed *box, *fbox;
-
-   fbox = ( GtkFixed * ) gtk_fixed_new(  );
+   GtkFixed *box;
 
    hCtrl = gtk_drawing_area_new(  );
    box = ( GtkFixed * ) g_object_get_data( ( GObject * ) pSplitter->pParent->Handle(), "fbox" );
 
    if( box )
    {
-      gtk_fixed_put( box, ( GtkWidget * ) fbox, x, y );
-      gtk_widget_set_size_request( ( GtkWidget * ) fbox, nWidth, nHeight );
+      gtk_fixed_put( box, ( GtkWidget * ) hCtrl, x, y );
+      gtk_widget_set_size_request( ( GtkWidget * ) hCtrl, nWidth, nHeight );
    }
-   gtk_fixed_put( fbox, hCtrl, 0, 0 );
-   gtk_widget_set_size_request( hCtrl, nWidth, nHeight );
-   g_object_set_data( ( GObject * ) hCtrl, "fbox", ( gpointer ) fbox );
 
    brig_SetEvent( ( gpointer ) hCtrl, (char*)"expose_event", WM_PAINT, 0, 0 );
    GTK_WIDGET_SET_FLAGS( hCtrl, GTK_CAN_FOCUS );
