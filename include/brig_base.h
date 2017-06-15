@@ -115,6 +115,7 @@ public:
 
    void AddWidget( brig_Widget *pWidget );
    brig_Widget* FindWidget( unsigned int uiType, unsigned int uiNum = 1 );
+   brig_Widget* FindWidget( BRIG_HANDLE handle );
    void OnSize( WPARAM wParam, LPARAM lParam );
 
    PBRIG_MITEM pMenu;

@@ -172,6 +172,17 @@ brig_Widget* brig_Container::FindWidget( unsigned int uiType, unsigned int uiNum
    return NULL;
 }
 
+brig_Widget* brig_Container::FindWidget( BRIG_HANDLE handle )
+{
+   unsigned int ui;
+
+   for( ui = 0; ui < avWidgets.size(); ui++ )
+      if( avWidgets[ui]->Handle() == handle )
+         return avWidgets[ui];
+
+   return NULL;
+}
+
 void brig_Container::OnSize( WPARAM wParam, LPARAM lParam )
 {
    //unsigned long iWidth = ((unsigned long)lParam) & 0xFFFF;

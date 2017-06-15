@@ -176,6 +176,7 @@ using std::vector;
    #define WM_LBUTTONDBLCLK   515
    #define WM_RBUTTONDOWN     516
    #define WM_MOUSEWHEEL   0x020A
+   #define WM_USER           1024
 
    #define BS_AUTOCHECKBOX      3
    #define BS_RADIOBUTTON       4

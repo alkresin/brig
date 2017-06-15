@@ -12,6 +12,7 @@
 static WNDPROC wpOrigEditProc = NULL;
 static WNDPROC wpOrigBtnProc = NULL;
 static WNDPROC wpOrigComboProc = NULL;
+static WNDPROC wpOrigTabProc = NULL;
 
 /* -------- Label ---------
  */
@@ -240,6 +241,19 @@ void brig_ComboSetValue( brig_Widget *pWidget, int iSelected )
 
 /* -------- Tab ---------  */
 
+static LRESULT CALLBACK s_TabProc( BRIG_HANDLE hTab, UINT message,
+      WPARAM wParam, LPARAM lParam )
+{
+
+   brig_Tab *pObject = ( brig_Tab * ) GetWindowLongPtr( hTab, GWLP_USERDATA );
+   //brig_writelog( NULL, "btnmsg %lu %lu %u\r\n", (unsigned long)pObject, (unsigned long)hBtn, message );
+
+   if( !pObject || !( pObject->onEvent( message, wParam, lParam ) ) )
+      return CallWindowProc( wpOrigTabProc, hTab, message, wParam, lParam );
+   else
+      return 0;
+}
+
 BRIG_HANDLE brig_CreateTab( brig_Tab *pTab, int iWidgId,
           int x, int y, int nWidth, int nHeight )
 {
@@ -251,16 +265,14 @@ BRIG_HANDLE brig_CreateTab( brig_Tab *pTab, int iWidgId,
          GetModuleHandle( NULL ),
          NULL );
 
-   /*
    if( hTab )
    {
       LONG_PTR hProc;
-      SetWindowLongPtr( hCombo, GWLP_USERDATA, NULL );
-      hProc = SetWindowLongPtr( hCombo, GWLP_WNDPROC, ( LONG_PTR ) s_ComboProc );
-      if( !wpOrigComboProc )
-         wpOrigComboProc = ( WNDPROC ) hProc;
+      SetWindowLongPtr( hTab, GWLP_USERDATA, NULL );
+      hProc = SetWindowLongPtr( hTab, GWLP_WNDPROC, ( LONG_PTR ) s_TabProc );
+      if( !wpOrigTabProc )
+         wpOrigTabProc = ( WNDPROC ) hProc;
    }
-   */
    return hTab;
 
 }
@@ -276,6 +288,15 @@ void brig_TabAddPage( brig_Tab *pTab, int iPage, PBRIG_CHAR lpName )
    TabCtrl_InsertItem( pTab->Handle(), iPage, &tie );
    brig_free( wcName );
 
+}
+
+void brig_TabShowPage( brig_Tab *pTab, int iPage, bool bShow )
+{
+   PBRIG_TABPAGE ptp = &( pTab->avPages[iPage] );
+
+   if( ptp->iFirst >= 0 )
+      for( int i = ptp->iFirst; i <= ptp->iLast; i++ )
+         pTab->avWidgets[i]->Show( bShow );
 }
 
 /* -------- Panel ---------  */

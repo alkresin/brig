@@ -166,6 +166,13 @@ static LRESULT CALLBACK s_MainWndProc( BRIG_HANDLE handle, UINT message,
          }
          break;
 
+      case WM_NOTIFY:
+         pObject = pObjWin->FindWidget( ( ( ( NMHDR * ) lParam )->hwndFrom ) );
+         if( pObject->uiType == TYPE_TAB )
+            if( ( ( ( NMHDR * ) lParam )->code ) == TCN_SELCHANGE )
+               pObject->onEvent( WM_USER, wParam, TabCtrl_GetCurSel( ( HWND ) pObject->Handle() ) );
+         break;
+
       case WM_DESTROY:
          hMainWindow = NULL;
          return 0;

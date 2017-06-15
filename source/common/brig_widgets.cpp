@@ -322,7 +322,7 @@ void brig_Combo::SetValue( int iSelected )
 
 
 /* -------- Tab --------- */
-brig_Tab::brig_Tab():brig_Container(), iPages(0)
+brig_Tab::brig_Tab():brig_Container(), iCurrPage(0)
 {
    uiType = TYPE_TAB;
 }
@@ -342,10 +342,48 @@ BRIG_HANDLE brig_Tab::Create( brig_Container *pParent,
    return handle;
 }
 
-void brig_Tab::AddPage( PBRIG_CHAR lpName )
+void brig_Tab::StartPage( PBRIG_CHAR lpName )
 {
-   brig_TabAddPage( this, iPages, lpName );
-   iPages ++;
+   BRIG_TABPAGE tp;
+
+   tp.iFirst = (int) (avWidgets.size());
+   tp.iLast = -1;
+   brig_TabAddPage( this, avPages.size(), lpName );
+   avPages.push_back( tp );
+}
+
+void brig_Tab::EndPage( void )
+{
+   PBRIG_TABPAGE ptp = &*avPages.rbegin();
+
+   if( ptp->iFirst == (int) (avWidgets.size()) )
+      ptp->iFirst = -1;
+   else
+   {
+      ptp->iLast = avWidgets.size() - 1;
+      if( avPages.size() > 1 )
+         brig_TabShowPage( this, avPages.size()-1, 0 );
+   }
+}
+
+bool brig_Tab::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
+{
+
+   SYMBOL_UNUSED( wParam );
+
+   //brig_writelog( NULL, "tab_onEvent %u\r\n", message );
+   switch( message ) {
+
+      case WM_USER:
+         brig_TabShowPage( this, iCurrPage, 0 );
+         iCurrPage = (int) lParam;
+         brig_TabShowPage( this, iCurrPage, 1 );
+         //brig_writelog( NULL, "tab_onUser %ld\r\n", (long)lParam );
+         break;
+
+   }
+   
+   return 0;
 }
 
 /* -------- Panel --------- */

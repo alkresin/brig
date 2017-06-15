@@ -259,6 +259,13 @@ void brig_TabAddPage( brig_Tab *pTab, int iPage, PBRIG_CHAR lpName )
 
 }
 
+void brig_TabShowPage( brig_Tab *pTab, int iPage, bool bShow )
+{
+   SYMBOL_UNUSED( pTab );
+   SYMBOL_UNUSED( iPage );
+   SYMBOL_UNUSED( bShow );
+}
+
 /* -------- Panel --------- */
 
 BRIG_HANDLE brig_CreatePanel( brig_Panel *pPanel, int iWidgId,

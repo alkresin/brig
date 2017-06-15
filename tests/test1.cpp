@@ -33,6 +33,7 @@ bool fncStart( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
       idCount = 0;
       idTimer = brigSetTimer( 1000, fncTimer );
    }
+   oEdit.Show(0);
    return 0;
 }
 
@@ -47,6 +48,7 @@ bool fncStop( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
       brigKillTimer( idTimer );
       idTimer = 0;
    }
+   oEdit.Show(1);
    return 0;
 }
 

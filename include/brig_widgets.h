@@ -42,6 +42,7 @@ extern void brig_ComboSetValue( brig_Widget *pWidget, int iSelected );
 extern BRIG_HANDLE brig_CreateTab( brig_Tab *pTab, int iWidgId,
           int x, int y, int nWidth, int nHeight );
 extern void brig_TabAddPage( brig_Tab *pTab, int iPage, PBRIG_CHAR lpName );
+extern void brig_TabShowPage( brig_Tab *pTab, int iPage, bool bShow );
 
 extern BRIG_HANDLE brig_CreateSplitter( brig_Splitter *pSplitter, int iWidgId,
           int x, int y, int nWidth, int nHeight );
@@ -165,6 +166,14 @@ public:
 };
 
 
+typedef struct BRIG_TABPAGE_STRU
+{
+ 
+   int  iFirst;
+   int  iLast;
+
+} BRIG_TABPAGE, *PBRIG_TABPAGE;
+
 class brig_Tab : public brig_Container
 {
 public:
@@ -173,9 +182,12 @@ public:
 
    BRIG_HANDLE Create( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight );
-   void AddPage( PBRIG_CHAR lpName );
+   bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
+   void StartPage( PBRIG_CHAR lpName );
+   void EndPage( void );
 
-   int iPages;
+   vector<BRIG_TABPAGE> avPages;
+   int iCurrPage;
 
 };
 
