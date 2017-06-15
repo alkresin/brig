@@ -186,6 +186,7 @@ public:
    void StartPage( PBRIG_CHAR lpName );
    void EndPage( void );
 
+   brig_fnc_mess_1 pfOnChange;
    vector<BRIG_TABPAGE> avPages;
    int iCurrPage;
 

@@ -228,6 +228,17 @@ void brig_ComboSetValue( brig_Widget *pWidget, int iSelected )
 
 /* -------- Tab --------- */
 
+void cb_signal_tab( GtkNotebook *notebook, GtkNotebookPage *page,
+      guint page_num, gpointer user_data )
+{
+   gpointer gObject = g_object_get_data( (GObject*) notebook, "obj" );
+
+   SYMBOL_UNUSED( page );
+   SYMBOL_UNUSED( user_data );
+
+   ( ( brig_Widget* ) gObject )->onEvent( WM_USER, 0, page_num );
+}
+
 BRIG_HANDLE brig_CreateTab( brig_Tab *pTab, int iWidgId,
           int x, int y, int nWidth, int nHeight )
 {
@@ -238,8 +249,8 @@ BRIG_HANDLE brig_CreateTab( brig_Tab *pTab, int iWidgId,
       gtk_fixed_put( box, hCtrl, x, y );
    gtk_widget_set_size_request( hCtrl, nWidth, nHeight );
 
-   //g_signal_connect( hCtrl, "switch-page",
-   //                   G_CALLBACK (cb_signal_tab), NULL );
+   g_signal_connect( hCtrl, "switch-page",
+                      G_CALLBACK (cb_signal_tab), NULL );
 
    return hCtrl;
 }

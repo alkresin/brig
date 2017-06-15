@@ -322,7 +322,7 @@ void brig_Combo::SetValue( int iSelected )
 
 
 /* -------- Tab --------- */
-brig_Tab::brig_Tab():brig_Container(), iCurrPage(0)
+brig_Tab::brig_Tab():brig_Container(), pfOnChange(NULL), iCurrPage(0)
 {
    uiType = TYPE_TAB;
 }
@@ -378,7 +378,8 @@ bool brig_Tab::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
          brig_TabShowPage( this, iCurrPage, 0 );
          iCurrPage = (int) lParam;
          brig_TabShowPage( this, iCurrPage, 1 );
-         //brig_writelog( NULL, "tab_onUser %ld\r\n", (long)lParam );
+         if( pfOnChange )
+            pfOnChange( this );
          break;
 
    }
