@@ -263,13 +263,22 @@ static void table_SetVScroll( brig_Table *pTable, int iPos = 0 )
 {
 
    int iMinPos, iMaxPos;
-   unsigned long ulRecNo, ulRecCount;
+   unsigned long ulRecNo, ulRecCount, ulNew;
 
    brig_GetScrollRange( pTable, 1, &iMinPos, &iMaxPos );
    ulRecCount = pTable->pfDataSet( pTable, TDS_COUNT, 0 );
    ulRecNo = pTable->pfDataSet( pTable, TDS_RECNO, 0 );
    if( !iPos )
       iPos = (ulRecNo<=1)? iMinPos : (int) ( ( ((double)(iMaxPos-iMinPos)) / (ulRecCount-1) ) * (ulRecNo-1) );
+   else
+   {
+      ulNew = (unsigned long) ( (double)((ulRecCount - 1) * iPos) / (iMaxPos - iMinPos ) + 1 );
+      if( ulNew > ulRecCount )
+         ulNew = ulRecCount;
+      if( ulNew != ulRecNo )
+      {
+      }
+   }
    brig_SetScrollPos( pTable, 1, iPos );
 
 }
