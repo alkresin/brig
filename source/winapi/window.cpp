@@ -84,7 +84,6 @@ PBRIG_CHAR brig_GetWindowText( brig_Widget *pWidget )
 
 void brig_MoveWindow( brig_Widget *pWidget, int iLeft, int iTop, int iWidth, int iHeight )
 {
-   RECT rc;
 
    MoveWindow( pWidget->Handle(),
          ( iLeft < 0 ) ? pWidget->iLeft : iLeft,       // horizontal position
@@ -256,7 +255,7 @@ BRIG_HANDLE brig_InitMainWindow( PBRIG_CHAR lpAppName, PBRIG_CHAR lpTitle,
    brig_free( wcAppName );
    brig_free( wcTitle );
 
-   SetWindowLongPtr( hMainWindow, GWLP_USERDATA, NULL );
+   SetWindowLongPtr( hMainWindow, GWLP_USERDATA, 0 );
 
    return hMainWindow;
 }
@@ -368,7 +367,7 @@ BRIG_HANDLE brig_InitDialog( PBRIG_CHAR lpTitle,
             aDialogs = ( BRIG_HANDLE * ) realloc( aDialogs, sizeof( BRIG_HANDLE ) * s_nDialogs );
       }
       aDialogs[iDialogs++] = hDialog;
-      SetWindowLongPtr( hDialog, GWLP_USERDATA, NULL );
+      SetWindowLongPtr( hDialog, GWLP_USERDATA, 0 );
    }
 
    brig_free( wcTitle );

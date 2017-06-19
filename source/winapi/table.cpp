@@ -32,9 +32,11 @@ void brig_table_OnVScroll( brig_Table *pTable, WPARAM wParam )
          break;
 
       case SB_PAGEDOWN:
+         pTable->PageDown();
          break;
 
       case SB_PAGEUP:
+         pTable->PageUp();
          break;
 
       case SB_THUMBPOSITION:
@@ -160,7 +162,7 @@ BRIG_HANDLE brig_CreateTable( brig_Table *pTable, int iWidgId,
 
    if( hTable )
    {
-      SetWindowLongPtr( hTable, GWLP_USERDATA, NULL );
+      SetWindowLongPtr( hTable, GWLP_USERDATA, 0 );
    }
 
    return hTable;

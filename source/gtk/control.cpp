@@ -551,7 +551,8 @@ void brig_KillTimer( unsigned int uiId )
 
 int brig_GetScrollPos( brig_Widget *pWidget, bool bVertical )
 {
-   GtkAdjustment *adj = g_object_set_data( ( GObject * ) pWidget->Handle(), (bVertical)? "adjv" : "adjh" );
+   GtkAdjustment *adj = (GtkAdjustment *) g_object_get_data(
+         ( GObject * ) pWidget->Handle(), (bVertical)? "adjv" : "adjh" );
    if( adj )
       return adj->value;
 
@@ -560,11 +561,40 @@ int brig_GetScrollPos( brig_Widget *pWidget, bool bVertical )
 
 void brig_SetScrollPos( brig_Widget *pWidget, bool bVertical, int iPos )
 {
-   GtkAdjustment *adj = g_object_set_data( ( GObject * ) pWidget->Handle(), (bVertical)? "adjv" : "adjh" );
+   GtkAdjustment *adj = (GtkAdjustment *) g_object_get_data(
+         ( GObject * ) pWidget->Handle(), (bVertical)? "adjv" : "adjh" );
    if( adj )
    {
       adj->value = iPos;
       gtk_adjustment_changed( adj );
    }
 
+}
+
+int brig_GetScrollRange( brig_Widget *pWidget, bool bVertical, int *pMinPos, int *pMaxPos )
+{
+   GtkAdjustment *adj = (GtkAdjustment *) g_object_get_data(
+         ( GObject * ) pWidget->Handle(), (bVertical)? "adjv" : "adjh" );
+   if( adj )
+   {
+      if( pMinPos )
+         *pMinPos = (int) adj->lower;
+      if( pMaxPos )
+         *pMaxPos = (int) adj->upper;
+      return (int) (adj->upper - adj->lower);
+   }
+
+   return -1;
+}
+
+void brig_SetScrollRange( brig_Widget *pWidget, bool bVertical, int iMinPos, int iMaxPos )
+{
+   GtkAdjustment *adj = (GtkAdjustment *) g_object_get_data(
+         ( GObject * ) pWidget->Handle(), (bVertical)? "adjv" : "adjh" );
+   if( adj )
+   {
+      adj->lower = (gfloat) iMinPos;
+      adj->upper = (gfloat) iMaxPos;
+      gtk_adjustment_changed( adj );
+   }
 }

@@ -280,7 +280,8 @@ typedef PBRIG_CHAR (*brig_fnc_column)( brig_Table *pTable, int iCol );
 typedef struct BRIG_TCOLUMN_STRU
 {
  
-   PBRIG_CHAR    szHead, szFoot;
+   PBRIG_CHAR    szHead;
+   PBRIG_CHAR    szFoot;
    unsigned int  iWidth;
    unsigned int  iAlign;
    brig_fnc_column pfValue;
@@ -303,13 +304,15 @@ public:
 
    void Down( void );
    void Up( void );
+   void PageDown( void );
+   void PageUp( void );
    void Top( void );
    void Bottom( void );
 
    brig_fnc_paint pfOnPaint;
+   unsigned long (*pfDataSet)( brig_Table *pTable, int iOp, unsigned long ulData );
    bool (*pfOnDblClick)( brig_Table *pTable );
    void (*pfOnPosChanged)( brig_Table *pTable );
-   unsigned long (*pfDataSet)( brig_Table *pTable, int iOp, unsigned long ulData );
 
    void *pData;                // A Data source - an array, data table handle, ...
    unsigned long ulRecCurr;    // A current record number ( in a data source )

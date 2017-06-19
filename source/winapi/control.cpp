@@ -69,7 +69,7 @@ BRIG_HANDLE brig_CreateButton( brig_Widget *pWidget, int iWidgId,
    if( hBtn )
    {
       LONG_PTR hProc;
-      SetWindowLongPtr( hBtn, GWLP_USERDATA, NULL );
+      SetWindowLongPtr( hBtn, GWLP_USERDATA, 0 );
       hProc = SetWindowLongPtr( hBtn, GWLP_WNDPROC, ( LONG_PTR ) s_BtnProc );
       if( !wpOrigBtnProc )
          wpOrigBtnProc = ( WNDPROC ) hProc;
@@ -157,7 +157,7 @@ BRIG_HANDLE brig_CreateEdit( brig_Edit *pEdit, int iWidgId,
          SendMessage( hEdit, WM_SETTEXT, 0, ( LPARAM ) wcCaption );
          brig_free( wcCaption );
       }
-      SetWindowLongPtr( hEdit, GWLP_USERDATA, NULL );
+      SetWindowLongPtr( hEdit, GWLP_USERDATA, 0 );
       wpOrigEditProc = ( WNDPROC ) SetWindowLongPtr( hEdit,
             GWLP_WNDPROC, ( LONG_PTR ) s_EditProc );
    }
@@ -198,7 +198,7 @@ BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
       int iHeightBox = SendMessage( hCombo, CB_GETITEMHEIGHT, - 1, 0 );
       int iHeightItem = SendMessage( hCombo, CB_GETITEMHEIGHT, - 1, 0 );
       LONG_PTR hProc;
-      SetWindowLongPtr( hCombo, GWLP_USERDATA, NULL );
+      SetWindowLongPtr( hCombo, GWLP_USERDATA, 0 );
 
       MoveWindow( hCombo, x, y, nWidth, iHeightBox + iHeightItem * iDisplay, TRUE );
 
@@ -268,7 +268,7 @@ BRIG_HANDLE brig_CreateTab( brig_Tab *pTab, int iWidgId,
    if( hTab )
    {
       LONG_PTR hProc;
-      SetWindowLongPtr( hTab, GWLP_USERDATA, NULL );
+      SetWindowLongPtr( hTab, GWLP_USERDATA, 0 );
       hProc = SetWindowLongPtr( hTab, GWLP_WNDPROC, ( LONG_PTR ) s_TabProc );
       if( !wpOrigTabProc )
          wpOrigTabProc = ( WNDPROC ) hProc;
@@ -354,7 +354,7 @@ BRIG_HANDLE brig_CreatePanel( brig_Panel *pPanel, int iWidgId,
 
    if( hPanel )
    {
-      SetWindowLongPtr( hPanel, GWLP_USERDATA, NULL );
+      SetWindowLongPtr( hPanel, GWLP_USERDATA, 0 );
    }
 
    return hPanel;
@@ -440,7 +440,7 @@ BRIG_HANDLE brig_CreateQButton( brig_QButton *pQBtn, int iWidgId,
 
    if( hQButton )
    {
-      SetWindowLongPtr( hQButton, GWLP_USERDATA, NULL );
+      SetWindowLongPtr( hQButton, GWLP_USERDATA, 0 );
    }
 
    return hQButton;
@@ -492,8 +492,7 @@ BRIG_HANDLE brig_CreateSplitter( brig_Splitter *pSplitter, int iWidgId,
 
    if( hSplitter )
    {
-      LONG_PTR hProc;
-      SetWindowLongPtr( hSplitter, GWLP_USERDATA, NULL );
+      SetWindowLongPtr( hSplitter, GWLP_USERDATA, 0 );
       SetWindowLongPtr( hSplitter, GWLP_WNDPROC, ( LONG_PTR ) s_SplitterProc );
    }
 

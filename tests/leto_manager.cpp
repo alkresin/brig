@@ -160,9 +160,7 @@ unsigned long fncTable1( brig_Table *pTable, int iOp, unsigned long ulData )
          break;
 
       case TDS_BACK:
-         pTable->ulRecCurr -= ulData;
-         if( pTable->ulRecCurr < 1 )
-            pTable->ulRecCurr = 1;
+         pTable->ulRecCurr = (pTable->ulRecCurr <= ulData)? 1 : (pTable->ulRecCurr - ulData);
          break;
 
       case TDS_BOF:
