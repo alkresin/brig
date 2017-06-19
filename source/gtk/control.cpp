@@ -548,3 +548,23 @@ void brig_KillTimer( unsigned int uiId )
 
    gtk_timeout_remove( ( gint ) uiId );
 }
+
+int brig_GetScrollPos( brig_Widget *pWidget, bool bVertical )
+{
+   GtkAdjustment *adj = g_object_set_data( ( GObject * ) pWidget->Handle(), (bVertical)? "adjv" : "adjh" );
+   if( adj )
+      return adj->value;
+
+   return -1;
+}
+
+void brig_SetScrollPos( brig_Widget *pWidget, bool bVertical, int iPos )
+{
+   GtkAdjustment *adj = g_object_set_data( ( GObject * ) pWidget->Handle(), (bVertical)? "adjv" : "adjh" );
+   if( adj )
+   {
+      adj->value = iPos;
+      gtk_adjustment_changed( adj );
+   }
+
+}

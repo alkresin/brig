@@ -501,6 +501,7 @@ BRIG_HANDLE brig_CreateSplitter( brig_Splitter *pSplitter, int iWidgId,
 
 }
 
+/* -------- common widget's functions --------- */
 
 PBRIG_CURSOR brig_LoadCursor( int iCursorType )
 {
@@ -549,4 +550,56 @@ void brig_KillTimer( unsigned int uiId )
 
    KillTimer( NULL, uiId );
 
+}
+
+int brig_GetScrollPos( brig_Widget *pWidget, bool bVertical )
+{
+   return GetScrollPos( pWidget->Handle(), (bVertical)? SB_VERT : SB_HORZ );
+}
+
+void brig_SetScrollPos( brig_Widget *pWidget, bool bVertical, int iPos )
+{
+   SetScrollPos( pWidget->Handle(), (bVertical)? SB_VERT : SB_HORZ, iPos, 1 );
+}
+
+int brig_GetScrollRange( brig_Widget *pWidget, bool bVertical, int *pMinPos, int *pMaxPos )
+{
+   int iRes, iMin, iMax;
+
+   iRes = GetScrollRange( pWidget->Handle(), (bVertical)? SB_VERT : SB_HORZ, &iMin, &iMax );
+   if( pMinPos )
+      *pMinPos = iMin;
+   if( pMaxPos )
+      *pMaxPos = iMax;
+
+   return iRes;
+}
+
+void brig_SetScrollRange( brig_Widget *pWidget, bool bVertical, int iMinPos, int iMaxPos )
+{
+   SetScrollRange( pWidget->Handle(), (bVertical)? SB_VERT : SB_HORZ, iMinPos, iMaxPos, 1 );
+}
+
+int brig_GetScrollPage( brig_Widget *pWidget, bool bVertical )
+{
+   SCROLLINFO si;
+
+   memset( (void*) &si, 0, sizeof(SCROLLINFO) );
+   si.cbSize = sizeof( si );
+   si.fMask = SIF_PAGE;
+
+   GetScrollInfo( pWidget->Handle(), (bVertical)? SB_VERT : SB_HORZ, &si );
+   return si.nPage;
+}
+
+void brig_SetScrollPage( brig_Widget *pWidget, bool bVertical, int iPage )
+{
+   SCROLLINFO si;
+
+   memset( (void*) &si, 0, sizeof(SCROLLINFO) );
+   si.cbSize = sizeof( si );
+   si.fMask = SIF_PAGE;
+   si.nPage = iPage;
+
+   SetScrollInfo( pWidget->Handle(), (bVertical)? SB_VERT : SB_HORZ, &si, 1 );
 }

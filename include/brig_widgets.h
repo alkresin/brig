@@ -47,6 +47,13 @@ extern void brig_TabShowPage( brig_Tab *pTab, int iPage, bool bShow );
 extern BRIG_HANDLE brig_CreateSplitter( brig_Splitter *pSplitter, int iWidgId,
           int x, int y, int nWidth, int nHeight );
 
+extern int brig_GetScrollPos( brig_Widget *pWidget, bool bVertical );
+extern void brig_SetScrollPos( brig_Widget *pWidget, bool bVertical, int iPos );
+extern int brig_GetScrollRange( brig_Widget *pWidget, bool bVertical, int *pMinPos, int *pMaxPos );
+extern void brig_SetScrollRange( brig_Widget *pWidget, bool bVertical, int iMinPos, int iMaxPos );
+extern int brig_GetScrollPage( brig_Widget *pWidget, bool bVertical );
+extern void brig_SetScrollPage( brig_Widget *pWidget, bool bVertical, int iPage );
+
 
 class brig_Label : public brig_Widget
 {
