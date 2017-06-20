@@ -40,9 +40,11 @@ void brig_table_OnVScroll( brig_Table *pTable, WPARAM wParam )
          break;
 
       case SB_THUMBPOSITION:
+         brig_table_SetVScroll( pTable, ( ( (unsigned long) wParam ) >> 16 ) & 0xFFFF );
          break;
 
       case SB_THUMBTRACK:
+         brig_table_SetVScroll( pTable, ( ( (unsigned long) wParam ) >> 16 ) & 0xFFFF, 1 );
          break;
 
    }

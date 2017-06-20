@@ -32,6 +32,7 @@ extern BRIG_HANDLE brig_CreateTable( brig_Table *pTable, int iWidgId,
 extern void brig_table_OnVScroll( brig_Table *pTable, WPARAM wParam );
 extern void brig_table_OnHScroll( brig_Table *pTable, WPARAM wParam );
 extern void brig_table_OnWheel( brig_Table *pTable, WPARAM wParam );
+extern void brig_table_SetVScroll( brig_Table *pTable, int iPos = 0, bool bNoScroll = 0 );
 
 extern BRIG_HANDLE brig_CreateCombo( brig_Combo *pCombo, int iWidgId,
           int x, int y, int nWidth, int nHeight, int iDisplay, bool bEdit );

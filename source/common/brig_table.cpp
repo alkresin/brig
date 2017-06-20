@@ -259,7 +259,7 @@ static void paint_table( brig_Table *pTable )
 
 }
 
-static void table_SetVScroll( brig_Table *pTable, int iPos = 0 )
+void brig_table_SetVScroll( brig_Table *pTable, int iPos, bool bNoScroll )
 {
 
    int iMinPos, iMaxPos;
@@ -272,14 +272,27 @@ static void table_SetVScroll( brig_Table *pTable, int iPos = 0 )
       iPos = (ulRecNo<=1)? iMinPos : (int) ( ( ((double)(iMaxPos-iMinPos)) / (ulRecCount-1) ) * (ulRecNo-1) );
    else
    {
+      long lDiff;
       ulNew = (unsigned long) ( (double)((ulRecCount - 1) * iPos) / (iMaxPos - iMinPos ) + 1 );
       if( ulNew > ulRecCount )
          ulNew = ulRecCount;
-      if( ulNew != ulRecNo )
+      lDiff = ulNew - ulRecNo;
+      if( lDiff )
       {
+         if( lDiff > 0 )
+            pTable->pfDataSet( pTable, TDS_FORWARD, lDiff );
+         else
+            pTable->pfDataSet( pTable, TDS_BACK, -lDiff );
+
+         if( pTable->uiRowCount - pTable->uiRowSel > ulRecCount - ulNew )
+            pTable->uiRowSel = pTable->uiRowCount - ( ulRecCount - ulNew );
+         if( pTable->uiRowSel > ulNew )
+            pTable->uiRowSel = ulNew;
+         brig_RedrawWindow( pTable );
       }
    }
-   brig_SetScrollPos( pTable, 1, iPos );
+   if( !bNoScroll )
+      brig_SetScrollPos( pTable, 1, iPos );
 
 }
 
@@ -322,7 +335,7 @@ static int table_OnBtnDown( brig_Table *pTable, LPARAM lParam )
             }
          }
 
-      table_SetVScroll( pTable );
+      brig_table_SetVScroll( pTable );
       if( bRepaint )
          brig_RedrawWindow( pTable );
    }
@@ -340,7 +353,7 @@ void brig_Table::Down( void )
    if( uiRowSel < uiRowCount )
       uiRowSel++;
 
-   table_SetVScroll( this );
+   brig_table_SetVScroll( this );
 
    bBodyOnly = 1;
    brig_RedrawWindow( this );
@@ -355,7 +368,7 @@ void brig_Table::Up( void )
    if( uiRowSel > 1 )
       uiRowSel--;
 
-   table_SetVScroll( this );
+   brig_table_SetVScroll( this );
 
    bBodyOnly = 1;
    brig_RedrawWindow( this );
@@ -371,7 +384,7 @@ void brig_Table::PageDown( void )
    if( uiRowSel > uiRowCount )
       uiRowSel = uiRowCount;
 
-   table_SetVScroll( this );
+   brig_table_SetVScroll( this );
 
    bBodyOnly = 1;
    brig_RedrawWindow( this );
@@ -387,7 +400,7 @@ void brig_Table::PageUp( void )
    if( ( ulNo = pfDataSet( this, TDS_RECNO, 0 ) ) < uiRowSel )
       uiRowSel = ulNo;
 
-   table_SetVScroll( this );
+   brig_table_SetVScroll( this );
 
    bBodyOnly = 1;
    brig_RedrawWindow( this );
@@ -398,7 +411,7 @@ void brig_Table::Top( void )
    pfDataSet( this, TDS_TOP, 0 );
    uiRowSel = 1;
 
-   table_SetVScroll( this );
+   brig_table_SetVScroll( this );
 
    bBodyOnly = 1;
    brig_RedrawWindow( this );
@@ -410,7 +423,7 @@ void brig_Table::Bottom( void )
    pfDataSet( this, TDS_BOTTOM, 0 );
    uiRowSel = ( ulRecs > uiRowCount )? uiRowCount : ulRecs;
 
-   table_SetVScroll( this );
+   brig_table_SetVScroll( this );
 
    bBodyOnly = 1;
    brig_RedrawWindow( this );
