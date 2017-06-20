@@ -35,7 +35,6 @@ void brig_table_OnVScroll( brig_Table *pTable, WPARAM wParam )
    else
       brig_table_SetVScroll( pTable, iScrollV - iScrV, 1 );
 
-   g_object_set_data( handle, "iscrv", ( gpointer ) iScrollV );
 }
 
 void brig_table_OnHScroll( brig_Table *pTable, WPARAM wParam )

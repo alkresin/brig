@@ -567,6 +567,8 @@ void brig_SetScrollPos( brig_Widget *pWidget, bool bVertical, int iPos )
    {
       adj->value = iPos;
       gtk_adjustment_changed( adj );
+      g_object_set_data( ( GObject * ) pWidget->Handle(),
+            (bVertical)? "iscrv" : "iscrh", ( gpointer ) iPos );
    }
 
 }
