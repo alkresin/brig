@@ -33,7 +33,10 @@ void brig_table_OnVScroll( brig_Table *pTable, WPARAM wParam )
    else if( iScrollV - iScrV == -10 )
       pTable->PageUp();
    else
-      brig_table_SetVScroll( pTable, iScrollV - iScrV, 1 );
+   {
+      brig_table_SetVScroll( pTable, iScrollV, 1 );
+      g_object_set_data( ( GObject * ) pTable->Handle(), "iscrv", ( gpointer ) iScrollV );
+   }
 
 }
 

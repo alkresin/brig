@@ -584,8 +584,8 @@ int brig_GetScrollRange( brig_Widget *pWidget, bool bVertical, int *pMinPos, int
       if( pMinPos )
          *pMinPos = (int) adj->lower;
       if( pMaxPos )
-         *pMaxPos = (int) adj->upper;
-      return (int) (adj->upper - adj->lower);
+         *pMaxPos = (int) (adj->upper - adj->page_size);
+      return (int) (adj->upper - -adj->page_size - adj->lower);
    }
 
    return -1;
@@ -598,7 +598,7 @@ void brig_SetScrollRange( brig_Widget *pWidget, bool bVertical, int iMinPos, int
    if( adj )
    {
       adj->lower = (gfloat) iMinPos;
-      adj->upper = (gfloat) iMaxPos;
+      adj->upper = (gfloat) (iMaxPos + adj->page_size);
       gtk_adjustment_changed( adj );
    }
 }

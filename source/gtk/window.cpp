@@ -487,7 +487,7 @@ static gint cb_event( GtkWidget *widget, GdkEvent * event, gchar* data )
       else if( event->type == GDK_SCROLL )
       {
          p1 = WM_KEYDOWN;
-         p2 = ( ( (GdkEventScroll*)event )->direction == GDK_SCROLL_DOWN )? 0xFF54 : 0xFF52;
+         p2 = ( ( (GdkEventScroll*)event )->direction == GDK_SCROLL_DOWN )? GDK_Down : GDK_Up;
          p3 = 0;
       }
       else if( event->type == GDK_BUTTON_PRESS || 
