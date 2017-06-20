@@ -565,6 +565,8 @@ void brig_SetScrollPos( brig_Widget *pWidget, bool bVertical, int iPos )
          ( GObject * ) pWidget->Handle(), (bVertical)? "adjv" : "adjh" );
    if( adj )
    {
+      if( iPos > (adj->upper - adj->page_size) )
+         iPos = adj->upper - adj->page_size;
       adj->value = iPos;
       gtk_adjustment_changed( adj );
       g_object_set_data( ( GObject * ) pWidget->Handle(),
