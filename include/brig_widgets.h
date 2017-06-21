@@ -14,6 +14,7 @@ class brig_Panel;
 class brig_QButton;
 class brig_Table;
 class brig_Splitter;
+class brig_Tree;
 
 extern BRIG_HANDLE brig_CreateLabel( brig_Label *pLabel, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle, PBRIG_CHAR lpCaption, unsigned long ulExStyle );
@@ -47,6 +48,9 @@ extern void brig_TabShowPage( brig_Tab *pTab, int iPage, bool bShow );
 
 extern BRIG_HANDLE brig_CreateSplitter( brig_Splitter *pSplitter, int iWidgId,
           int x, int y, int nWidth, int nHeight );
+extern BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
+          int x, int y, int nWidth, int nHeight );
+extern BRIG_TNHANDLE brig_TreeAddNode( BRIG_HANDLE hTree, PBRIG_CHAR szTitle, BRIG_TNHANDLE hParent, BRIG_TNHANDLE hPrev, int iPos );
 
 extern int brig_GetScrollPos( brig_Widget *pWidget, bool bVertical );
 extern void brig_SetScrollPos( brig_Widget *pWidget, bool bVertical, int iPos );
@@ -334,6 +338,33 @@ public:
    PBRIG_PEN pPenSep, pPenHdr;
    unsigned long lSepColor, lSelTColor, lHeadColor;
    brig_Style  *pStyle, *pStyleSel, *pStyleCell, *pStyleHead, *pStyleFoot;
+};
+
+class brig_TreeNode;
+
+class brig_TreeNode
+{
+public:
+
+   brig_TreeNode();
+
+   BRIG_TNHANDLE handle;
+   brig_fnc_menu pfAction;
+   vector<brig_TreeNode*> avItems;
+
+};
+
+class brig_Tree : public brig_Widget
+{
+public:
+
+   brig_Tree();
+
+   BRIG_HANDLE Create( brig_Container *pParent, int x, int y, int nWidth, int nHeight );
+   brig_TreeNode * AddNode( PBRIG_CHAR szTitle, brig_TreeNode *pPrev, brig_TreeNode * pNext, brig_fnc_menu pfAct );
+
+   vector<brig_TreeNode*> avItems;
+
 };
 
 extern void brig_RadioGroupSet( brig_RadioGroup *pGroup, int iSelected );

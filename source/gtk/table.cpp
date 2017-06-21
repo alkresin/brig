@@ -19,18 +19,21 @@ void brig_table_OnVScroll( brig_Table *pTable, WPARAM wParam )
 {
    GObject *handle = (GObject*) pTable->Handle();
    GtkAdjustment *adj = ( GtkAdjustment * ) g_object_get_data( handle, "adjv" );
-   int iScrollV = adj->value;
+   int iScrollV = (int) adj->value;
    int iScrV = (int) g_object_get_data( handle, "iscrv" );
+   int iStep = (int) adj->step_increment;
+   int iPageStep = (int) adj->page_increment;
 
    SYMBOL_UNUSED( wParam );
 
-   if( iScrollV - iScrV == 1 )
+   //brig_writelog( NULL, "%d %d\r\n", iScrV, iScrollV );
+   if( iScrollV - iScrV == iStep )
       pTable->Down();
-   else if( iScrollV - iScrV == -1 )
+   else if( iScrollV - iScrV == -iStep )
       pTable->Up();
-   else if( iScrollV - iScrV == 10 )
+   else if( iScrollV - iScrV == iPageStep )
       pTable->PageDown();
-   else if( iScrollV - iScrV == -10 )
+   else if( iScrollV - iScrV == -iPageStep )
       pTable->PageUp();
    else
    {
@@ -81,15 +84,9 @@ BRIG_HANDLE brig_CreateTable( brig_Table *pTable, int iWidgId,
 
    if( hFont && iRows )
    {
-      //cairo_t * cr = gdk_cairo_create( area->window );
-      //PangoLayout *layout = pango_cairo_create_layout( cr );
-      //PangoContext * context = pango_layout_get_context( layout );
       PangoFontMetrics * metrics = pango_context_get_metrics( pangoContext, hFont->hFont, NULL );
       int iHeight =  ( pango_font_metrics_get_ascent( metrics ) +
                pango_font_metrics_get_descent( metrics ) ) / PANGO_SCALE;
-
-      //g_object_unref( (GObject*) layout );
-      //cairo_destroy( cr );
 
       iHeight = (iHeight + pTable->pPadding[1] + pTable->pPadding[3]) * iRows + 2;
       if( iHeight < nHeight )
@@ -107,8 +104,7 @@ BRIG_HANDLE brig_CreateTable( brig_Table *pTable, int iWidgId,
    gtk_box_pack_start( GTK_BOX( hbox ), vbox, TRUE, TRUE, 0 );
    if( ulStyle & WS_VSCROLL )
    {
-      GtkObject *adjV;
-      adjV = gtk_adjustment_new( 0.0, 0.0, 101.0, 1.0, 10.0, 10.0 );
+      GtkObject *adjV = gtk_adjustment_new( 0.0, 0.0, 400.0, 10.0, 20.0, 20.0 );
       vscroll = gtk_vscrollbar_new( GTK_ADJUSTMENT( adjV ) );
       gtk_box_pack_end( GTK_BOX( hbox ), vscroll, FALSE, FALSE, 0 );
       g_object_set_data( ( GObject * ) area, "adjv", ( gpointer ) adjV );
@@ -121,8 +117,7 @@ BRIG_HANDLE brig_CreateTable( brig_Table *pTable, int iWidgId,
    gtk_box_pack_start( GTK_BOX( vbox ), area, TRUE, TRUE, 0 );
    if( ulStyle & WS_HSCROLL )
    {
-      GtkObject *adjH;
-      adjH = gtk_adjustment_new( 0.0, 0.0, 101.0, 1.0, 10.0, 10.0 );
+      GtkObject *adjH = gtk_adjustment_new( 0.0, 0.0, 101.0, 1.0, 10.0, 10.0 );
       hscroll = gtk_hscrollbar_new( GTK_ADJUSTMENT( adjH ) );
       gtk_box_pack_end( GTK_BOX( vbox ), hscroll, FALSE, FALSE, 0 );
       g_object_set_data( ( GObject * ) area, "adjh", ( gpointer ) adjH );
@@ -138,11 +133,6 @@ BRIG_HANDLE brig_CreateTable( brig_Table *pTable, int iWidgId,
    g_object_set_data( ( GObject * ) area, "pbox", ( gpointer ) hbox );
    gtk_widget_set_size_request( hbox, nWidth, nHeight );
 
-   //temp = HB_PUTHANDLE( NULL, area );
-   //SetObjectVar( pObject, "_AREA", temp );
-   //hb_itemRelease( temp );
-
-   //SetWindowObject( area, pObject );
    brig_SetEvent( ( gpointer ) area, (char*)"expose_event", WM_PAINT, 0, 0 );
 
    GTK_WIDGET_SET_FLAGS( area, GTK_CAN_FOCUS );
@@ -156,8 +146,6 @@ BRIG_HANDLE brig_CreateTable( brig_Table *pTable, int iWidgId,
    brig_SetEvent( ( gpointer ) area, (char*)"key_press_event", 0, 0, 0 );
    brig_SetEvent( ( gpointer ) area, (char*)"key_release_event", 0, 0, 0 );
    brig_SetEvent( ( gpointer ) area, (char*)"scroll_event", 0, 0, 0 );
-
-   //all_signal_connect( ( gpointer ) area );
 
    return area;
 }

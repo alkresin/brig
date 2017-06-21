@@ -13,6 +13,7 @@ static WNDPROC wpOrigEditProc = NULL;
 static WNDPROC wpOrigBtnProc = NULL;
 static WNDPROC wpOrigComboProc = NULL;
 static WNDPROC wpOrigTabProc = NULL;
+static WNDPROC wpOrigTreeProc = NULL;
 
 /* -------- Label ---------
  */
@@ -498,6 +499,93 @@ BRIG_HANDLE brig_CreateSplitter( brig_Splitter *pSplitter, int iWidgId,
 
    return hSplitter;
 
+}
+
+/* -------- Tree --------- 
+ */
+
+static LRESULT CALLBACK s_TreeProc( BRIG_HANDLE hTree, UINT message,
+      WPARAM wParam, LPARAM lParam )
+{
+
+   brig_Tree *pObject = ( brig_Tree * ) GetWindowLongPtr( hTree, GWLP_USERDATA );
+
+   if( !pObject || !( pObject->onEvent( message, wParam, lParam ) ) )
+      return CallWindowProc( wpOrigTreeProc, hTree, message, wParam, lParam );
+   else
+      return 0;
+}
+
+BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
+          int x, int y, int nWidth, int nHeight )
+{
+
+   HWND hTree = CreateWindowEx( WS_EX_CLIENTEDGE, WC_TREEVIEW, 0,
+         WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+         x, y, nWidth, nHeight,
+         pTree->pParent->Handle(),
+         ( HMENU ) iWidgId,           /* widget ID  */
+         GetModuleHandle( NULL ), NULL );
+
+   if( hTree )
+   {
+      LONG_PTR hProc;
+      SetWindowLongPtr( hTree, GWLP_USERDATA, 0 );
+      hProc = SetWindowLongPtr( hTree, GWLP_WNDPROC, ( LONG_PTR ) s_TreeProc );
+      if( !wpOrigTreeProc )
+         wpOrigTreeProc = ( WNDPROC ) hProc;
+   }
+
+   return hTree;
+}
+
+BRIG_TNHANDLE brig_TreeAddNode( BRIG_HANDLE hTree, PBRIG_CHAR szTitle, BRIG_TNHANDLE hParent, BRIG_TNHANDLE hPrev, int iPos )
+{
+   TV_ITEM tvi;
+   TV_INSERTSTRUCT is;
+   HTREEITEM handle;
+   PBRIG_WCHAR wcCaption = brig_str2WC( szTitle );
+
+   tvi.iImage = 0;
+   tvi.iSelectedImage = 0;
+
+   tvi.mask = TVIF_TEXT | TVIF_PARAM;
+   tvi.pszText = wcCaption;
+   tvi.lParam = NULL; //( LPARAM ) ( hb_itemNew( pObject ) );
+   /*
+   if( hb_pcount(  ) > 6 && !HB_ISNIL( 7 ) )
+   {
+      tvi.iImage = hb_parni( 7 );
+      tvi.mask |= TVIF_IMAGE;
+      if( hb_pcount(  ) > 7 && !HB_ISNIL( 8 ) )
+      {
+         tvi.iSelectedImage = hb_parni( 8 );
+         tvi.mask |= TVIF_SELECTEDIMAGE;
+      }
+   }
+   */
+
+   is.item = tvi;
+
+   is.hParent = hParent;
+   if( iPos == 0 )
+      is.hInsertAfter = hPrev;
+   else if( iPos == 1 )
+      is.hInsertAfter = TVI_FIRST;
+   else if( iPos == 2 )
+      is.hInsertAfter = TVI_LAST;
+
+   handle = (HTREEITEM) SendMessage( hTree, TVM_INSERTITEM, 0, ( LPARAM ) ( &is ) );
+
+   if( tvi.mask & TVIF_IMAGE )
+      if ( tvi.iImage )
+         DeleteObject( ( HGDIOBJ ) tvi.iImage );
+   if( tvi.mask & TVIF_SELECTEDIMAGE )
+      if ( tvi.iSelectedImage )
+         DeleteObject( ( HGDIOBJ ) tvi.iSelectedImage );
+
+   brig_free( wcCaption );
+   return handle;
 }
 
 /* -------- common widget's functions --------- */

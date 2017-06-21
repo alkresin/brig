@@ -797,3 +797,41 @@ bool brig_Splitter::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
   
    return 0;
 }
+
+/* -------- Tree --------- */
+
+brig_TreeNode::brig_TreeNode()
+{
+   pfAction = NULL;
+}
+
+brig_Tree::brig_Tree():brig_Widget()
+{
+   uiType = TYPE_TREE;
+}
+
+BRIG_HANDLE brig_Tree::Create( brig_Container *pParent,
+          int x, int y, int nWidth, int nHeight )
+{
+
+   brig_Widget::Create( pParent, x, y, nWidth, nHeight );
+   
+   handle = brig_CreateTree( this, iWidgId, x, y, nWidth, nHeight );
+
+   if( !hFont && pParent->hFont )
+      SetFont( pParent->hFont );
+
+   return handle;
+}
+
+brig_TreeNode * brig_Tree::AddNode( PBRIG_CHAR szTitle, brig_TreeNode *pPrev,
+      brig_TreeNode * pNext, brig_fnc_menu pfAct )
+{
+   brig_TreeNode * pNode = new brig_TreeNode;
+
+   pNode->pfAction = pfAct;
+   if( !pPrev && ! pNext )
+      avItems.push_back( pNode );
+
+   return pNode;
+}

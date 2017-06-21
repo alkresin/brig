@@ -34,6 +34,11 @@ using std::vector;
 #endif
 
 #if defined( BRIG_OS_WIN )
+
+   #ifndef _WIN32_IE
+      #define _WIN32_IE      0x0501
+   #endif
+
    #include <windows.h>
    #include <commctrl.h>
 
@@ -66,6 +71,8 @@ using std::vector;
      PBRIG_DC hDC;
      PAINTSTRUCT *pps;
    } BRIG_PPS, * PBRIG_PPS;
+
+   #define BRIG_TNHANDLE  HTREEITEM
 
 #else
    #include <gtk/gtk.h>
@@ -149,6 +156,8 @@ using std::vector;
    #define CURSOR_SIZENS   GDK_SIZING
    #define CURSOR_UPARROW  GDK_BASED_ARROW_UP
    #define CURSOR_HAND     GDK_HAND1
+
+   #define BRIG_TNHANDLE      long
 
    #define HACCEL        void*
    #define DWORD         int
@@ -284,6 +293,7 @@ using std::vector;
 #define TYPE_COMBO        17
 #define TYPE_TAB          18
 #define TYPE_SPLITTER     19
+#define TYPE_TREE         20
 #define TYPE_PANEL        51
 #define TYPE_QBTN         52
 #define TYPE_TABLE        53
