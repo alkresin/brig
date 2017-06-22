@@ -539,7 +539,7 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
    return hTree;
 }
 
-BRIG_TNHANDLE brig_TreeAddNode( BRIG_HANDLE hTree, PBRIG_CHAR szTitle, BRIG_TNHANDLE hParent, BRIG_TNHANDLE hPrev, int iPos )
+BRIG_TNHANDLE brig_TreeAddNode( brig_Tree * pTree, PBRIG_CHAR szTitle, brig_TreeNode * pParent, brig_TreeNode * pPrev, int iPos )
 {
    TV_ITEM tvi;
    TV_INSERTSTRUCT is;
@@ -567,15 +567,15 @@ BRIG_TNHANDLE brig_TreeAddNode( BRIG_HANDLE hTree, PBRIG_CHAR szTitle, BRIG_TNHA
 
    is.item = tvi;
 
-   is.hParent = hParent;
+   is.hParent = pParent->handle;
    if( iPos == 0 )
-      is.hInsertAfter = hPrev;
+      is.hInsertAfter = pPrev->handle;
    else if( iPos == 1 )
       is.hInsertAfter = TVI_FIRST;
    else if( iPos == 2 )
       is.hInsertAfter = TVI_LAST;
 
-   handle = (HTREEITEM) SendMessage( hTree, TVM_INSERTITEM, 0, ( LPARAM ) ( &is ) );
+   handle = (HTREEITEM) SendMessage( pTree->Handle(), TVM_INSERTITEM, 0, ( LPARAM ) ( &is ) );
 
    if( tvi.mask & TVIF_IMAGE )
       if ( tvi.iImage )

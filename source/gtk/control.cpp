@@ -542,12 +542,12 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
    return area;
 }
 
-BRIG_TNHANDLE brig_TreeAddNode( BRIG_HANDLE hTree, PBRIG_CHAR szTitle, BRIG_TNHANDLE hParent, BRIG_TNHANDLE hPrev, int iPos )
+BRIG_TNHANDLE brig_TreeAddNode( brig_Tree * pTree, PBRIG_CHAR szTitle, brig_TreeNode * pParent, brig_TreeNode * pPrev, int iPos )
 {
-   SYMBOL_UNUSED( hTree );
+   SYMBOL_UNUSED( pTree );
    SYMBOL_UNUSED( szTitle );
-   SYMBOL_UNUSED( hParent );
-   SYMBOL_UNUSED( hPrev );
+   SYMBOL_UNUSED( pParent );
+   SYMBOL_UNUSED( pPrev );
    SYMBOL_UNUSED( iPos );
 
    return 0;

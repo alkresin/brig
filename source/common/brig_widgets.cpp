@@ -805,6 +805,20 @@ brig_TreeNode::brig_TreeNode()
    pfAction = NULL;
 }
 
+brig_TreeNode * brig_TreeNode::AddNode( PBRIG_CHAR szTitle, brig_TreeNode *pPrev,
+      brig_TreeNode * pNext, brig_fnc_menu pfAct )
+{
+   brig_TreeNode * pNode = new brig_TreeNode;
+
+   //pNode->handle = brig_TreeAddNode( pTree, szTitle, pParent, pPrev, iPos );
+   pNode->pfAction = pfAct;
+   if( !pPrev && ! pNext )
+      avItems.push_back( pNode );
+
+   return pNode;
+
+}
+
 brig_Tree::brig_Tree():brig_Widget()
 {
    uiType = TYPE_TREE;
@@ -828,6 +842,24 @@ brig_TreeNode * brig_Tree::AddNode( PBRIG_CHAR szTitle, brig_TreeNode *pPrev,
       brig_TreeNode * pNext, brig_fnc_menu pfAct )
 {
    brig_TreeNode * pNode = new brig_TreeNode;
+   int iPos = (pPrev)? 0 : 2;
+
+   if( !pPrev && pNext )
+   {
+      unsigned int ui;
+      for( ui = 0; ui <= avItems.size(); ui++ )
+         if( avItems[ui]->handle == pNext->handle )
+            break;
+      if( ui )
+      {
+         pPrev = avItems[ui-1];
+         iPos = 0;
+      }
+      else
+         iPos = 1;
+   }
+
+   pNode->handle = brig_TreeAddNode( this, szTitle, NULL, pPrev, iPos );
 
    pNode->pfAction = pfAct;
    if( !pPrev && ! pNext )
