@@ -34,11 +34,14 @@ using std::vector;
 #endif
 
 #if defined( BRIG_OS_WIN )
-
+/*
+   #ifndef _WIN32
+      #define _WIN32
+   #endif
    #ifndef _WIN32_IE
       #define _WIN32_IE      0x0501
    #endif
-
+*/
    #include <windows.h>
    #include <commctrl.h>
 

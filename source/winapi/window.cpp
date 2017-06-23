@@ -404,6 +404,7 @@ int WINAPI WinMain( HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iShow
    LPWSTR * lpArgv = CommandLineToArgvW( GetCommandLineW(), &argc );
    char ** argv;
    int iLen, i;
+   INITCOMMONCONTROLSEX icc;
 
    SYMBOL_UNUSED( hInst );
    SYMBOL_UNUSED( hPrev );
@@ -419,6 +420,12 @@ int WINAPI WinMain( HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iShow
       argv[i] = brig_WCTostr( CP_ACP, lpArgv[i], iLen );
       #endif
    }
+
+   icc.dwSize = sizeof( INITCOMMONCONTROLSEX );
+   icc.dwICC =
+         ICC_DATE_CLASSES | ICC_INTERNET_CLASSES | ICC_BAR_CLASSES |
+         ICC_LISTVIEW_CLASSES | ICC_TAB_CLASSES | ICC_TREEVIEW_CLASSES;
+   InitCommonControlsEx( &icc );
 
    brig_Main( argc, argv );
 

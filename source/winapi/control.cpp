@@ -510,6 +510,7 @@ static LRESULT CALLBACK s_TreeProc( BRIG_HANDLE hTree, UINT message,
 
    brig_Tree *pObject = ( brig_Tree * ) GetWindowLongPtr( hTree, GWLP_USERDATA );
 
+   //brig_writelog( NULL, "treeproc %u\r\n", message );
    if( !pObject || !( pObject->onEvent( message, wParam, lParam ) ) )
       return CallWindowProc( wpOrigTreeProc, hTree, message, wParam, lParam );
    else
@@ -520,13 +521,19 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
           int x, int y, int nWidth, int nHeight )
 {
 
-   HWND hTree = CreateWindowEx( WS_EX_CLIENTEDGE, WC_TREEVIEW, 0,
-         WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+   HWND hTree ;
+
+   brig_writelog( NULL, "crtree-0 %d %d %lu %s\r\n", pTree->pParent->uiType, iWidgId, (unsigned long) pTree->pParent->Handle(), WC_TREEVIEW );
+
+   InitCommonControls();
+   hTree = CreateWindowEx( WS_EX_CLIENTEDGE, WC_TREEVIEW, TEXT("Tree View"),
+         WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | TVS_SHOWSELALWAYS,
          x, y, nWidth, nHeight,
          pTree->pParent->Handle(),
-         ( HMENU ) iWidgId,           /* widget ID  */
+         ( HMENU ) iWidgId,
          GetModuleHandle( NULL ), NULL );
 
+   brig_writelog( NULL, "crtree-1 %lu\r\n", (unsigned long) hTree );
    if( hTree )
    {
       LONG_PTR hProc;
@@ -535,7 +542,7 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
       if( !wpOrigTreeProc )
          wpOrigTreeProc = ( WNDPROC ) hProc;
    }
-
+   
    return hTree;
 }
 

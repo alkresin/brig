@@ -834,6 +834,7 @@ BRIG_HANDLE brig_Tree::Create( brig_Container *pParent,
 
    if( !hFont && pParent->hFont )
       SetFont( pParent->hFont );
+   brig_SetWidgetData( this );
 
    return handle;
 }
@@ -866,4 +867,16 @@ brig_TreeNode * brig_Tree::AddNode( PBRIG_CHAR szTitle, brig_TreeNode *pPrev,
       avItems.push_back( pNode );
 
    return pNode;
+}
+
+bool brig_Tree::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
+{
+
+   //SYMBOL_UNUSED( message );
+   SYMBOL_UNUSED( wParam );
+   SYMBOL_UNUSED( lParam );
+
+   //brig_writelog( NULL, "tree_onEvent %u\r\n", message );
+   
+   return 0;
 }

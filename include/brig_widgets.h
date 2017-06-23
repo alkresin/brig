@@ -364,6 +364,7 @@ public:
 
    BRIG_HANDLE Create( brig_Container *pParent, int x, int y, int nWidth, int nHeight );
    brig_TreeNode * AddNode( PBRIG_CHAR szTitle, brig_TreeNode *pPrev, brig_TreeNode * pNext, brig_fnc_menu pfAct );
+   bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
 
    vector<brig_TreeNode*> avItems;
 

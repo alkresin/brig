@@ -35,7 +35,7 @@ int brig_Main( int argc, char *argv[] )
    oBtn.Create( &oDlg, 10, 4, 380, 32, (PBRIG_CHAR) "Ok" );
    oBtn.pfOnClick = fncCloseDlg;
 
-   oDlg.Activate( 0 );
+   oDlg.Activate();
    return 0;
 }
 
