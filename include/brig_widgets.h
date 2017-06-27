@@ -346,8 +346,8 @@ class brig_TreeNode
 public:
 
    brig_TreeNode();
-   brig_TreeNode * AddNode( PBRIG_CHAR szTitle, brig_TreeNode *pPrev,
-      brig_TreeNode * pNext, brig_fnc_menu pfAct );
+   brig_TreeNode * AddNode( PBRIG_CHAR szTitle, brig_fnc_menu pfAct = NULL,
+      brig_TreeNode *pPrev = NULL, brig_TreeNode * pNext = NULL );
 
    brig_Tree *pTree;
    BRIG_TNHANDLE handle;
@@ -363,7 +363,8 @@ public:
    brig_Tree();
 
    BRIG_HANDLE Create( brig_Container *pParent, int x, int y, int nWidth, int nHeight );
-   brig_TreeNode * AddNode( PBRIG_CHAR szTitle, brig_TreeNode *pPrev, brig_TreeNode * pNext, brig_fnc_menu pfAct );
+   brig_TreeNode * AddNode( PBRIG_CHAR szTitle, brig_fnc_menu pfAct = NULL,
+      brig_TreeNode *pPrev = NULL, brig_TreeNode * pNext = NULL );
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
 
    vector<brig_TreeNode*> avItems;

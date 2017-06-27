@@ -40,7 +40,7 @@ COMMON_DIR = source\common
 # C compiler definition and C flags. These should never have to change.
 #
 
-CFLAGS               = -I$(INCLUDE_DIR) -d $(C_USR) $(CFLAGS) -tWM -D__WIN32__
+CFLAGS               = -I$(INCLUDE_DIR) -d $(C_USR) $(CFLAGS) -D__WIN32__
 CLIBFLAGS            = -c $(CFLAGS) $(CLIBFLAGS)
 CLIBFLAGSDEBUG       = -v $(CLIBFLAGS)
 LDFLAGS              = $(LDFLAGS)

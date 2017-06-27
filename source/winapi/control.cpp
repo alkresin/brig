@@ -523,17 +523,13 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
 
    HWND hTree ;
 
-   brig_writelog( NULL, "crtree-0 %d %d %lu %s\r\n", pTree->pParent->uiType, iWidgId, (unsigned long) pTree->pParent->Handle(), WC_TREEVIEW );
-
-   InitCommonControls();
-   hTree = CreateWindowEx( WS_EX_CLIENTEDGE, WC_TREEVIEW, TEXT("Tree View"),
+   hTree = CreateWindowEx( WS_EX_CLIENTEDGE, WC_TREEVIEW, NULL,
          WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | TVS_SHOWSELALWAYS,
          x, y, nWidth, nHeight,
          pTree->pParent->Handle(),
          ( HMENU ) iWidgId,
          GetModuleHandle( NULL ), NULL );
 
-   brig_writelog( NULL, "crtree-1 %lu\r\n", (unsigned long) hTree );
    if( hTree )
    {
       LONG_PTR hProc;
@@ -574,7 +570,7 @@ BRIG_TNHANDLE brig_TreeAddNode( brig_Tree * pTree, PBRIG_CHAR szTitle, brig_Tree
 
    is.item = tvi;
 
-   is.hParent = pParent->handle;
+   is.hParent = (pParent)? pParent->handle : NULL;
    if( iPos == 0 )
       is.hInsertAfter = pPrev->handle;
    else if( iPos == 1 )
