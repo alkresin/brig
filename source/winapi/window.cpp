@@ -167,9 +167,19 @@ static LRESULT CALLBACK s_MainWndProc( BRIG_HANDLE handle, UINT message,
 
       case WM_NOTIFY:
          pObject = pObjWin->FindWidget( ( ( ( NMHDR * ) lParam )->hwndFrom ) );
-         if( pObject && pObject->uiType == TYPE_TAB )
-            if( ( ( ( NMHDR * ) lParam )->code ) == TCN_SELCHANGE )
-               pObject->onEvent( WM_USER, wParam, TabCtrl_GetCurSel( ( HWND ) pObject->Handle() ) );
+         if( pObject )
+            if( pObject->uiType == TYPE_TREE )
+               switch( ( ( NMHDR * ) lParam )->code ) {
+                  case TVN_SELCHANGED:
+                     break;
+                  case -3:
+                     break;
+                  case -5:
+                     break;
+               }
+            else if( pObject->uiType == TYPE_TAB )
+               if( ( ( ( NMHDR * ) lParam )->code ) == TCN_SELCHANGE )
+                  pObject->onEvent( WM_USER, wParam, TabCtrl_GetCurSel( ( HWND ) pObject->Handle() ) );
          break;
 
       case WM_DESTROY:
