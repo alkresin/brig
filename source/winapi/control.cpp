@@ -542,7 +542,8 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
    return hTree;
 }
 
-BRIG_TNHANDLE brig_TreeAddNode( brig_Tree * pTree, PBRIG_CHAR szTitle, brig_TreeNode * pParent, brig_TreeNode * pPrev, int iPos )
+BRIG_TNHANDLE brig_TreeAddNode( brig_TreeNode * pNode, brig_Tree * pTree,
+      PBRIG_CHAR szTitle, brig_TreeNode * pParent, brig_TreeNode * pPrev, int iPos )
 {
    TV_ITEM tvi;
    TV_INSERTSTRUCT is;
@@ -554,7 +555,7 @@ BRIG_TNHANDLE brig_TreeAddNode( brig_Tree * pTree, PBRIG_CHAR szTitle, brig_Tree
 
    tvi.mask = TVIF_TEXT | TVIF_PARAM;
    tvi.pszText = wcCaption;
-   tvi.lParam = NULL; //( LPARAM ) ( hb_itemNew( pObject ) );
+   tvi.lParam = ( LPARAM ) pNode;
    /*
    if( hb_pcount(  ) > 6 && !HB_ISNIL( 7 ) )
    {

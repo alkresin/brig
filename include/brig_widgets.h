@@ -341,18 +341,22 @@ public:
 
 class brig_TreeNode;
 
+typedef void (*brig_fnc_tree_action)( brig_TreeNode *pNode );
+
 class brig_TreeNode
 {
 public:
 
    brig_TreeNode();
-   brig_TreeNode * AddNode( PBRIG_CHAR szTitle, brig_fnc_menu pfAct = NULL,
+   brig_TreeNode * AddNode( PBRIG_CHAR szTitle, brig_fnc_tree_action pfAct = NULL,
       brig_TreeNode *pPrev = NULL, brig_TreeNode * pNext = NULL );
 
    brig_Tree *pTree;
    BRIG_TNHANDLE handle;
-   brig_fnc_menu pfAction;
    vector<brig_TreeNode*> avItems;
+
+   brig_fnc_tree_action pfAction;
+   brig_fnc_tree_action pfDblClick;
 
 };
 
@@ -363,13 +367,14 @@ public:
    brig_Tree();
 
    BRIG_HANDLE Create( brig_Container *pParent, int x, int y, int nWidth, int nHeight );
-   brig_TreeNode * AddNode( PBRIG_CHAR szTitle, brig_fnc_menu pfAct = NULL,
+   brig_TreeNode * AddNode( PBRIG_CHAR szTitle, brig_fnc_tree_action pfAct = NULL,
       brig_TreeNode *pPrev = NULL, brig_TreeNode * pNext = NULL );
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
 
+   brig_TreeNode* pSelected;
    vector<brig_TreeNode*> avItems;
 
 };
 
 extern void brig_RadioGroupSet( brig_RadioGroup *pGroup, int iSelected );
-extern BRIG_TNHANDLE brig_TreeAddNode( brig_Tree * pTree, PBRIG_CHAR szTitle, brig_TreeNode * pParent, brig_TreeNode * pPrev, int iPos );
+extern BRIG_TNHANDLE brig_TreeAddNode( brig_TreeNode * pNode, brig_Tree * pTree, PBRIG_CHAR szTitle, brig_TreeNode * pParent, brig_TreeNode * pPrev, int iPos );

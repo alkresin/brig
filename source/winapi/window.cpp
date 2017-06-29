@@ -131,12 +131,58 @@ void brig_RemoveTopmost( brig_Widget *pWidget )
    SetWindowPos( pWidget->Handle(), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
 }
 
+static LRESULT onCtlColor( WPARAM wParam, LPARAM lParam )
+{
+   brig_Widget *pObject = ( brig_Widget * ) GetWindowLongPtr( (BRIG_HANDLE) lParam, GWLP_USERDATA );
+   bool b = 0;
+
+   if( pObject )
+   {
+      if( pObject->SetTextColor() > -1 )
+      {
+         SetTextColor( ( HDC ) wParam, ( COLORREF ) pObject->SetTextColor() );
+         b = 1;
+      }
+      if( pObject->SetBackColor() > -1 )
+      {
+         SetBkColor( ( HDC ) wParam, ( COLORREF ) pObject->SetBackColor() );
+         return (LRESULT) pObject->hBrush;
+      }
+      else if( b )
+         return NULL_BRUSH;
+   }
+   return -1;
+}
+
+static void onNotify( brig_Widget *pObject, WPARAM wParam, LPARAM lParam )
+{
+   brig_TreeNode * pNode;
+   if( pObject )
+      if( pObject->uiType == TYPE_TREE )
+         switch( ( ( NMHDR * ) lParam )->code ) {
+            case TVN_SELCHANGED:
+               pNode = (brig_TreeNode*) ( ( ( NM_TREEVIEW * ) lParam )->itemNew.lParam );
+               ((brig_Tree*)pObject)->pSelected = pNode;
+               if( pNode->pfAction )
+                  pNode->pfAction( pNode );
+               break;
+            case -3:
+               break;
+            case -5:
+               break;
+         }
+      else if( pObject->uiType == TYPE_TAB )
+         if( ( ( ( NMHDR * ) lParam )->code ) == TCN_SELCHANGE )
+            pObject->onEvent( WM_USER, wParam, TabCtrl_GetCurSel( ( HWND ) pObject->Handle() ) );
+
+}
+
 static LRESULT CALLBACK s_MainWndProc( BRIG_HANDLE handle, UINT message,
       WPARAM wParam, LPARAM lParam )
 {
 
    brig_Widget *pObject;
-   bool b = 0;
+   LRESULT result;
 
    brig_MainWindow *pObjWin = ( brig_MainWindow * ) GetWindowLongPtr( handle, GWLP_USERDATA );
 
@@ -147,39 +193,14 @@ static LRESULT CALLBACK s_MainWndProc( BRIG_HANDLE handle, UINT message,
    switch( message ) {
       case WM_CTLCOLORSTATIC:
       case WM_CTLCOLOREDIT:
-         pObject = ( brig_Widget * ) GetWindowLongPtr( (BRIG_HANDLE) lParam, GWLP_USERDATA );
-         if( pObject )
-         {
-            if( pObject->SetTextColor() > -1 )
-            {
-               SetTextColor( ( HDC ) wParam, ( COLORREF ) pObject->SetTextColor() );
-               b = 1;
-            }
-            if( pObject->SetBackColor() > -1 )
-            {
-               SetBkColor( ( HDC ) wParam, ( COLORREF ) pObject->SetBackColor() );
-               return (LRESULT) pObject->hBrush;
-            }
-            else if( b )
-               return NULL_BRUSH;
-         }
-         break;
+           result = onCtlColor( wParam, lParam );
+           if( result == -1 )
+              break;
+           else
+              return result;
 
       case WM_NOTIFY:
-         pObject = pObjWin->FindWidget( ( ( ( NMHDR * ) lParam )->hwndFrom ) );
-         if( pObject )
-            if( pObject->uiType == TYPE_TREE )
-               switch( ( ( NMHDR * ) lParam )->code ) {
-                  case TVN_SELCHANGED:
-                     break;
-                  case -3:
-                     break;
-                  case -5:
-                     break;
-               }
-            else if( pObject->uiType == TYPE_TAB )
-               if( ( ( ( NMHDR * ) lParam )->code ) == TCN_SELCHANGE )
-                  pObject->onEvent( WM_USER, wParam, TabCtrl_GetCurSel( ( HWND ) pObject->Handle() ) );
+         onNotify( pObjWin->FindWidget( ( ( ( NMHDR * ) lParam )->hwndFrom ) ), wParam, lParam );
          break;
 
       case WM_DESTROY:
@@ -195,12 +216,25 @@ static LRESULT CALLBACK s_DialogProc( BRIG_HANDLE hDlg, UINT message,
    int i;
 
    brig_Dialog *pObjWin = ( brig_Dialog * ) GetWindowLongPtr( hDlg, GWLP_USERDATA );
+   LRESULT result;
    //brig_writelog( NULL, "dlgmsg %u\r\n", message );
 
    if( pObjWin && ( pObjWin->onEvent( message, wParam, lParam ) ) )
       return 0;
 
    switch( message ) {
+
+      case WM_CTLCOLORSTATIC:
+      case WM_CTLCOLOREDIT:
+           result = onCtlColor( wParam, lParam );
+           if( result == -1 )
+              break;
+           else
+              return result;
+
+      case WM_NOTIFY:
+         onNotify( pObjWin->FindWidget( ( ( ( NMHDR * ) lParam )->hwndFrom ) ), wParam, lParam );
+         break;
 
       case WM_SYSCOMMAND:
          if( wParam == SC_CLOSE )
