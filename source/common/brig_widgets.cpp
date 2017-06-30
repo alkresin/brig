@@ -391,7 +391,7 @@ bool brig_Tab::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 
 /* -------- Picture --------- */
 
-brig_Picture::brig_Picture():brig_Widget(), pfOnClick(NULL), pfOnDblClick(NULL), pfOnRClick(NULL)
+brig_Picture::brig_Picture():brig_Widget(), pfOnPaint(NULL), pfOnClick(NULL), pfOnDblClick(NULL), pfOnRClick(NULL)
 {
    uiType = TYPE_PICTURE;
 }
@@ -421,7 +421,7 @@ static void brig_paint_Picture( brig_Picture *pPicture )
    brig_GetClientRect( pPicture, &rc );
 
    if( pPicture->pBitmap )
-      brig_DrawBitmap( pps->hDC, pPicture->pBitmap, pPicture->iLeft, pPicture->iTop, pPicture->iWidth, pPicture->iHeight );
+      brig_DrawBitmap( pps->hDC, pPicture->pBitmap, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top );
 
    brig_EndPaint( pPicture, pps );
 
