@@ -52,13 +52,11 @@ bool fncStop( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
    return 0;
 }
 
-bool fncOnClick( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
+bool fncOnClick( brig_Widget *pBtn )
 {
    PBRIG_CHAR pText;
 
    SYMBOL_UNUSED( pBtn );
-   SYMBOL_UNUSED( wParam );
-   SYMBOL_UNUSED( lParam );
 
    oEdit.SetTextColor( 255, 0 );
    oEdit.SetBackColor( 11184810, 1 );

@@ -10,6 +10,7 @@
 
 
 /* -------- Label --------- */
+
 brig_Label::brig_Label():brig_Widget()
 {
    uiType = TYPE_LABEL;
@@ -21,7 +22,7 @@ BRIG_HANDLE brig_Label::Create( brig_Container *pParent,
 
    brig_Widget::Create( pParent, x, y, nWidth, nHeight );
    
-   handle = brig_CreateLabel( this, iWidgId,
+   handle = brig_CreateLabel( (brig_Widget*) this, iWidgId,
              x, y, nWidth, nHeight, ulStyle, lpCaption, ulExStyle );
    if( !hFont && pParent->hFont )
       SetFont( pParent->hFont );
@@ -30,6 +31,7 @@ BRIG_HANDLE brig_Label::Create( brig_Container *pParent,
 }
 
 /* -------- Edit --------- */
+
 brig_Edit::brig_Edit():brig_Widget()
 {
    uiType = TYPE_EDIT;
@@ -92,7 +94,7 @@ bool brig_Button::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
       case WM_LBUTTONUP:
          //brig_writelog( NULL, "btn_onClick: %lu %lu %d %s\r\n", (unsigned long)this, (unsigned long)handle, iWidgId, GetText() );
          if( pfOnClick )
-            pfOnClick( this, wParam, lParam );
+            pfOnClick( this );
          break;
    }
    
@@ -387,7 +389,93 @@ bool brig_Tab::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
    return 0;
 }
 
+/* -------- Picture --------- */
+
+brig_Picture::brig_Picture():brig_Widget(), pfOnClick(NULL), pfOnDblClick(NULL), pfOnRClick(NULL)
+{
+   uiType = TYPE_PICTURE;
+}
+
+BRIG_HANDLE brig_Picture::Create( brig_Container *pParent,
+          int x, int y, int nWidth, int nHeight, PBRIG_BITMAP pBitmap )
+{
+
+   brig_Widget::Create( pParent, x, y, nWidth, nHeight );
+   
+   handle = brig_CreateLabel( (brig_Widget*) this, iWidgId, x, y, nWidth, nHeight, SS_OWNERDRAW, NULL, 0 );
+
+   if( !hFont && pParent->hFont )
+      SetFont( pParent->hFont );
+
+   this->pBitmap = pBitmap;
+   brig_SetWidgetData( this );
+
+   return handle;
+}
+
+static void brig_paint_Picture( brig_Picture *pPicture )
+{
+   PBRIG_PPS pps = brig_BeginPaint( pPicture );
+   RECT rc;
+
+   brig_GetClientRect( pPicture, &rc );
+
+   if( pPicture->pBitmap )
+      brig_DrawBitmap( pps->hDC, pPicture->pBitmap, pPicture->iLeft, pPicture->iTop, pPicture->iWidth, pPicture->iHeight );
+
+   brig_EndPaint( pPicture, pps );
+
+}
+
+bool brig_Picture::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
+{
+
+   SYMBOL_UNUSED( wParam );
+   SYMBOL_UNUSED( lParam );
+
+   //brig_writelog( NULL, "Picture_onEvent %u\r\n", message );
+   switch( message ) {
+
+      case WM_PAINT:
+
+         if( pfOnPaint )
+         {
+            PBRIG_PPS pps = brig_BeginPaint( this );
+
+            pfOnPaint( this, pps->hDC );
+
+            brig_EndPaint( this, pps );
+         }
+         else
+            brig_paint_Picture( this );
+
+         break;
+
+      case WM_LBUTTONDOWN:
+         if( pfOnClick )
+            pfOnClick( this );
+         break;
+
+      case WM_LBUTTONUP:
+         break;
+
+      case WM_LBUTTONDBLCLK:
+         if( pfOnDblClick )
+            pfOnDblClick( this );
+         break;
+
+      case WM_RBUTTONDOWN:
+         if( pfOnRClick )
+            pfOnRClick( this );
+         break;
+
+   }
+  
+   return 0;
+}
+
 /* -------- Panel --------- */
+
 brig_Panel::brig_Panel():brig_Container(), pfOnPaint(NULL)
 {
    uiType = TYPE_PANEL;
@@ -802,7 +890,7 @@ bool brig_Splitter::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 
 brig_TreeNode::brig_TreeNode()
 {
-   pfAction = NULL;
+   pfAction = pfDblClick = pfRClick = NULL;
 }
 
 brig_TreeNode * brig_TreeNode::AddNode( PBRIG_CHAR szTitle, brig_fnc_tree_action pfAct,
@@ -850,6 +938,7 @@ brig_TreeNode * brig_TreeNode::AddNode( PBRIG_CHAR szTitle, brig_fnc_tree_action
 brig_Tree::brig_Tree():brig_Widget()
 {
    uiType = TYPE_TREE;
+   pImages = NULL;
 }
 
 BRIG_HANDLE brig_Tree::Create( brig_Container *pParent,

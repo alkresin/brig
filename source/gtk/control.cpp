@@ -16,7 +16,7 @@ extern void brig_parse_color( long lColor, GdkColor * pColor );
 
 /* -------- Label ---------
  */
-BRIG_HANDLE brig_CreateLabel( brig_Label *pLabel, int iWidgId,
+BRIG_HANDLE brig_CreateLabel( brig_Widget *pLabel, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle,
           PBRIG_CHAR lpCaption, unsigned long ulExStyle )
 {
@@ -49,6 +49,14 @@ BRIG_HANDLE brig_CreateLabel( brig_Label *pLabel, int iWidgId,
    if( ( ulStyle & SS_OWNERDRAW ) == SS_OWNERDRAW )
    {
       brig_SetEvent( ( gpointer ) hCtrl, (char*)"expose_event", WM_PAINT, 0, 0 );
+      gtk_widget_add_events( hCtrl, GDK_BUTTON_PRESS_MASK |
+            GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK |
+            GDK_POINTER_MOTION_MASK );
+      brig_SetEvent( ( gpointer ) hCtrl, (char*)"button_press_event", 0, 0, 0 );
+      brig_SetEvent( ( gpointer ) hCtrl, (char*)"button_release_event", 0, 0, 0 );
+      brig_SetEvent( ( gpointer ) hCtrl, (char*)"motion_notify_event", 0, 0, 0 );
+      brig_SetEvent( ( gpointer ) hCtrl, (char*)"key_press_event", 0, 0, 0 );
+      brig_SetEvent( ( gpointer ) hCtrl, (char*)"key_release_event", 0, 0, 0 );
    }
    return hCtrl;
 

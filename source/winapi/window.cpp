@@ -16,6 +16,8 @@ static WNDPROC wpOrigDlgProc;
 static BRIG_HANDLE hMainWindow = NULL;
 static BRIG_HANDLE hFrameWindow = NULL;
 
+extern brig_TreeNode * brig_TreeHitTest( brig_Tree * pTree );
+
 brig_Application brigApp;
 
 BRIG_HANDLE *aDialogs = NULL;
@@ -167,8 +169,14 @@ static void onNotify( brig_Widget *pObject, WPARAM wParam, LPARAM lParam )
                   pNode->pfAction( pNode );
                break;
             case -3:
+               pNode = brig_TreeHitTest( (brig_Tree*) pObject );
+               if( pNode->pfDblClick )
+                  pNode->pfDblClick( pNode );
                break;
             case -5:
+               pNode = brig_TreeHitTest( (brig_Tree*) pObject );
+               if( pNode->pfRClick )
+                  pNode->pfRClick( pNode );
                break;
          }
       else if( pObject->uiType == TYPE_TAB )

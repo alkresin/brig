@@ -303,5 +303,6 @@ using std::vector;
 #define TYPE_PANEL        51
 #define TYPE_QBTN         52
 #define TYPE_TABLE        53
+#define TYPE_PICTURE      54
 
 #endif  // BRIG_DEFS_H_

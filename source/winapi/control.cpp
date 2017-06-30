@@ -9,20 +9,37 @@
 
 #include "brig.h"
 
+static WNDPROC wpOrigLabelProc = NULL;
 static WNDPROC wpOrigEditProc = NULL;
 static WNDPROC wpOrigBtnProc = NULL;
 static WNDPROC wpOrigComboProc = NULL;
 static WNDPROC wpOrigTabProc = NULL;
 static WNDPROC wpOrigTreeProc = NULL;
 
-/* -------- Label ---------
- */
-BRIG_HANDLE brig_CreateLabel( brig_Label *pLabel, int iWidgId,
+/* -------- Label --------- */
+
+static LRESULT CALLBACK s_LabelProc( BRIG_HANDLE hLabel, UINT message,
+      WPARAM wParam, LPARAM lParam )
+{
+
+   brig_Label *pObject = ( brig_Label * ) GetWindowLongPtr( hLabel, GWLP_USERDATA );
+
+   if( !pObject || !( pObject->onEvent( message, wParam, lParam ) ) )
+      return CallWindowProc( wpOrigLabelProc, hLabel, message, wParam, lParam );
+   else
+      return 0;
+}
+
+BRIG_HANDLE brig_CreateLabel( brig_Widget *pLabel, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle,
           PBRIG_CHAR lpCaption, unsigned long ulExStyle )
 {
 
-   PBRIG_WCHAR wcCaption = brig_str2WC( lpCaption );
+   PBRIG_WCHAR wcCaption = NULL;
+
+   if( lpCaption )
+      wcCaption = brig_str2WC( lpCaption );
+
    BRIG_HANDLE hLabel = 
          CreateWindowEx( ulExStyle,   /* extended style */
          TEXT( "STATIC" ),
@@ -33,13 +50,23 @@ BRIG_HANDLE brig_CreateLabel( brig_Label *pLabel, int iWidgId,
          ( HMENU ) iWidgId,           /* widget ID  */
          GetModuleHandle( NULL ), NULL );
 
-   brig_free( wcCaption );
+   if( hLabel && ( ulStyle & SS_OWNERDRAW ) )
+   {
+      LONG_PTR hProc;
+      SetWindowLongPtr( hLabel, GWLP_USERDATA, 0 );
+      hProc = SetWindowLongPtr( hLabel, GWLP_WNDPROC, ( LONG_PTR ) s_LabelProc );
+      if( !wpOrigLabelProc )
+         wpOrigLabelProc = ( WNDPROC ) hProc;
+   }
+   if( wcCaption )
+      brig_free( wcCaption );
+
    return hLabel;
 
 }
 
-/* -------- Button ---------
- */
+/* -------- Button --------- */
+
 static LRESULT CALLBACK s_BtnProc( BRIG_HANDLE hBtn, UINT message,
       WPARAM wParam, LPARAM lParam )
 {
@@ -113,8 +140,8 @@ void brig_RadioGroupSet( brig_RadioGroup *pGroup, int iSelected )
 
 
 
-/* -------- Edit --------- 
- */
+/* -------- Edit --------- */
+
 static LRESULT CALLBACK s_EditProc( BRIG_HANDLE hDlg, UINT message,
       WPARAM wParam, LPARAM lParam )
 {
@@ -590,6 +617,31 @@ BRIG_TNHANDLE brig_TreeAddNode( brig_TreeNode * pNode, brig_Tree * pTree,
 
    brig_free( wcCaption );
    return handle;
+}
+
+brig_TreeNode * brig_TreeHitTest( brig_Tree * pTree )
+{
+   TV_HITTESTINFO ht;
+   HWND hTree = pTree->Handle();
+
+   GetCursorPos( &( ht.pt ) );
+   ScreenToClient( hTree, &( ht.pt ) );
+
+   SendMessage( hTree, TVM_HITTEST, 0, ( LPARAM ) & ht );
+
+   if( ht.hItem )
+   {
+      TV_ITEM TreeItem;
+
+      memset( &TreeItem, 0, sizeof( TV_ITEM ) );
+      TreeItem.mask = TVIF_HANDLE | TVIF_PARAM;
+      TreeItem.hItem = ht.hItem;
+
+      SendMessage( hTree, TVM_GETITEM, 0, ( LPARAM ) ( &TreeItem ) );
+      return ( brig_TreeNode * ) TreeItem.lParam;
+   }
+   else
+      return NULL;
 }
 
 /* -------- common widget's functions --------- */

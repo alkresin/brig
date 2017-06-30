@@ -16,7 +16,7 @@ class brig_Table;
 class brig_Splitter;
 class brig_Tree;
 
-extern BRIG_HANDLE brig_CreateLabel( brig_Label *pLabel, int iWidgId,
+extern BRIG_HANDLE brig_CreateLabel( brig_Widget *pLabel, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle, PBRIG_CHAR lpCaption, unsigned long ulExStyle );
 extern BRIG_HANDLE brig_CreateButton( brig_Widget *pWidget, int iWidgId,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle, PBRIG_CHAR lpCaption );
@@ -98,7 +98,7 @@ public:
           int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption, unsigned long ulStyle = 0 );
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
 
-   brig_fnc_mess pfOnClick;
+   brig_fnc_mess_1 pfOnClick;
 };
 
 class brig_CheckButton : public brig_Widget
@@ -201,6 +201,23 @@ public:
    vector<BRIG_TABPAGE> avPages;
    int iCurrPage;
 
+};
+
+class brig_Picture : public brig_Widget
+{
+public:
+
+   brig_Picture();
+   BRIG_HANDLE Create( brig_Container *pParent,
+          int x, int y, int nWidth, int nHeight, PBRIG_BITMAP pBitmap = NULL );
+
+   bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
+
+   brig_fnc_paint pfOnPaint;
+   brig_fnc_mess_1 pfOnClick;
+   brig_fnc_mess_1 pfOnDblClick;
+   brig_fnc_mess_1 pfOnRClick;
+   PBRIG_BITMAP pBitmap;
 };
 
 class brig_Panel : public brig_Container
@@ -357,6 +374,7 @@ public:
 
    brig_fnc_tree_action pfAction;
    brig_fnc_tree_action pfDblClick;
+   brig_fnc_tree_action pfRClick;
 
 };
 
@@ -373,6 +391,7 @@ public:
 
    brig_TreeNode* pSelected;
    vector<brig_TreeNode*> avItems;
+   void * pImages;
 
 };
 

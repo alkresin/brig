@@ -18,23 +18,17 @@ static bool fncChoic( brig_Table *pTable )
    return 1;
 }
 
-static bool fncCloseDlg1( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
+static bool fncCloseDlg1( brig_Widget *pBtn )
 {
    brig_Table *pTable = (brig_Table *)((brig_Dialog*)(pBtn->pParent))->avWidgets[0];
-
-   SYMBOL_UNUSED( wParam );
-   SYMBOL_UNUSED( lParam );
 
    ((brig_Dialog*)(pBtn->pParent))->pResult = (void*) pTable->ulRecCurr;
    ((brig_Dialog*)(pBtn->pParent))->Close();
    return 1;
 }
 
-static bool fncCloseDlg2( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
+static bool fncCloseDlg2( brig_Widget *pBtn )
 {
-
-   SYMBOL_UNUSED( wParam );
-   SYMBOL_UNUSED( lParam );
 
    ((brig_Dialog*)(pBtn->pParent))->pResult = (void*) 0;
    ((brig_Dialog*)(pBtn->pParent))->Close();
