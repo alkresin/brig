@@ -22,11 +22,9 @@ void fncTimer( void )
    oLabel.SetText( szText );
 }
 
-bool fncStart( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
+bool fncStart( brig_Widget *pBtn )
 {
    SYMBOL_UNUSED( pBtn );
-   SYMBOL_UNUSED( wParam );
-   SYMBOL_UNUSED( lParam );
 
    if( !idTimer )
    {
@@ -37,11 +35,9 @@ bool fncStart( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
    return 0;
 }
 
-bool fncStop( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
+bool fncStop( brig_Widget *pBtn )
 {
    SYMBOL_UNUSED( pBtn );
-   SYMBOL_UNUSED( wParam );
-   SYMBOL_UNUSED( lParam );
 
    if( idTimer )
    {
@@ -117,12 +113,9 @@ void fncMenu1e( void )
    oMain.Close();
 }
 
-bool fncCloseDlg( brig_Widget *pBtn, WPARAM wParam, LPARAM lParam )
+bool fncCloseDlg( brig_Widget *pBtn )
 {
    brig_Dialog *pDlg = ((brig_Dialog*)(pBtn->pParent));
-
-   SYMBOL_UNUSED( wParam );
-   SYMBOL_UNUSED( lParam );
 
    pDlg->pResult = (void*) pDlg->avWidgets[0]->GetText();
    pDlg->Close();
@@ -144,6 +137,8 @@ void fncMenu2( void )
 
    oBtnD.Create( &oDlg, 50, 170, 100, 32, (PBRIG_CHAR) "Ok" );
    oBtnD.pfOnClick = fncCloseDlg;
+
+   brig_SetFocus( &oEdit1 );
 
    oDlg.Activate();
    if( oDlg.pResult )
@@ -170,6 +165,7 @@ int brig_Main( int argc, char *argv[] )
    brig_RadioButton oR1, oR2;
    brig_CheckButton oCheck;
    brig_Combo oCombo;
+   brig_GroupBox oGroup;
 
    char *pCombo[3] = { "one", "two", "three" };
    long pColors1[2] = {0x333333, 0xcccccc};
@@ -177,7 +173,7 @@ int brig_Main( int argc, char *argv[] )
    
    SYMBOL_UNUSED( argc );
    SYMBOL_UNUSED( argv );
-   brig_writelog( NULL, "test %02d\r\n", 3 );
+
    /*
    for( int i = 0; i < argc; ++i ) {
       brig_writelog( NULL, "arg%d: %s\r\n", i, argv[i] );
@@ -195,7 +191,7 @@ int brig_Main( int argc, char *argv[] )
          }
    }
    
-   oMain.Create( 100, 100, 500, 320, (PBRIG_CHAR) "First Brig Window" );
+   oMain.Create( 100, 100, 500, 340, (PBRIG_CHAR) "First Brig Window" );
    oMain.pfOnClose = fncOnClose;
    oMain.hFont = brigAddFont( "Georgia", 20 );
    
@@ -221,28 +217,31 @@ int brig_Main( int argc, char *argv[] )
    oQBtn.lBackColor = oQBtn.lBackClr1 = 0xcccccc;
    oQBtn.SetFont( brigAddFont( "Georgia", 18, 400, 0, 1 ) );
 
-   oEdit.Create( &oMain, 20, 60, 100, 28 );
+   oEdit.Create( &oMain, 20, 60, 120, 28 );
    oEdit.pfOnFocusIn  = fncFocusIn1;
    oEdit.pfOnFocusOut = fncFocusOu1;
 
-   oCheck.Create( &oMain, 160, 60, 100, 28, "Mark me" );
-   oLabel.Create( &oMain, 264, 60, 120, 24, "" );
+   oBtn.Create( &oMain, 160, 60, 80, 28, (PBRIG_CHAR) "-->" );
+   oBtn.pfOnClick = fncOnClick;
 
-   oRG.Begin( &oMain, 20, 100, 220, 90, "Radio group" );
-   oR1.Create( &oRG, 30, 120, 150, 24, "radio1" );
-   oR2.Create( &oRG, 30, 150, 150, 24, "radio2" );
-   oRG.End( 1 );
+   oCheck.Create( &oMain, 20, 96, 120, 28, "Mark me" );
 
-   oBtn1.Create( &oMain, 264, 100, 76, 28, (PBRIG_CHAR) "Start" );
+   oGroup.Create( &oMain, 264, 60, 200, 100, "Timer" );
+
+   oLabel.Create( &oMain, 290, 84, 120, 24, "" );
+
+   oBtn1.Create( &oMain, 280, 120, 76, 28, (PBRIG_CHAR) "Start" );
    oBtn1.pfOnClick = fncStart;
 
-   oBtn2.Create( &oMain, 348, 100, 76, 28, (PBRIG_CHAR) "Stop" );
+   oBtn2.Create( &oMain, 364, 120, 76, 28, (PBRIG_CHAR) "Stop" );
    oBtn2.pfOnClick = fncStop;
 
-   oCombo.Create( &oMain, 264, 160, 120, 28, 4, 0, pCombo, 3 );
+   oRG.Begin( &oMain, 20, 130, 220, 90, "Radio group" );
+   oR1.Create( &oRG, 30, 150, 150, 24, "radio1" );
+   oR2.Create( &oRG, 30, 180, 150, 24, "radio2" );
+   oRG.End( 1 );
 
-   oBtn.Create( &oMain, 100, 210, 100, 32, (PBRIG_CHAR) "Помощь" );
-   oBtn.pfOnClick = fncOnClick;
+   oCombo.Create( &oMain, 20, 230, 120, 28, 4, 0, pCombo, 3 );
 
    //brig_writelog( NULL, "edit id: %d\r\n", oEdit.iControlId );
    //brig_writelog( NULL, "button id: %d\r\n", oBtn.iControlId );
