@@ -169,7 +169,6 @@ int brig_Main( int argc, char *argv[] )
 
    char *pCombo[3] = { (PBRIG_CHAR)"one", (PBRIG_CHAR)"two", (PBRIG_CHAR)"three" };
    long pColors1[2] = {0x333333, 0xcccccc};
-   PBRIG_XMLITEM pXmlDoc;
    
    SYMBOL_UNUSED( argc );
    SYMBOL_UNUSED( argv );
@@ -179,17 +178,6 @@ int brig_Main( int argc, char *argv[] )
       brig_writelog( NULL, "arg%d: %s\r\n", i, argv[i] );
    }
    */
-   pXmlDoc = brigxml_GetDoc( (PBRIG_CHAR)"test1.xml" );
-   if( !brigxml_Error() )
-   {
-      int iNum = 0;
-      PBRIG_XMLITEM pParent, pNode;
-      if( (pParent = brigxml_First( pXmlDoc )) != NULL )
-         while( ( pNode = brigxml_Next( pParent, &iNum ) ) != NULL )
-         {
-            brig_writelog( NULL, "item: %s\r\n", pNode->szTitle );
-         }
-   }
    
    oMain.Create( 100, 100, 500, 340, (PBRIG_CHAR) "First Brig Window" );
    oMain.pfOnClose = fncOnClose;
@@ -247,9 +235,6 @@ int brig_Main( int argc, char *argv[] )
    //brig_writelog( NULL, "button id: %d\r\n", oBtn.iControlId );
 
    oMain.Activate();
-
-   if( pXmlDoc )
-      brigxml_Release( pXmlDoc );
 
    return 0;
 }
