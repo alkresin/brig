@@ -502,6 +502,7 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
    vbox = gtk_vbox_new( FALSE, 0 );
 
    gtk_box_pack_start( GTK_BOX( hbox ), vbox, TRUE, TRUE, 0 );
+   /*
    if( ulStyle & WS_VSCROLL )
    {
       GtkObject *adjV = gtk_adjustment_new( 0.0, 0.0, 400.0, 10.0, 20.0, 20.0 );
@@ -513,8 +514,9 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
       g_object_set_data( (GObject*) adjV, "obj", (gpointer) pTree );
       brig_SetSignal( ( gpointer ) adjV, (char*)"value_changed", WM_VSCROLL, 0, 0 );
    }
-
+   */
    gtk_box_pack_start( GTK_BOX( vbox ), area, TRUE, TRUE, 0 );
+   /*
    if( ulStyle & WS_HSCROLL )
    {
       GtkObject *adjH = gtk_adjustment_new( 0.0, 0.0, 101.0, 1.0, 10.0, 10.0 );
@@ -526,7 +528,7 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
       g_object_set_data( (GObject*) adjH, "obj", (gpointer) pTree );
       brig_SetSignal( ( gpointer ) adjH, (char*)"value_changed", WM_HSCROLL, 0, 0 );
    }
-
+   */
    box = ( GtkFixed * ) g_object_get_data( ( GObject * ) handle, "fbox" );
    if( box )
       gtk_fixed_put( box, hbox, x, y );
@@ -550,13 +552,17 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
    return area;
 }
 
-BRIG_TNHANDLE brig_TreeAddNode( brig_Tree * pTree, PBRIG_CHAR szTitle, brig_TreeNode * pParent, brig_TreeNode * pPrev, int iPos )
+BRIG_TNHANDLE brig_TreeAddNode( brig_TreeNode * pNode, brig_Tree * pTree,
+      PBRIG_CHAR szTitle, brig_TreeNode * pParent, brig_TreeNode * pPrev,
+      int iPos, int iImage, int iSelectedImage )
 {
    SYMBOL_UNUSED( pTree );
    SYMBOL_UNUSED( szTitle );
    SYMBOL_UNUSED( pParent );
    SYMBOL_UNUSED( pPrev );
    SYMBOL_UNUSED( iPos );
+   SYMBOL_UNUSED( iImage );
+   SYMBOL_UNUSED( iSelectedImage );
 
    return 0;
 }

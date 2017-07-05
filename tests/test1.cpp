@@ -167,7 +167,7 @@ int brig_Main( int argc, char *argv[] )
    brig_Combo oCombo;
    brig_GroupBox oGroup;
 
-   char *pCombo[3] = { "one", "two", "three" };
+   char *pCombo[3] = { (PBRIG_CHAR)"one", (PBRIG_CHAR)"two", (PBRIG_CHAR)"three" };
    long pColors1[2] = {0x333333, 0xcccccc};
    PBRIG_XMLITEM pXmlDoc;
    
@@ -179,7 +179,7 @@ int brig_Main( int argc, char *argv[] )
       brig_writelog( NULL, "arg%d: %s\r\n", i, argv[i] );
    }
    */
-   pXmlDoc = brigxml_GetDoc( "test1.xml" );
+   pXmlDoc = brigxml_GetDoc( (PBRIG_CHAR)"test1.xml" );
    if( !brigxml_Error() )
    {
       int iNum = 0;
@@ -193,29 +193,29 @@ int brig_Main( int argc, char *argv[] )
    
    oMain.Create( 100, 100, 500, 340, (PBRIG_CHAR) "First Brig Window" );
    oMain.pfOnClose = fncOnClose;
-   oMain.hFont = brigAddFont( "Georgia", 20 );
+   oMain.hFont = brigAddFont( (PBRIG_CHAR)"Georgia", 20 );
    
    brigMenu( &oMain );
 
    if( brigSubMenu( "File", 0 ) )
    {
-      brigMenuItemAdd( "brigChoice", 0, fncMenu1b );
-      brigMenuItemAdd( "Dialog", 0, fncMenu2 );
+      brigMenuItemAdd( (PBRIG_CHAR)"brigChoice", 0, fncMenu1b );
+      brigMenuItemAdd( (PBRIG_CHAR)"Dialog", 0, fncMenu2 );
       brigMenuSeparator();
-      brigMenuItemAdd( "Close", 0, fncMenu1e );
+      brigMenuItemAdd( (PBRIG_CHAR)"Close", 0, fncMenu1e );
       brigMenuEnd();
    }
 
-   brigMenuItemAdd( "Help", 0, fncMenu3 );
+   brigMenuItemAdd( (PBRIG_CHAR)"Help", 0, fncMenu3 );
 
    brigMenuEnd();
    
    oPanel.Create( &oMain, 0, 0, 500, 40, brigAddStyle( 2, pColors1 ) );
    oPanel.pfOnSize = fncOnSize;
 
-   oQBtn.Create( &oPanel, 0, 0, 48, 40, "Ok" );
+   oQBtn.Create( &oPanel, 0, 0, 48, 40, (PBRIG_CHAR)"Ok" );
    oQBtn.lBackColor = oQBtn.lBackClr1 = 0xcccccc;
-   oQBtn.SetFont( brigAddFont( "Georgia", 18, 400, 0, 1 ) );
+   oQBtn.SetFont( brigAddFont( (PBRIG_CHAR)"Georgia", 18, 400, 0, 1 ) );
 
    oEdit.Create( &oMain, 20, 60, 120, 28 );
    oEdit.pfOnFocusIn  = fncFocusIn1;
@@ -224,7 +224,7 @@ int brig_Main( int argc, char *argv[] )
    oBtn.Create( &oMain, 160, 60, 80, 28, (PBRIG_CHAR) "-->" );
    oBtn.pfOnClick = fncOnClick;
 
-   oCheck.Create( &oMain, 20, 96, 120, 28, "Mark me" );
+   oCheck.Create( &oMain, 20, 96, 120, 28, (PBRIG_CHAR) "Mark me" );
 
    oGroup.Create( &oMain, 264, 60, 200, 100, "Timer" );
 
@@ -236,9 +236,9 @@ int brig_Main( int argc, char *argv[] )
    oBtn2.Create( &oMain, 364, 120, 76, 28, (PBRIG_CHAR) "Stop" );
    oBtn2.pfOnClick = fncStop;
 
-   oRG.Begin( &oMain, 20, 130, 220, 90, "Radio group" );
-   oR1.Create( &oRG, 30, 150, 150, 24, "radio1" );
-   oR2.Create( &oRG, 30, 180, 150, 24, "radio2" );
+   oRG.Begin( &oMain, 20, 130, 220, 90, (PBRIG_CHAR)"Radio group" );
+   oR1.Create( &oRG, 30, 150, 150, 24, (PBRIG_CHAR)"radio1" );
+   oR2.Create( &oRG, 30, 180, 150, 24, (PBRIG_CHAR)"radio2" );
    oRG.End( 1 );
 
    oCombo.Create( &oMain, 20, 230, 120, 28, 4, 0, pCombo, 3 );
