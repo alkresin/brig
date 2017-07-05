@@ -26,11 +26,14 @@ int brig_Main( int argc, char *argv[] )
    oMain.Create( 200, 200, 400, 500, (PBRIG_CHAR) "A tree test" );
 
    oTree.Create( &oMain, 20, 12, 360, 160 );
+   brig_TreeAddImage( &oTree, brig_OpenImage( "images/folder_closed.bmp" ) );
+   brig_TreeAddImage( &oTree, brig_OpenImage( "images/folder_open.bmp" ) );
+   brig_TreeAddImage( &oTree, brig_OpenImage( "images/book.bmp" ) );
 
-   pNode = oTree.AddNode( (PBRIG_CHAR)"First", fncTree );
-   pNode->AddNode( (PBRIG_CHAR)"f1", fncTree );
-   pNode->AddNode( (PBRIG_CHAR)"f2", fncTree );
-   oTree.AddNode( (PBRIG_CHAR)"Second", fncTree );
+   pNode = oTree.AddNode( (PBRIG_CHAR)"First", fncTree, NULL, NULL, 0, 1 );
+   pNode->AddNode( (PBRIG_CHAR)"f1", fncTree, NULL, NULL, 2 );
+   pNode->AddNode( (PBRIG_CHAR)"f2", fncTree, NULL, NULL, 2 );
+   oTree.AddNode( (PBRIG_CHAR)"Second", fncTree, NULL, NULL, 2 );
    
    oEdit.Create( &oMain, 20, 180, 360, 28 );
 

@@ -366,7 +366,8 @@ public:
 
    brig_TreeNode();
    brig_TreeNode * AddNode( PBRIG_CHAR szTitle, brig_fnc_tree_action pfAct = NULL,
-      brig_TreeNode *pPrev = NULL, brig_TreeNode * pNext = NULL );
+      brig_TreeNode *pPrev = NULL, brig_TreeNode * pNext = NULL,
+      int iImage = -1, int iSelectedImage = -1 );
 
    brig_Tree *pTree;
    BRIG_TNHANDLE handle;
@@ -386,7 +387,8 @@ public:
 
    BRIG_HANDLE Create( brig_Container *pParent, int x, int y, int nWidth, int nHeight );
    brig_TreeNode * AddNode( PBRIG_CHAR szTitle, brig_fnc_tree_action pfAct = NULL,
-      brig_TreeNode *pPrev = NULL, brig_TreeNode * pNext = NULL );
+      brig_TreeNode *pPrev = NULL, brig_TreeNode * pNext = NULL,
+      int iImage = -1, int iSelectedImage = -1 );
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
 
    brig_TreeNode* pSelected;
@@ -396,4 +398,7 @@ public:
 };
 
 extern void brig_RadioGroupSet( brig_RadioGroup *pGroup, int iSelected );
-extern BRIG_TNHANDLE brig_TreeAddNode( brig_TreeNode * pNode, brig_Tree * pTree, PBRIG_CHAR szTitle, brig_TreeNode * pParent, brig_TreeNode * pPrev, int iPos );
+extern BRIG_TNHANDLE brig_TreeAddNode( brig_TreeNode * pNode, brig_Tree * pTree,
+      PBRIG_CHAR szTitle, brig_TreeNode * pParent, brig_TreeNode * pPrev,
+      int iPos, int iImage = -1, int iSelectedImage = -1 );
+extern void brig_TreeAddImage( brig_Tree * pTree, PBRIG_BITMAP pBitmap );

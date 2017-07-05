@@ -222,6 +222,15 @@ void brig_DrawBitmap( PBRIG_DC hDC, PBRIG_BITMAP hBitmap, int iLeft, int iTop, i
    }
 }
 
+void brig_GetBitmapSize( PBRIG_BITMAP hBitmap, int *pWidth, int *pHeight )
+{
+
+   if( pWidth )
+      *pWidth = gdk_pixbuf_get_width( hBitmap->handle);
+   if( pHeight )
+      *pHeight = gdk_pixbuf_get_height( hBitmap->handle);
+
+}
 
 void brig_RedrawWindow( brig_Widget *pWidget )
 {

@@ -570,7 +570,8 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
 }
 
 BRIG_TNHANDLE brig_TreeAddNode( brig_TreeNode * pNode, brig_Tree * pTree,
-      PBRIG_CHAR szTitle, brig_TreeNode * pParent, brig_TreeNode * pPrev, int iPos )
+      PBRIG_CHAR szTitle, brig_TreeNode * pParent, brig_TreeNode * pPrev,
+      int iPos, int iImage, int iSelectedImage )
 {
    TV_ITEM tvi;
    TV_INSERTSTRUCT is;
@@ -583,18 +584,13 @@ BRIG_TNHANDLE brig_TreeAddNode( brig_TreeNode * pNode, brig_Tree * pTree,
    tvi.mask = TVIF_TEXT | TVIF_PARAM;
    tvi.pszText = wcCaption;
    tvi.lParam = ( LPARAM ) pNode;
-   /*
-   if( hb_pcount(  ) > 6 && !HB_ISNIL( 7 ) )
+   
+   if( iImage >= 0 )
    {
-      tvi.iImage = hb_parni( 7 );
-      tvi.mask |= TVIF_IMAGE;
-      if( hb_pcount(  ) > 7 && !HB_ISNIL( 8 ) )
-      {
-         tvi.iSelectedImage = hb_parni( 8 );
-         tvi.mask |= TVIF_SELECTEDIMAGE;
-      }
+      tvi.iImage = iImage;
+      tvi.iSelectedImage = ( iSelectedImage >= 0 )? iSelectedImage : iImage;
+      tvi.mask |= ( TVIF_IMAGE | TVIF_SELECTEDIMAGE );
    }
-   */
 
    is.item = tvi;
 
@@ -642,6 +638,21 @@ brig_TreeNode * brig_TreeHitTest( brig_Tree * pTree )
    }
    else
       return NULL;
+}
+
+void brig_TreeAddImage( brig_Tree * pTree, PBRIG_BITMAP pBitmap )
+{
+   HIMAGELIST himl = (HIMAGELIST) SendMessage( pTree->Handle(), TVM_GETIMAGELIST, TVSIL_NORMAL, 0 );
+
+   if( !himl )
+   {
+      int iWidth, iHeight;
+
+      brig_GetBitmapSize( pBitmap, &iWidth, &iHeight );
+      himl = ImageList_Create( iWidth, iHeight, 0, 2, 2 );
+      SendMessage( pTree->Handle(), TVM_SETIMAGELIST, TVSIL_NORMAL, ( LPARAM ) himl );
+   }
+   ImageList_Add( himl, pBitmap, ( HBITMAP ) NULL );
 }
 
 /* -------- common widget's functions --------- */

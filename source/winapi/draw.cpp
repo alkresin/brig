@@ -244,6 +244,18 @@ void brig_DrawBitmap( PBRIG_DC hDC, PBRIG_BITMAP hBitmap, int iLeft, int iTop, i
    DeleteDC( hDCmem );
 }
 
+void brig_GetBitmapSize( PBRIG_BITMAP hBitmap, int *pWidth, int *pHeight )
+{
+   BITMAP bitmap;
+
+   GetObject( hBitmap, sizeof( BITMAP ), ( LPVOID ) &bitmap );
+   if( pWidth )
+      *pWidth = bitmap.bmWidth;
+   if( pHeight )
+      *pHeight = bitmap.bmHeight;
+
+}
+
 void brig_RedrawWindow( brig_Widget *pWidget )
 {
    RedrawWindow( pWidget->Handle(), NULL, NULL, RDW_ERASE | RDW_INVALIDATE );

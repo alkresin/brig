@@ -894,7 +894,7 @@ brig_TreeNode::brig_TreeNode()
 }
 
 brig_TreeNode * brig_TreeNode::AddNode( PBRIG_CHAR szTitle, brig_fnc_tree_action pfAct,
-      brig_TreeNode *pPrev, brig_TreeNode * pNext )
+      brig_TreeNode *pPrev, brig_TreeNode * pNext, int iImage, int iSelectedImage )
 {
    brig_TreeNode * pNode = new brig_TreeNode;
    int iPos = (pPrev)? 0 : 2;
@@ -914,7 +914,8 @@ brig_TreeNode * brig_TreeNode::AddNode( PBRIG_CHAR szTitle, brig_fnc_tree_action
          iPos = 1;
    }
 
-   pNode->handle = brig_TreeAddNode( pNode, pTree, szTitle, this, pPrev, iPos );
+   pNode->handle = brig_TreeAddNode( pNode, pTree, szTitle, this, pPrev, iPos,
+         iImage, iSelectedImage );
 
    pNode->pTree = pTree;
    pNode->pfAction = pfAct;
@@ -957,7 +958,7 @@ BRIG_HANDLE brig_Tree::Create( brig_Container *pParent,
 }
 
 brig_TreeNode * brig_Tree::AddNode( PBRIG_CHAR szTitle, brig_fnc_tree_action pfAct,
-      brig_TreeNode *pPrev, brig_TreeNode * pNext )
+      brig_TreeNode *pPrev, brig_TreeNode * pNext, int iImage, int iSelectedImage )
 {
    brig_TreeNode * pNode = new brig_TreeNode;
    int iPos = (pPrev)? 0 : 2;
@@ -977,7 +978,8 @@ brig_TreeNode * brig_Tree::AddNode( PBRIG_CHAR szTitle, brig_fnc_tree_action pfA
          iPos = 1;
    }
 
-   pNode->handle = brig_TreeAddNode( pNode, this, szTitle, NULL, pPrev, iPos );
+   pNode->handle = brig_TreeAddNode( pNode, this, szTitle, NULL, pPrev, iPos,
+      iImage, iSelectedImage );
 
    pNode->pTree = this;
    pNode->pfAction = pfAct;

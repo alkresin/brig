@@ -52,6 +52,7 @@ extern void brig_lineto( PBRIG_DC hDC, int iLeft, int iTop );
 extern void brig_Ellipse( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom );
 extern void brig_RoundRect( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom, int iRadius );
 extern void brig_DrawBitmap( PBRIG_DC hDC, PBRIG_BITMAP hBitmap, int iLeft, int iTop, int iWidth, int iHeight );
+extern void brig_GetBitmapSize( PBRIG_BITMAP hBitmap, int *pWidth, int *pHeight );
 extern PBRIG_BITMAP brig_OpenImage( PBRIG_CHAR lpName, bool bString = 0, int iType = 0 );
 
 extern long int brig_SetTextColor( PBRIG_DC hDC, long int lColor );
