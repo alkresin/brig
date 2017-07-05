@@ -372,6 +372,7 @@ public:
    brig_Tree *pTree;
    BRIG_TNHANDLE handle;
    vector<brig_TreeNode*> avItems;
+   void * pData;
 
    brig_fnc_tree_action pfAction;
    brig_fnc_tree_action pfDblClick;

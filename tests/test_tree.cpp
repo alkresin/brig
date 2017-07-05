@@ -7,7 +7,12 @@ brig_Edit oEdit;
 void fncTree( brig_TreeNode *pNode )
 {
    char szRes[16];
+   PBRIG_XMLITEM pItem;
 
+   if( pNode->pData )
+   {
+      pItem = (PBRIG_XMLITEM) pNode->pData;
+   }
    sprintf( szRes, "Selected: %lu", (unsigned long) pNode->handle );
    oEdit.SetText( szRes );
 }
@@ -19,7 +24,7 @@ void AddBranch( brig_TreeNode * pNode, PBRIG_XMLITEM pItem )
    PBRIG_XMLITEM pChildItem;
 
    if( pItem->avItems.empty() )
-      pNode->AddNode( pItem->szTitle, fncTree, NULL, NULL, 2 );
+      pChildNode = pNode->AddNode( pItem->szTitle, fncTree, NULL, NULL, 2 );
    else
    {
       int iNum = 0;
@@ -27,6 +32,7 @@ void AddBranch( brig_TreeNode * pNode, PBRIG_XMLITEM pItem )
       while( ( pChildItem = brigxml_Next( pItem, &iNum ) ) != NULL )
          AddBranch( pChildNode, pChildItem );
    }
+   pChildNode->pData = (void*) pItem;
 
 }
 
@@ -59,6 +65,7 @@ int brig_Main( int argc, char *argv[] )
       if( (pParent = brigxml_First( pXmlDoc )) != NULL )
       {
          pNode = oTree.AddNode( pParent->szTitle, fncTree, NULL, NULL, 0, 1 );
+         pNode->pData = (void*) pParent;
          while( ( pItem = brigxml_Next( pParent, &iNum ) ) != NULL )
             AddBranch( pNode, pItem );
       }

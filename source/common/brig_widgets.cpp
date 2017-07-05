@@ -891,6 +891,7 @@ bool brig_Splitter::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 brig_TreeNode::brig_TreeNode()
 {
    pfAction = pfDblClick = pfRClick = NULL;
+   pData = NULL;
 }
 
 brig_TreeNode * brig_TreeNode::AddNode( PBRIG_CHAR szTitle, brig_fnc_tree_action pfAct,
