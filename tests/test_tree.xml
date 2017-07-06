@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<part class="report">
+  <style>
+    <property name="Geometry">{780,120,916,480}</property>
+    <property name="Caption">[Form1]</property>
+    <property name="Paper Size">[A4]</property>
+    <property name="Orientation">[Portrait]</property>
+    <property name="Duplex">[No]</property>
+    <property name="Font">
+      <font name="Arial" width="0" height="16M4.00"/>
+    </property>
+    <property name="FontH">4.00</property>
+  </style>
+  <part class="label">
+    <style>
+      <property name="Geometry">{13.8,8.0,24.8,7.0,38.3,14.8}</property>
+      <property name="Caption">[Test]</property>
+      <property name="font">
+        <font name="" width="0" height="21M5.25" weight="400" charset="204"/>
+      </property>
+      <property name="FontH">5.25</property>
+    </style>
+  </part>
+  <part class="hline">
+    <style>
+      <property name="Geometry">{14.8,21.5,164.5,0.5,179.0,21.8}</property>
+    </style>
+  </part>
+</part>

@@ -131,12 +131,12 @@ static unsigned char* brigxml_pp( unsigned char *ptr, unsigned long ulLen )
    return pResult;
 }
 
-static std::map<std::string,char*> brigxml_getattr( unsigned char **pBuffer, int * lSingle )
+static void brigxml_getattr( std::map<std::string,char*> *pAttr, unsigned char **pBuffer, int * lSingle )
 {
 
-   std::map<std::string,char*> amAttr;
    unsigned char *ptr, cQuo;
-   unsigned char szKey[ATTR_KEY_LEN], szVal[ATTR_VAL_LEN], *pKey = NULL, *pVal = NULL;
+   unsigned char szKey[ATTR_KEY_LEN], *pKey, *pVal;
+   // unsigned char szVal[ATTR_VAL_LEN];
    int iLen;
    bool bPI = 0;
 
@@ -178,6 +178,7 @@ static std::map<std::string,char*> brigxml_getattr( unsigned char **pBuffer, int
          {
             memcpy( szKey, ptr, iLen );
             szKey[iLen] = '\0';
+            pKey = NULL;
          }
          else
          {
@@ -210,24 +211,29 @@ static std::map<std::string,char*> brigxml_getattr( unsigned char **pBuffer, int
             }
             iLen = *pBuffer - ptr;
             // add attribute value to result array
+            /*
             if( iLen < ATTR_VAL_LEN )
             {
                memcpy( szVal, ptr, iLen );
                szVal[iLen] = '\0';
+               pVal = NULL;
             }
             else
             {
+            */
                pVal = (unsigned char*) malloc( iLen+1 );
                memcpy( pVal, ptr, iLen );
                pVal[iLen] = '\0';
-            }
+            //}
             //brig_writelog( NULL, "getattr-2 %s\r\n", (pVal)? pVal:szVal );
-            amAttr[ (char*) ((pKey)? pKey : szKey) ] = (char*) ((pVal)? pVal : szVal);
+            //(*pAttr)[ (char*) ((pKey)? pKey : szKey) ] = (char*) ((pVal)? pVal : szVal);
+            (*pAttr)[ (char*) ((pKey)? pKey : szKey) ] = (char*) pVal;
+            //brig_writelog( NULL, "getattr-3 %s\r\n", (*pAttr)[(char*)szKey] );
             if( pKey )
                free( pKey );
-            if( pVal )
-               free( pVal );
-            pKey = pVal = NULL;
+            //if( pVal )
+            //   free( pVal );
+            //pKey = NULL;
             ( *pBuffer )++;
          }
          SKIPTABSPACES( *pBuffer );
@@ -235,7 +241,6 @@ static std::map<std::string,char*> brigxml_getattr( unsigned char **pBuffer, int
       if( **pBuffer == '>' )
          ( *pBuffer )++;
    }
-   return amAttr;
 }
 
 static PBRIG_XMLITEM brigxml_addnode( PBRIG_XMLITEM pParent )
@@ -330,7 +335,7 @@ static bool brigxml_readElement( PBRIG_XMLITEM pParent, unsigned char **pBuffer 
    ( *pBuffer )--;
    if( **pBuffer == '?' )
       ( *pBuffer )--;
-   pNode->amAttr = brigxml_getattr( pBuffer, &lSingle );
+   brigxml_getattr( &(pNode->amAttr), pBuffer, &lSingle );
    if( nParseError )
    {
       brigxml_Release( pNode );
@@ -349,7 +354,7 @@ static bool brigxml_readElement( PBRIG_XMLITEM pParent, unsigned char **pBuffer 
          {
             if( lEmpty && ( **pBuffer != ' ' && **pBuffer != '\t' &&
                         **pBuffer != '\r' && **pBuffer != '\n' ) )
-               lEmpty = 1;
+               lEmpty = 0;
             ( *pBuffer )++;
          }
          if( (unsigned long)(*pBuffer-pStart) >= ulDataLen )
@@ -486,6 +491,17 @@ void brigxml_Release( PBRIG_XMLITEM pItem )
       free( pItem->szText );
    pItem->szTitle = pItem->szText = NULL;
 
+   if( !( pItem->amAttr.empty() ) )
+   {
+      for( std::map<std::string,char*>::iterator it = pItem->amAttr.begin(); it != pItem->amAttr.end(); it++ )
+         if( (*it).second )
+         {
+            free( (*it).second );
+         }
+      pItem->amAttr.clear();
+   }
+
+
    for( unsigned int i = 0; i < pItem->avItems.size(); i++ )
       brigxml_Release( pItem->avItems[i] );
 
@@ -551,7 +567,7 @@ PBRIG_XMLITEM brigxml_GetDoc( PBRIG_CHAR szSource, unsigned long ulLen )
       if( !memcmp( ptr + 1, "?xml", 4 ) )
       {
          int bSingle;
-         pDoc->amAttr = brigxml_getattr( &ptr, &bSingle );
+         brigxml_getattr( &(pDoc->amAttr), &ptr, &bSingle );
          if( pDoc->amAttr.empty() || nParseError )
          {
             if( pBuffer )

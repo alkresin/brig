@@ -4,16 +4,65 @@
 
 brig_Edit oEdit;
 
+bool fncTreeOnSize( brig_Widget *pTree, WPARAM wParam, LPARAM lParam )
+{
+   unsigned long iHeight = ( ((unsigned long)lParam) >> 16 ) & 0xFFFF;
+
+   SYMBOL_UNUSED( wParam );
+
+   pTree->Move( -1, -1, -1, iHeight-24 );
+   return 0;
+
+}
+
+bool fncEditOnSize( brig_Widget *pEdit, WPARAM wParam, LPARAM lParam )
+{
+   unsigned long iWidth = ((unsigned long)lParam) & 0xFFFF;
+   unsigned long iHeight = ( ((unsigned long)lParam) >> 16 ) & 0xFFFF;
+
+   SYMBOL_UNUSED( wParam );
+
+   pEdit->Move( -1, -1, iWidth-pEdit->iLeft-12, iHeight-254 );
+   return 0;
+
+}
+
+bool fncPictOnSize( brig_Widget *pPict, WPARAM wParam, LPARAM lParam )
+{
+   //unsigned long iWidth = ((unsigned long)lParam) & 0xFFFF;
+   //unsigned long iHeight = ( ((unsigned long)lParam) >> 16 ) & 0xFFFF;
+
+   SYMBOL_UNUSED( wParam );
+   SYMBOL_UNUSED( lParam );
+
+   pPict->Move( -1, oEdit.iTop+oEdit.iHeight+4, -1, -1 );
+   return 0;
+
+}
+
 void fncTree( brig_TreeNode *pNode )
 {
-   char szRes[16];
+   char szRes[1024], *ptr;
    PBRIG_XMLITEM pItem;
 
    if( pNode->pData )
    {
       pItem = (PBRIG_XMLITEM) pNode->pData;
+      sprintf( szRes, "-- %s --\r\n", pItem->szTitle );
+      ptr = szRes + strlen( szRes );
+      if( !( pItem->amAttr.empty() ) )
+      {
+         for( std::map<std::string,char*>::iterator it = pItem->amAttr.begin(); it != pItem->amAttr.end(); it++ )
+         {
+            sprintf( ptr, "%s = %s\r\n", (*it).first.c_str(), (*it).second );
+            ptr += strlen( ptr );
+         }
+      }
+      if( pItem->szText )
+         sprintf( ptr, "------------\r\n%s\r\n", pItem->szText );
    }
-   sprintf( szRes, "Selected: %lu", (unsigned long) pNode->handle );
+   else
+      sprintf( szRes, "Selected: %lu", (unsigned long) pNode->handle );
    oEdit.SetText( szRes );
 }
 
@@ -42,20 +91,22 @@ int brig_Main( int argc, char *argv[] )
    brig_Tree oTree;
    brig_TreeNode * pNode;
    brig_Picture oPict;
-   PBRIG_BITMAP hBitmap = brig_OpenImage( "images/brig2.jpg" );
+   PBRIG_BITMAP hBitmap = brig_OpenImage( (PBRIG_CHAR)"images/brig2.jpg" );
 
    PBRIG_XMLITEM pXmlDoc;
 
    SYMBOL_UNUSED( argc );
    SYMBOL_UNUSED( argv );
 
-   oMain.Create( 200, 200, 400, 500, (PBRIG_CHAR) "A tree test" );
+   oMain.Create( 200, 200, 540, 500, (PBRIG_CHAR) "A tree test" );
+   oMain.hFont = brigAddFont( (PBRIG_CHAR)"Georgia", 18 );
 
-   oTree.Create( &oMain, 20, 12, 360, 160 );
+   oTree.Create( &oMain, 12, 12, 200, 380 );
+   oTree.pfOnSize = fncTreeOnSize;
 
-   brig_TreeAddImage( &oTree, brig_OpenImage( "images/folder_closed.bmp" ) );
-   brig_TreeAddImage( &oTree, brig_OpenImage( "images/folder_open.bmp" ) );
-   brig_TreeAddImage( &oTree, brig_OpenImage( "images/book.bmp" ) );
+   brig_TreeAddImage( &oTree, brig_OpenImage( (PBRIG_CHAR)"images/folder_closed.bmp" ) );
+   brig_TreeAddImage( &oTree, brig_OpenImage( (PBRIG_CHAR)"images/folder_open.bmp" ) );
+   brig_TreeAddImage( &oTree, brig_OpenImage( (PBRIG_CHAR)"images/book.bmp" ) );
 
    pXmlDoc = brigxml_GetDoc( (PBRIG_CHAR)"test_tree.xml" );
    if( !brigxml_Error() )
@@ -77,9 +128,11 @@ int brig_Main( int argc, char *argv[] )
       oTree.AddNode( (PBRIG_CHAR)"Second", fncTree, NULL, NULL, 2 );
    }
 
-   oEdit.Create( &oMain, 20, 180, 360, 28 );
+   oEdit.Create( &oMain, 220, 12, 300, 220, NULL, ES_MULTILINE );
+   oEdit.pfOnSize = fncEditOnSize;
 
-   oPict.Create( &oMain, 50, 220, 300, 225, hBitmap );
+   oPict.Create( &oMain, 220, 240, 300, 225, hBitmap );
+   oPict.pfOnSize = fncPictOnSize;
 
    oMain.Activate();
 
