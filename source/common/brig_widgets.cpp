@@ -944,12 +944,12 @@ brig_Tree::brig_Tree():brig_Widget()
 }
 
 BRIG_HANDLE brig_Tree::Create( brig_Container *pParent,
-          int x, int y, int nWidth, int nHeight )
+          int x, int y, int nWidth, int nHeight, unsigned long ulStyle )
 {
 
    brig_Widget::Create( pParent, x, y, nWidth, nHeight );
    
-   handle = brig_CreateTree( this, iWidgId, x, y, nWidth, nHeight );
+   handle = brig_CreateTree( this, iWidgId, x, y, nWidth, nHeight, ulStyle );
 
    if( !hFont && pParent->hFont )
       SetFont( pParent->hFont );

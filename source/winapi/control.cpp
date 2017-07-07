@@ -545,13 +545,13 @@ static LRESULT CALLBACK s_TreeProc( BRIG_HANDLE hTree, UINT message,
 }
 
 BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
-          int x, int y, int nWidth, int nHeight )
+          int x, int y, int nWidth, int nHeight, unsigned long ulStyle )
 {
 
    HWND hTree ;
 
    hTree = CreateWindowEx( WS_EX_CLIENTEDGE, WC_TREEVIEW, NULL,
-         WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | TVS_SHOWSELALWAYS,
+         WS_CHILD | WS_VISIBLE | TVS_HASLINES | TVS_LINESATROOT | TVS_HASBUTTONS | TVS_SHOWSELALWAYS | ulStyle,
          x, y, nWidth, nHeight,
          pTree->pParent->Handle(),
          ( HMENU ) iWidgId,

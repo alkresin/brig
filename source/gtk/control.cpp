@@ -412,7 +412,7 @@ BRIG_HANDLE brig_CreateQButton( brig_QButton *pQBtn, int iWidgId,
 
    GtkFixed *box;
 
-   hQButton = gtk_drawing_area_new(  );
+   hQButton = gtk_drawing_area_new();
 
    box = ( GtkFixed * ) g_object_get_data( ( GObject * ) pQBtn->pParent->Handle(), "fbox" );
    if( box )
@@ -432,8 +432,6 @@ BRIG_HANDLE brig_CreateQButton( brig_QButton *pQBtn, int iWidgId,
          G_CALLBACK (cb_qbtn), NULL );
    g_signal_connect( hQButton, (char*)"leave_notify_event",
          G_CALLBACK (cb_qbtn), NULL );
-
-   //all_signal_connect( ( gpointer ) hQButton );
 
    return hQButton;
 }
@@ -471,8 +469,28 @@ BRIG_HANDLE brig_CreateSplitter( brig_Splitter *pSplitter, int iWidgId,
 /* -------- Tree --------- 
  */
 
+static void paint_tree( brig_Tree * pTree )
+{
+   PBRIG_PPS pps = brig_BeginPaint( pTree );
+
+   brig_EndPaint( pTree, pps );
+}
+
+static gint cb_tree( GtkWidget *widget, GdkEvent * event, gchar* data )
+{
+   gpointer gObject = g_object_get_data( (GObject*) widget, "obj" );
+
+   SYMBOL_UNUSED( data );
+
+   if( gObject )
+   {
+      paint_tree( (brig_Tree *) gObject );
+   }
+   return 0;
+}
+
 BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
-          int x, int y, int nWidth, int nHeight )
+          int x, int y, int nWidth, int nHeight, unsigned long ulStyle )
 {
    BRIG_HANDLE handle = pTree->pParent->Handle();
    GtkWidget *vbox, *hbox;
@@ -504,7 +522,7 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
    vbox = gtk_vbox_new( FALSE, 0 );
 
    gtk_box_pack_start( GTK_BOX( hbox ), vbox, TRUE, TRUE, 0 );
-   /*
+   
    if( ulStyle & WS_VSCROLL )
    {
       GtkObject *adjV = gtk_adjustment_new( 0.0, 0.0, 400.0, 10.0, 20.0, 20.0 );
@@ -516,9 +534,9 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
       g_object_set_data( (GObject*) adjV, "obj", (gpointer) pTree );
       brig_SetSignal( ( gpointer ) adjV, (char*)"value_changed", WM_VSCROLL, 0, 0 );
    }
-   */
+   
    gtk_box_pack_start( GTK_BOX( vbox ), area, TRUE, TRUE, 0 );
-   /*
+   
    if( ulStyle & WS_HSCROLL )
    {
       GtkObject *adjH = gtk_adjustment_new( 0.0, 0.0, 101.0, 1.0, 10.0, 10.0 );
@@ -530,7 +548,7 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
       g_object_set_data( (GObject*) adjH, "obj", (gpointer) pTree );
       brig_SetSignal( ( gpointer ) adjH, (char*)"value_changed", WM_HSCROLL, 0, 0 );
    }
-   */
+   
    box = ( GtkFixed * ) g_object_get_data( ( GObject * ) handle, "fbox" );
    if( box )
       gtk_fixed_put( box, hbox, x, y );
@@ -538,6 +556,7 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
    gtk_widget_set_size_request( hbox, nWidth, nHeight );
 
    brig_SetEvent( ( gpointer ) area, (char*)"expose_event", WM_PAINT, 0, 0 );
+   g_signal_connect( area, (char*)"expose_event", G_CALLBACK (cb_tree), NULL );
 
    GTK_WIDGET_SET_FLAGS( area, GTK_CAN_FOCUS );
 
@@ -567,6 +586,13 @@ BRIG_TNHANDLE brig_TreeAddNode( brig_TreeNode * pNode, brig_Tree * pTree,
    SYMBOL_UNUSED( iSelectedImage );
 
    return 0;
+}
+
+void brig_TreeAddImage( brig_Tree * pTree, PBRIG_BITMAP pBitmap )
+{
+
+   SYMBOL_UNUSED( pTree );
+   SYMBOL_UNUSED( pBitmap );
 }
 
 /* -------- common widget's functions --------- */

@@ -49,7 +49,7 @@ extern void brig_TabShowPage( brig_Tab *pTab, int iPage, bool bShow );
 extern BRIG_HANDLE brig_CreateSplitter( brig_Splitter *pSplitter, int iWidgId,
           int x, int y, int nWidth, int nHeight );
 extern BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
-          int x, int y, int nWidth, int nHeight );
+          int x, int y, int nWidth, int nHeight, unsigned long ulStyle = 0 );
 
 extern int brig_GetScrollPos( brig_Widget *pWidget, bool bVertical );
 extern void brig_SetScrollPos( brig_Widget *pWidget, bool bVertical, int iPos );
@@ -386,7 +386,8 @@ public:
 
    brig_Tree();
 
-   BRIG_HANDLE Create( brig_Container *pParent, int x, int y, int nWidth, int nHeight );
+   BRIG_HANDLE Create( brig_Container *pParent, int x, int y, int nWidth,
+         int nHeight, unsigned long ulStyle = 0 );
    brig_TreeNode * AddNode( PBRIG_CHAR szTitle, brig_fnc_tree_action pfAct = NULL,
       brig_TreeNode *pPrev = NULL, brig_TreeNode * pNext = NULL,
       int iImage = -1, int iSelectedImage = -1 );
