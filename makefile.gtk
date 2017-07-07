@@ -40,6 +40,7 @@ $(LIB_DIR)/libbrig.a : \
    $(OBJ_DIR)/menu.o \
    $(OBJ_DIR)/message.o \
    $(OBJ_DIR)/table.o \
+   $(OBJ_DIR)/tree.o \
    $(OBJ_DIR)/window.o
 
 clean:
