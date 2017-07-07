@@ -306,6 +306,7 @@ unsigned int brigSetTimer( unsigned int uiValue, brig_fnc_menu pfAction, bool bO
    if( !brigApp.avTimers.empty() )
       uiId = brigApp.avTimers.back().uiId + 1;
 
+   bt.uiIdInit = uiId;
    bt.uiId = brig_SetTimer( uiId, uiValue );
    bt.bOnce = bOnce;
    bt.uiVal = uiValue;
@@ -318,6 +319,7 @@ unsigned int brigSetTimer( unsigned int uiValue, brig_fnc_menu pfAction, bool bO
 
 void brigRunTimerFunc( unsigned int uiId )
 {
+   //brig_writelog( NULL, "%u %u %u\r\n", brigApp.avTimers[0].uiIdInit, brigApp.avTimers[0].uiId, uiId);
    for( unsigned int i = 0; i < brigApp.avTimers.size(); i++ )
       if( brigApp.avTimers[i].uiId == uiId )
       {

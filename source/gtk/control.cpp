@@ -173,6 +173,8 @@ BRIG_HANDLE brig_CreateEdit( brig_Edit *pEdit, int iWidgId,
 
    gtk_widget_add_events( hCtrl, GDK_BUTTON_PRESS_MASK );
    brig_SetEvent( ( gpointer ) hCtrl, (char*)"button_press_event", 0, 0, 0 );
+   brig_SetEvent( ( gpointer ) hCtrl, (char*)"focus_in_event", WM_SETFOCUS, 0, 0 );
+   brig_SetEvent( ( gpointer ) hCtrl, (char*)"focus_out_event", WM_KILLFOCUS, 0, 0 );
 
    //all_signal_connect( ( gpointer ) hCtrl );
 
@@ -634,9 +636,16 @@ void brig_SetBgColor( brig_Widget *pWidget, long lColor )
 
 static gint cb_timer( gchar * data )
 {
-   unsigned int idTimer;
+   unsigned int uiId, idTimer = 0;
 
-   sscanf( ( char * ) data, "%u", &idTimer );
+   sscanf( ( char * ) data, "%u", &uiId );
+
+   for( unsigned int i = 0; i < brigApp.avTimers.size(); i++ )
+      if( brigApp.avTimers[i].uiIdInit == uiId )
+      {
+         idTimer = brigApp.avTimers[i].uiId;
+         break;
+      }
 
    brigRunTimerFunc( idTimer );
    return 1;

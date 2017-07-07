@@ -50,6 +50,7 @@ struct BRIGAPP_STYLE
 struct BRIGAPP_TIMER
 {
    unsigned int   uiId;
+   unsigned int   uiIdInit;          // for GTK version only
    unsigned int  uiVal;
    bool          bOnce;
    brig_fnc_menu pfAction;
