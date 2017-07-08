@@ -378,6 +378,12 @@ public:
    brig_fnc_tree_action pfDblClick;
    brig_fnc_tree_action pfRClick;
 
+#if !defined( BRIG_OS_WIN )
+   brig_TreeNode *pParent;
+   int iLevel;
+   bool bExpanded;
+#endif
+
 };
 
 class brig_Tree : public brig_Widget
@@ -395,8 +401,11 @@ public:
 
    brig_TreeNode* pSelected;
    vector<brig_TreeNode*> avItems;
-   void * pImages;
-
+#if !defined( BRIG_OS_WIN )
+   brig_TreeNode* pFirst;
+   PBRIG_PEN pPenLine, pPenPlus;
+   long lNodeCount;
+#endif
 };
 
 extern void brig_RadioGroupSet( brig_RadioGroup *pGroup, int iSelected );

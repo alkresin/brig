@@ -34,17 +34,7 @@ using std::vector;
 #endif
 
 #if defined( BRIG_OS_WIN )
-/*
-   #ifndef _WIN32
-      #define _WIN32
-   #endif
-   #ifndef _WIN32_IE
-      #define _WIN32_IE      0x0501
-   #endif
-   #ifndef WINVER
-       #define WINVER  0x0500
-   #endif
-*/
+
    #include <windows.h>
    #include <commctrl.h>
 
@@ -163,7 +153,10 @@ using std::vector;
    #define CURSOR_UPARROW  GDK_BASED_ARROW_UP
    #define CURSOR_HAND     GDK_HAND1
 
-   #define BRIG_TNHANDLE      long
+   #define  PS_SOLID   0
+   #define  PS_DOT     2
+
+   #define BRIG_TNHANDLE long
 
    #define HACCEL        void*
    #define DWORD         int

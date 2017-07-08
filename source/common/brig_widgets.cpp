@@ -940,7 +940,6 @@ brig_TreeNode * brig_TreeNode::AddNode( PBRIG_CHAR szTitle, brig_fnc_tree_action
 brig_Tree::brig_Tree():brig_Widget()
 {
    uiType = TYPE_TREE;
-   pImages = NULL;
 }
 
 BRIG_HANDLE brig_Tree::Create( brig_Container *pParent,

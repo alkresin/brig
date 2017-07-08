@@ -9,13 +9,30 @@
 
 #include "brig.h"
 
+#define COLOR_TREE_LINE   0x737373
+
 extern void cb_signal( GtkWidget *widget, gchar* data );
 extern void brig_SetEvent( gpointer handle, char * cSignal, long int p1, long int p2, long int p3 );
 extern void brig_SetSignal( gpointer handle, char * cSignal, long int p1, long int p2, long int p3 );
 extern void brig_parse_color( long lColor, GdkColor * pColor );
 
+static brig_TreeNode * NextNode( brig_TreeNode * pNode )
+{
+   vector<brig_TreeNode*> * pItems = (pNode->pParent)? &(pNode->pParent->avItems) : &(pNode->pTree->avItems);
+
+   for( unsigned int ui = 0; ui != (*pItems).size(); ui ++ )
+      if( (*pItems)[ui]->handle == pNode->handle )
+      {
+         if( ++ui < (*pItems).size() )
+            return (*pItems)[ui];
+      }
+
+   return NULL;
+}
+
 static void paint_tree_node( brig_TreeNode * pNode, PBRIG_DC hDC, int y )
 {
+   brig_SelectObject( hDC, pNode->pTree->pPenLine );
 }
 
 static void paint_tree( brig_Tree * pTree )
@@ -25,21 +42,37 @@ static void paint_tree( brig_Tree * pTree )
    unsigned long ulRecCount;
    unsigned int uiRowHeight, y;
    int iNode = 0;
+   brig_TreeNode * pNode;
 
    brig_GetClientRect( pTree, &rc );
+
+   if( !pTree->pPenLine )
+   {
+      pTree->pPenLine = brigAddPen( 1, COLOR_TREE_LINE, PS_DOT );
+      pTree->pPenPlus = brigAddPen( 2, 0 );
+   }
 
    if( !pTree->hBrush )
       pTree->SetBackColor( COLOR_WHITE, 0 );
 
    brig_FillRect( pps->hDC, rc.left, rc.top, rc.right, rc.bottom, pTree->hBrush );
 
+   if( pTree->avItems.empty() )
+   {
+      brig_EndPaint( pTree, pps );
+      return;
+   }
+   else if( !pTree->pFirst )
+      pTree->pFirst = pTree->avItems[0];
+
    if( pTree->hFont )
       brig_SelectObject( pps->hDC, pTree->hFont );
    uiRowHeight = brig_GetCharHeight( pps->hDC ) + 8;
 
    y = rc.top;
+   pNode = pTree->pFirst;
 
-   while( y < rc.bottom )
+   while( y < rc.bottom && pNode )
    {
       paint_tree_node( pTree->avItems[iNode], pps->hDC, y );
       y += uiRowHeight;
@@ -142,6 +175,9 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
    brig_SetEvent( ( gpointer ) area, (char*)"key_release_event", 0, 0, 0 );
    brig_SetEvent( ( gpointer ) area, (char*)"scroll_event", 0, 0, 0 );
 
+   pTree->pPenLine = pTree->pPenPlus = NULL;
+   pTree->lNodeCount = 0;
+
    return area;
 }
 
@@ -149,15 +185,18 @@ BRIG_TNHANDLE brig_TreeAddNode( brig_TreeNode * pNode, brig_Tree * pTree,
       PBRIG_CHAR szTitle, brig_TreeNode * pParent, brig_TreeNode * pPrev,
       int iPos, int iImage, int iSelectedImage )
 {
-   SYMBOL_UNUSED( pTree );
    SYMBOL_UNUSED( szTitle );
-   SYMBOL_UNUSED( pParent );
    SYMBOL_UNUSED( pPrev );
    SYMBOL_UNUSED( iPos );
    SYMBOL_UNUSED( iImage );
    SYMBOL_UNUSED( iSelectedImage );
 
-   return 0;
+   pNode->pParent = pParent;
+   pNode->iLevel = ( pParent )? pParent->iLevel + 1 : 0;
+   pNode->handle = ++pTree->lNodeCount;
+   pNode->bExpanded = 0;
+
+   return pNode->handle;
 }
 
 void brig_TreeAddImage( brig_Tree * pTree, PBRIG_BITMAP pBitmap )

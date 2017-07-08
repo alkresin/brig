@@ -10,8 +10,6 @@
 #include "brig.h"
 #include <math.h>
 
-#define  PS_SOLID   0
-
 void brig_parse_color( long lColor, GdkColor * pColor )
 {
    char color[10]={0};
