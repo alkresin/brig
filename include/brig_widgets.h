@@ -382,6 +382,7 @@ public:
    brig_TreeNode *pParent;
    int iLevel;
    bool bExpanded;
+   PBRIG_CHAR szTitle;
 #endif
 
 };
@@ -404,6 +405,8 @@ public:
 #if !defined( BRIG_OS_WIN )
    brig_TreeNode* pFirst;
    PBRIG_PEN pPenLine, pPenPlus;
+   unsigned int uiRowHeight;
+   unsigned int uiIndent;
    long lNodeCount;
 #endif
 };

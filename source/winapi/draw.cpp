@@ -81,6 +81,12 @@ void brig_lineto( PBRIG_DC hDC, int iLeft, int iTop )
    LineTo( hDC, iLeft, iTop );
 }
 
+void brig_DrawLine( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom )
+{
+   MoveToEx( hDC, iLeft, iTop, NULL );
+   LineTo( hDC, iRight, iBottom );
+}
+
 void brig_GetClientRect( brig_Widget *pWidget, RECT *prc )
 {
    GetClientRect( pWidget->Handle(), prc );

@@ -118,6 +118,14 @@ void brig_lineto( PBRIG_DC hDC, int iLeft, int iTop )
 
 }
 
+void brig_DrawLine( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom )
+{
+   cairo_move_to( hDC->cr, (gdouble)iLeft, (gdouble)iTop );
+   cairo_line_to( hDC->cr, (gdouble)iRight, (gdouble)iBottom );
+   cairo_stroke( hDC->cr );
+
+}
+
 void brig_GetClientRect( brig_Widget *pWidget, RECT *prc )
 {
    GtkWidget *handle = pWidget->Handle();

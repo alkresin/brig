@@ -16,15 +16,23 @@ extern void brig_SetEvent( gpointer handle, char * cSignal, long int p1, long in
 extern void brig_SetSignal( gpointer handle, char * cSignal, long int p1, long int p2, long int p3 );
 extern void brig_parse_color( long lColor, GdkColor * pColor );
 
-static brig_TreeNode * NextNode( brig_TreeNode * pNode )
+static brig_TreeNode * NextNode( brig_TreeNode * pNode, bool bFirst )
 {
-   vector<brig_TreeNode*> * pItems = (pNode->pParent)? &(pNode->pParent->avItems) : &(pNode->pTree->avItems);
+   vector<brig_TreeNode*> * pItems;
 
+   if( bFirst && pNode->bExpanded )
+      return pNode->avItems[0];
+
+   pItems = (pNode->pParent)? &(pNode->pParent->avItems) : &(pNode->pTree->avItems);
    for( unsigned int ui = 0; ui != (*pItems).size(); ui ++ )
       if( (*pItems)[ui]->handle == pNode->handle )
       {
          if( ++ui < (*pItems).size() )
             return (*pItems)[ui];
+         else if( pNode->pParent )
+            return NextNode( pNode->pParent, 0 );
+         else
+            return NULL;
       }
 
    return NULL;
@@ -32,7 +40,22 @@ static brig_TreeNode * NextNode( brig_TreeNode * pNode )
 
 static void paint_tree_node( brig_TreeNode * pNode, PBRIG_DC hDC, int y )
 {
+
+   unsigned int x = pNode->pTree->uiIndent/2 + pNode->pTree->uiIndent * pNode->iLevel;
+   vector<brig_TreeNode*> * pItems = (pNode->pParent)? &(pNode->pParent->avItems) : &(pNode->pTree->avItems);
+
    brig_SelectObject( hDC, pNode->pTree->pPenLine );
+   brig_DrawLine( hDC, x+1, y+9, x+pNode->pTree->uiIndent-4, y+9 );
+
+   if( pNode->iLevel && (*pItems)[0]->handle != pNode->handle )
+      brig_DrawLine( hDC, x+5, y+9, x+5, y+pNode->pTree->uiRowHeight+1 );
+
+   if( pNode->handle != (*pItems).back()->handle )
+   {
+   }
+   if( !pNode->avItems.empty() )
+   {
+   }
 }
 
 static void paint_tree( brig_Tree * pTree )
@@ -40,8 +63,7 @@ static void paint_tree( brig_Tree * pTree )
    PBRIG_PPS pps = brig_BeginPaint( pTree );
    RECT rc;
    unsigned long ulRecCount;
-   unsigned int uiRowHeight, y;
-   int iNode = 0;
+   unsigned int y;
    brig_TreeNode * pNode;
 
    brig_GetClientRect( pTree, &rc );
@@ -50,6 +72,9 @@ static void paint_tree( brig_Tree * pTree )
    {
       pTree->pPenLine = brigAddPen( 1, COLOR_TREE_LINE, PS_DOT );
       pTree->pPenPlus = brigAddPen( 2, 0 );
+      if( pTree->hFont )
+         brig_SelectObject( pps->hDC, pTree->hFont );
+      pTree->uiRowHeight = brig_GetCharHeight( pps->hDC ) + 8;
    }
 
    if( !pTree->hBrush )
@@ -65,17 +90,14 @@ static void paint_tree( brig_Tree * pTree )
    else if( !pTree->pFirst )
       pTree->pFirst = pTree->avItems[0];
 
-   if( pTree->hFont )
-      brig_SelectObject( pps->hDC, pTree->hFont );
-   uiRowHeight = brig_GetCharHeight( pps->hDC ) + 8;
-
    y = rc.top;
    pNode = pTree->pFirst;
 
    while( y < rc.bottom && pNode )
    {
-      paint_tree_node( pTree->avItems[iNode], pps->hDC, y );
-      y += uiRowHeight;
+      paint_tree_node( pNode, pps->hDC, y );
+      pNode = NextNode( pNode, 1 );
+      y += pTree->uiRowHeight;
    }
 
    brig_EndPaint( pTree, pps );
@@ -177,6 +199,7 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
 
    pTree->pPenLine = pTree->pPenPlus = NULL;
    pTree->lNodeCount = 0;
+   pTree->uiIndent = 20;
 
    return area;
 }
@@ -185,12 +208,12 @@ BRIG_TNHANDLE brig_TreeAddNode( brig_TreeNode * pNode, brig_Tree * pTree,
       PBRIG_CHAR szTitle, brig_TreeNode * pParent, brig_TreeNode * pPrev,
       int iPos, int iImage, int iSelectedImage )
 {
-   SYMBOL_UNUSED( szTitle );
    SYMBOL_UNUSED( pPrev );
    SYMBOL_UNUSED( iPos );
    SYMBOL_UNUSED( iImage );
    SYMBOL_UNUSED( iSelectedImage );
 
+   pNode->szTitle = szTitle;
    pNode->pParent = pParent;
    pNode->iLevel = ( pParent )? pParent->iLevel + 1 : 0;
    pNode->handle = ++pTree->lNodeCount;
