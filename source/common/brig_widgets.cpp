@@ -892,6 +892,8 @@ brig_TreeNode::brig_TreeNode()
 {
    pfAction = pfDblClick = pfRClick = NULL;
    pData = NULL;
+   pParent = NULL;
+   pTree = NULL;
 }
 
 brig_TreeNode * brig_TreeNode::AddNode( PBRIG_CHAR szTitle, brig_fnc_tree_action pfAct,
@@ -918,16 +920,19 @@ brig_TreeNode * brig_TreeNode::AddNode( PBRIG_CHAR szTitle, brig_fnc_tree_action
    pNode->handle = brig_TreeAddNode( pNode, pTree, szTitle, this, pPrev, iPos,
          iImage, iSelectedImage );
 
+   pNode->pParent = this;
    pNode->pTree = pTree;
    pNode->pfAction = pfAct;
    pNode->pfDblClick = NULL;
    if( iPos == 0 )
+   {
       for( ui = 0; ui <= pTree->avItems.size(); ui++ )
          if( pTree->avItems[ui]->handle == pPrev->handle )
          {
             pTree->avItems.insert( pTree->avItems.begin()+ui, pNode );
             break;
          }
+   }
    else if( iPos == 1 )
       pTree->avItems.insert( pTree->avItems.begin(), pNode );
    else if( iPos == 2 )
@@ -985,12 +990,14 @@ brig_TreeNode * brig_Tree::AddNode( PBRIG_CHAR szTitle, brig_fnc_tree_action pfA
    pNode->pfAction = pfAct;
    pNode->pfDblClick = NULL;
    if( iPos == 0 )
+   {
       for( ui = 0; ui <= avItems.size(); ui++ )
          if( avItems[ui]->handle == pPrev->handle )
          {
             avItems.insert( avItems.begin()+ui, pNode );
             break;
          }
+   }
    else if( iPos == 1 )
       avItems.insert( avItems.begin(), pNode );
    else if( iPos == 2 )

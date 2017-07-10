@@ -47,7 +47,7 @@ static void paint_tree_node( brig_TreeNode * pNode, PBRIG_DC hDC, int y )
    brig_SelectObject( hDC, pNode->pTree->pPenLine );
    brig_DrawLine( hDC, x+1, y+9, x+pNode->pTree->uiIndent-4, y+9 );
 
-   if( pNode->iLevel && (*pItems)[0]->handle != pNode->handle )
+   if( pNode->iLevel || (*pItems)[0]->handle != pNode->handle )
       brig_DrawLine( hDC, x+5, y+9, x+5, y+pNode->pTree->uiRowHeight+1 );
 
    if( pNode->handle != (*pItems).back()->handle )
@@ -200,6 +200,7 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
    pTree->pPenLine = pTree->pPenPlus = NULL;
    pTree->lNodeCount = 0;
    pTree->uiIndent = 20;
+   pTree->pFirst = NULL;
 
    return area;
 }
