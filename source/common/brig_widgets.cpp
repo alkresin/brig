@@ -926,17 +926,17 @@ brig_TreeNode * brig_TreeNode::AddNode( PBRIG_CHAR szTitle, brig_fnc_tree_action
    pNode->pfDblClick = NULL;
    if( iPos == 0 )
    {
-      for( ui = 0; ui <= pTree->avItems.size(); ui++ )
-         if( pTree->avItems[ui]->handle == pPrev->handle )
+      for( ui = 0; ui <= avItems.size(); ui++ )
+         if( avItems[ui]->handle == pPrev->handle )
          {
-            pTree->avItems.insert( pTree->avItems.begin()+ui, pNode );
+            avItems.insert( avItems.begin()+ui, pNode );
             break;
          }
    }
    else if( iPos == 1 )
-      pTree->avItems.insert( pTree->avItems.begin(), pNode );
+      avItems.insert( avItems.begin(), pNode );
    else if( iPos == 2 )
-      pTree->avItems.push_back( pNode );
+      avItems.push_back( pNode );
 
    return pNode;
 

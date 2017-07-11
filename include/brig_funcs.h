@@ -50,6 +50,7 @@ extern void brig_DrawRect( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iB
 extern void brig_moveto( PBRIG_DC hDC, int iLeft, int iTop );
 extern void brig_lineto( PBRIG_DC hDC, int iLeft, int iTop );
 extern void brig_DrawLine( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom );
+extern void brig_Rectangle( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom );
 extern void brig_Ellipse( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom );
 extern void brig_RoundRect( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom, int iRadius );
 extern void brig_DrawBitmap( PBRIG_DC hDC, PBRIG_BITMAP hBitmap, int iLeft, int iTop, int iWidth, int iHeight );

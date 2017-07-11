@@ -370,6 +370,7 @@ public:
       int iImage = -1, int iSelectedImage = -1 );
 
    brig_Tree *pTree;
+   brig_TreeNode *pParent;
    BRIG_TNHANDLE handle;
    vector<brig_TreeNode*> avItems;
    void * pData;
@@ -379,7 +380,6 @@ public:
    brig_fnc_tree_action pfRClick;
 
 #if !defined( BRIG_OS_WIN )
-   brig_TreeNode *pParent;
    int iLevel;
    bool bExpanded;
    PBRIG_CHAR szTitle;

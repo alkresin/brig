@@ -38,6 +38,22 @@ static brig_TreeNode * NextNode( brig_TreeNode * pNode, bool bFirst )
    return NULL;
 }
 
+static brig_TreeNode * GetNodeByPos( brig_Tree * pTree, int yPos )
+{
+   int y = 0;
+   brig_TreeNode * pNode = pTree->pFirst;
+
+   while( pNode )
+   {
+      y += pTree->uiRowHeight;
+      if( y >= yPos )
+         return pNode;
+      pNode = NextNode( pNode, 1 );
+   }
+
+   return NULL;
+}
+
 static void paint_tree_node( brig_TreeNode * pNode, PBRIG_DC hDC, int y )
 {
 
@@ -45,35 +61,46 @@ static void paint_tree_node( brig_TreeNode * pNode, PBRIG_DC hDC, int y )
    vector<brig_TreeNode*> * pItems = (pNode->pParent)? &(pNode->pParent->avItems) : &(pNode->pTree->avItems);
 
    brig_SelectObject( hDC, pNode->pTree->pPenLine );
-   brig_DrawLine( hDC, x+1, y+9, x+pNode->pTree->uiIndent-4, y+9 );
+   brig_DrawLine( hDC, x+5, y+9, x+pNode->pTree->uiIndent-4, y+9 );
 
    if( pNode->iLevel || (*pItems)[0]->handle != pNode->handle )
-      brig_DrawLine( hDC, x+5, y+9, x+5, y+pNode->pTree->uiRowHeight+1 );
+      brig_DrawLine( hDC, x+5, y, x+5, y+9 );
 
    if( pNode->handle != (*pItems).back()->handle )
-   {
-   }
+      brig_DrawLine( hDC, x+5, y+9, x+5, y+pNode->pTree->uiRowHeight+1 );
+
    if( !pNode->avItems.empty() )
    {
+      brig_Rectangle( hDC, x, y+4, x+8, y+12 );
+      if( !pNode->bExpanded )
+      {
+         brig_SelectObject( hDC, pNode->pTree->pPenPlus );
+         brig_DrawLine( hDC, x+5, y+5, x+5, y+12 );
+         brig_DrawLine( hDC, x+1, y+9, x+8, y+9 );
+         brig_SelectObject( hDC, pNode->pTree->pPenLine );
+      }
    }
+
+   x += pNode->pTree->uiIndent;
+   brig_DrawText( hDC, pNode->szTitle, x, y, pNode->pTree->iWidth, y+pNode->pTree->uiRowHeight+1, 0 );
 }
 
 static void paint_tree( brig_Tree * pTree )
 {
    PBRIG_PPS pps = brig_BeginPaint( pTree );
    RECT rc;
-   unsigned long ulRecCount;
-   unsigned int y;
+   int y;
    brig_TreeNode * pNode;
 
    brig_GetClientRect( pTree, &rc );
+
+   if( pTree->hFont )
+      brig_SelectObject( pps->hDC, pTree->hFont );
 
    if( !pTree->pPenLine )
    {
       pTree->pPenLine = brigAddPen( 1, COLOR_TREE_LINE, PS_DOT );
       pTree->pPenPlus = brigAddPen( 2, 0 );
-      if( pTree->hFont )
-         brig_SelectObject( pps->hDC, pTree->hFont );
       pTree->uiRowHeight = brig_GetCharHeight( pps->hDC ) + 8;
    }
 
@@ -106,12 +133,59 @@ static void paint_tree( brig_Tree * pTree )
 static gint cb_tree( GtkWidget *widget, GdkEvent * event, gchar* data )
 {
    gpointer gObject = g_object_get_data( (GObject*) widget, "obj" );
-
-   SYMBOL_UNUSED( data );
+   int iMessage;
+   brig_TreeNode * pNode;
 
    if( gObject )
    {
-      paint_tree( (brig_Tree *) gObject );
+      if( event->type == GDK_BUTTON_PRESS || 
+          event->type == GDK_2BUTTON_PRESS ||
+          event->type == GDK_BUTTON_RELEASE )
+      {
+         if( ((GdkEventButton*)event)->button == 3 )
+            iMessage = (event->type==GDK_BUTTON_PRESS)? WM_RBUTTONDOWN : 
+                 ( (event->type==GDK_BUTTON_RELEASE)? WM_RBUTTONUP : WM_LBUTTONDBLCLK );
+         else
+            iMessage = (event->type==GDK_BUTTON_PRESS)? WM_LBUTTONDOWN : 
+                 ( (event->type==GDK_BUTTON_RELEASE)? WM_LBUTTONUP : WM_LBUTTONDBLCLK );
+         //ix = ((GdkEventButton*)event)->x;
+      }
+      else
+         sscanf( (char*)data, "%d", &iMessage );
+
+      switch( iMessage ) {
+         case WM_PAINT:
+            paint_tree( (brig_Tree *) gObject );
+            break;
+
+         case WM_LBUTTONDOWN:
+            pNode = GetNodeByPos( (brig_Tree *) gObject, ((GdkEventButton*)event)->y );
+            if( pNode )
+            {
+               if( pNode->bExpanded )
+               {
+                  pNode->bExpanded = 0;
+                  brig_RedrawWindow( (brig_Tree *) gObject );
+               }
+               else if( !pNode->avItems.empty() )
+               {
+                  pNode->bExpanded = 1;
+                  brig_RedrawWindow( (brig_Tree *) gObject );
+               }
+            }
+            break;
+
+         case WM_LBUTTONUP:
+            break;
+
+         case WM_RBUTTONDOWN:
+            break;
+
+         case WM_LBUTTONDBLCLK:
+            break;
+
+      }
+
    }
    return 0;
 }
@@ -182,16 +256,16 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
    g_object_set_data( ( GObject * ) area, "pbox", ( gpointer ) hbox );
    gtk_widget_set_size_request( hbox, nWidth, nHeight );
 
-   brig_SetEvent( ( gpointer ) area, (char*)"expose_event", WM_PAINT, 0, 0 );
-   g_signal_connect( area, (char*)"expose_event", G_CALLBACK (cb_tree), NULL );
+   g_signal_connect( area, (char*)"expose_event", G_CALLBACK (cb_tree), g_strdup((char*)"015") );
 
    GTK_WIDGET_SET_FLAGS( area, GTK_CAN_FOCUS );
 
    gtk_widget_add_events( area, GDK_BUTTON_PRESS_MASK |
          GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK |
          GDK_POINTER_MOTION_MASK | GDK_SCROLL_MASK );
-   brig_SetEvent( ( gpointer ) area, (char*)"button_press_event", 0, 0, 0 );
-   brig_SetEvent( ( gpointer ) area, (char*)"button_release_event", 0, 0, 0 );
+
+   g_signal_connect( area, (char*)"button_press_event", G_CALLBACK (cb_tree), NULL );
+   g_signal_connect( area, (char*)"button_release_event", G_CALLBACK (cb_tree), NULL );
    brig_SetEvent( ( gpointer ) area, (char*)"motion_notify_event", 0, 0, 0 );
    brig_SetEvent( ( gpointer ) area, (char*)"key_press_event", 0, 0, 0 );
    brig_SetEvent( ( gpointer ) area, (char*)"key_release_event", 0, 0, 0 );
@@ -209,12 +283,17 @@ BRIG_TNHANDLE brig_TreeAddNode( brig_TreeNode * pNode, brig_Tree * pTree,
       PBRIG_CHAR szTitle, brig_TreeNode * pParent, brig_TreeNode * pPrev,
       int iPos, int iImage, int iSelectedImage )
 {
+   int iLen = strlen( szTitle );
+
    SYMBOL_UNUSED( pPrev );
    SYMBOL_UNUSED( iPos );
    SYMBOL_UNUSED( iImage );
    SYMBOL_UNUSED( iSelectedImage );
 
-   pNode->szTitle = szTitle;
+   pNode->szTitle = (PBRIG_CHAR) malloc( iLen+1 );
+   memcpy( pNode->szTitle, szTitle, iLen );
+   pNode->szTitle[iLen] = '\0';
+
    pNode->pParent = pParent;
    pNode->iLevel = ( pParent )? pParent->iLevel + 1 : 0;
    pNode->handle = ++pTree->lNodeCount;

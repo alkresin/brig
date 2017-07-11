@@ -183,6 +183,7 @@ using std::vector;
    #define WM_LBUTTONUP       514
    #define WM_LBUTTONDBLCLK   515
    #define WM_RBUTTONDOWN     516
+   #define WM_RBUTTONUP       517
    #define WM_MOUSEWHEEL   0x020A
    #define WM_USER           1024
 
