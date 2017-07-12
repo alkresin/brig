@@ -281,6 +281,7 @@ using std::vector;
 
 #define COLOR_GR_LIGHT   0xeeeeee
 #define COLOR_WHITE      0xffffff
+#define COLOR_BLUE       0xffbc79
 
 #define TYPE_WINDOW        1
 #define TYPE_DIALOG        2

@@ -408,6 +408,8 @@ public:
    unsigned int uiRowHeight;
    unsigned int uiIndent;
    long lNodeCount;
+   long int lTextSelColor, lBackSelColor;
+   PBRIG_BRUSH hBrushSel;
 #endif
 };
 

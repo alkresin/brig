@@ -82,7 +82,14 @@ static void paint_tree_node( brig_TreeNode * pNode, PBRIG_DC hDC, int y )
    }
 
    x += pNode->pTree->uiIndent;
+   if( pNode->pTree->pSelected && pNode->handle == pNode->pTree->pSelected->handle )
+   {
+      unsigned int uiWidth = brig_GetTextWidth( hDC, pNode->szTitle );
+      brig_SetTextColor( hDC, pNode->pTree->lTextSelColor );
+      brig_FillRect( hDC, x, y, x+uiWidth+2, y+pNode->pTree->uiRowHeight+1, pNode->pTree->hBrushSel );
+   }
    brig_DrawText( hDC, pNode->szTitle, x, y, pNode->pTree->iWidth, y+pNode->pTree->uiRowHeight+1, 0 );
+   brig_SetTextColor( hDC, pNode->pTree->lTextColor );
 }
 
 static void paint_tree( brig_Tree * pTree )
@@ -99,9 +106,9 @@ static void paint_tree( brig_Tree * pTree )
 
    if( !pTree->pPenLine )
    {
-      pTree->pPenLine = brigAddPen( 1, COLOR_TREE_LINE, PS_DOT );
       pTree->pPenPlus = brigAddPen( 2, 0 );
-      pTree->uiRowHeight = brig_GetCharHeight( pps->hDC ) + 8;
+      pTree->pPenLine = brigAddPen( 1, COLOR_TREE_LINE, PS_DOT );
+      pTree->uiRowHeight = brig_GetCharHeight( pps->hDC );
    }
 
    if( !pTree->hBrush )
@@ -132,12 +139,14 @@ static void paint_tree( brig_Tree * pTree )
 
 static gint cb_tree( GtkWidget *widget, GdkEvent * event, gchar* data )
 {
-   gpointer gObject = g_object_get_data( (GObject*) widget, "obj" );
+   brig_Tree * pTree = (brig_Tree *) g_object_get_data( (GObject*) widget, "obj" );
    int iMessage;
    brig_TreeNode * pNode;
 
-   if( gObject )
+   if( pTree )
    {
+      brig_TreeNode * pSel = pTree->pSelected;
+
       if( event->type == GDK_BUTTON_PRESS || 
           event->type == GDK_2BUTTON_PRESS ||
           event->type == GDK_BUTTON_RELEASE )
@@ -148,44 +157,106 @@ static gint cb_tree( GtkWidget *widget, GdkEvent * event, gchar* data )
          else
             iMessage = (event->type==GDK_BUTTON_PRESS)? WM_LBUTTONDOWN : 
                  ( (event->type==GDK_BUTTON_RELEASE)? WM_LBUTTONUP : WM_LBUTTONDBLCLK );
-         //ix = ((GdkEventButton*)event)->x;
       }
       else
          sscanf( (char*)data, "%d", &iMessage );
 
       switch( iMessage ) {
          case WM_PAINT:
-            paint_tree( (brig_Tree *) gObject );
+            paint_tree( pTree );
             break;
 
          case WM_LBUTTONDOWN:
-            pNode = GetNodeByPos( (brig_Tree *) gObject, ((GdkEventButton*)event)->y );
+            pNode = GetNodeByPos( pTree, ((GdkEventButton*)event)->y );
             if( pNode )
             {
-               if( pNode->bExpanded )
+               int x1 = pNode->pTree->uiIndent/2 + pNode->pTree->uiIndent * pNode->iLevel;
+               int xPos = ((GdkEventButton*)event)->x;
+               if( xPos > x1 )
                {
-                  pNode->bExpanded = 0;
-                  brig_RedrawWindow( (brig_Tree *) gObject );
-               }
-               else if( !pNode->avItems.empty() )
-               {
-                  pNode->bExpanded = 1;
-                  brig_RedrawWindow( (brig_Tree *) gObject );
+                  if( xPos < (int)(x1 + pNode->pTree->uiIndent) )
+                  {
+                     if( pNode->bExpanded )
+                     {
+                        pNode->bExpanded = 0;
+                        brig_RedrawWindow( pTree );
+                     }
+                     else if( !pNode->avItems.empty() )
+                     {
+                        pNode->bExpanded = 1;
+                        brig_RedrawWindow( pTree );
+                     }
+                  }
+                  else
+                  {
+                     pNode->pTree->pSelected = pNode;
+                     brig_RedrawWindow( pTree );
+                  }
                }
             }
             break;
 
-         case WM_LBUTTONUP:
-            break;
-
          case WM_RBUTTONDOWN:
+            pNode = GetNodeByPos( pTree, ((GdkEventButton*)event)->y );
+            if( pNode )
+            {
+               int x1 = pNode->pTree->uiIndent/2 + pNode->pTree->uiIndent * pNode->iLevel;
+               int xPos = ((GdkEventButton*)event)->x;
+               if( xPos > (int)(x1 + pNode->pTree->uiIndent) )
+               {
+                  pNode->pTree->pSelected = pNode;
+                  brig_RedrawWindow( pTree );
+                  if( pNode->pfRClick )
+                     pNode->pfRClick( pNode );
+               }
+            }
             break;
 
          case WM_LBUTTONDBLCLK:
+            pNode = GetNodeByPos( pTree, ((GdkEventButton*)event)->y );
+            if( pNode )
+            {
+               int x1 = pNode->pTree->uiIndent/2 + pNode->pTree->uiIndent * pNode->iLevel;
+               int xPos = ((GdkEventButton*)event)->x;
+               if( xPos > (int)(x1 + pNode->pTree->uiIndent) )
+                  if( pNode->pfDblClick )
+                     pNode->pfDblClick( pNode );
+            }
+            break;
+
+         case WM_VSCROLL:
+            {
+               GtkAdjustment *adj = ( GtkAdjustment * ) g_object_get_data( (GObject*) widget, "adjv" );
+               int iScrollV = (int) adj->value;
+               int iScrV = (int) g_object_get_data( (GObject*) widget, "iscrv" );
+               int iStep = (int) adj->step_increment;
+               int iPageStep = (int) adj->page_increment;
+
+               g_debug( "scroll %d", iScrollV );
+               if( iScrollV - iScrV == iStep )
+               {
+               }
+               else if( iScrollV - iScrV == -iStep )
+               {
+               }
+               else if( iScrollV - iScrV == iPageStep )
+               {
+               }
+               else if( iScrollV - iScrV == -iPageStep )
+               {
+               }
+               else
+               {
+               }
+
+            }
             break;
 
       }
 
+      if( pTree->pSelected && ( !pSel || pSel->handle != pTree->pSelected->handle ) )
+         if( pTree->pSelected->pfAction )
+            pTree->pSelected->pfAction( pTree->pSelected );
    }
    return 0;
 }
@@ -195,7 +266,7 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
 {
    BRIG_HANDLE handle = pTree->pParent->Handle();
    GtkWidget *vbox, *hbox;
-   GtkWidget *vscroll, *hscroll;
+   GtkWidget *vscroll; //, *hscroll;
    GtkWidget *area;
    GtkFixed *box;
 
@@ -233,11 +304,12 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
       g_object_set_data( ( GObject * ) area, "iscrv", ( gpointer ) 0 );
 
       g_object_set_data( (GObject*) adjV, "obj", (gpointer) pTree );
-      brig_SetSignal( ( gpointer ) adjV, (char*)"value_changed", WM_VSCROLL, 0, 0 );
+      //brig_SetSignal( ( gpointer ) adjV, (char*)"value_changed", WM_VSCROLL, 0, 0 );
+      g_signal_connect( area, (char*)"value_changed", G_CALLBACK (cb_tree), g_strdup((char*)"277") );
    }
    
    gtk_box_pack_start( GTK_BOX( vbox ), area, TRUE, TRUE, 0 );
-   
+   /*
    if( ulStyle & WS_HSCROLL )
    {
       GtkObject *adjH = gtk_adjustment_new( 0.0, 0.0, 101.0, 1.0, 10.0, 10.0 );
@@ -249,7 +321,7 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
       g_object_set_data( (GObject*) adjH, "obj", (gpointer) pTree );
       brig_SetSignal( ( gpointer ) adjH, (char*)"value_changed", WM_HSCROLL, 0, 0 );
    }
-   
+   */
    box = ( GtkFixed * ) g_object_get_data( ( GObject * ) handle, "fbox" );
    if( box )
       gtk_fixed_put( box, hbox, x, y );
@@ -272,9 +344,12 @@ BRIG_HANDLE brig_CreateTree( brig_Tree *pTree, int iWidgId,
    brig_SetEvent( ( gpointer ) area, (char*)"scroll_event", 0, 0, 0 );
 
    pTree->pPenLine = pTree->pPenPlus = NULL;
+   pTree->lTextSelColor = COLOR_WHITE;
+   pTree->lBackSelColor = COLOR_BLUE;
+   pTree->hBrushSel = brigAddBrush( pTree->lBackSelColor );
    pTree->lNodeCount = 0;
    pTree->uiIndent = 20;
-   pTree->pFirst = NULL;
+   pTree->pFirst = pTree->pSelected = NULL;
 
    return area;
 }

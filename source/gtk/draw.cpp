@@ -273,7 +273,9 @@ PBRIG_PEN brig_SelectObject( PBRIG_DC hDC, PBRIG_PEN pPen )
 {
    brig__setcolor( hDC->cr, pPen->color );
    cairo_set_line_width( hDC->cr, pPen->width );
-   if( pPen->style != PS_SOLID )
+   if( pPen->style == PS_SOLID )
+      cairo_set_dash( hDC->cr, NULL, 0, 0 );
+   else
    {
       static const double dashed[] = {2.0, 2.0};
       cairo_set_dash( hDC->cr, dashed, 2, 0 );
