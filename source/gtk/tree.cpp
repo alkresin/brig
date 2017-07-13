@@ -233,8 +233,17 @@ static gint cb_tree( GtkWidget *widget, GdkEvent * event, gchar* data )
                int iPageStep = (int) adj->page_increment;
 
                g_debug( "scroll %d", iScrollV );
+               pNode = pTree->pFirst;
+               if( !pNode )
+                  return 0;
                if( iScrollV - iScrV == iStep )
                {
+                  pNode = NextNode( pNode, 1 );
+                  if( !pNode )
+                     return 0;
+                  pTree->pFirst = pNode;
+                  brig_SetScrollPos( pTree, 1, iScrollV+1 );
+                  brig_RedrawWindow( pTree );
                }
                else if( iScrollV - iScrV == -iStep )
                {
