@@ -59,6 +59,7 @@ static void paint_tree_node( brig_TreeNode * pNode, PBRIG_DC hDC, int y )
 
    unsigned int x = pNode->pTree->uiIndent/2 + pNode->pTree->uiIndent * pNode->iLevel;
    vector<brig_TreeNode*> * pItems = (pNode->pParent)? &(pNode->pParent->avItems) : &(pNode->pTree->avItems);
+   bool bSelected = ( pNode->pTree->pSelected && pNode->handle == pNode->pTree->pSelected->handle );
 
    brig_SelectObject( hDC, pNode->pTree->pPenLine );
    brig_DrawLine( hDC, x+5, y+9, x+pNode->pTree->uiIndent-4, y+9 );
@@ -82,7 +83,17 @@ static void paint_tree_node( brig_TreeNode * pNode, PBRIG_DC hDC, int y )
    }
 
    x += pNode->pTree->uiIndent;
-   if( pNode->pTree->pSelected && pNode->handle == pNode->pTree->pSelected->handle )
+   if( pNode->iImage >= 0 )
+   {
+      PBRIG_BITMAP hBitmap = ( bSelected && pNode->iSelectedImage >= 0 )?
+            pNode->pTree->avImages[pNode->iSelectedImage] : pNode->pTree->avImages[pNode->iImage];
+      int iWidth, iHeight;
+
+      brig_GetBitmapSize( hBitmap, &iWidth, &iHeight );
+      brig_DrawBitmap( hDC, hBitmap, x, y, iWidth, iHeight );
+      x += iWidth + 4;
+   }
+   if( bSelected )
    {
       unsigned int uiWidth = brig_GetTextWidth( hDC, pNode->szTitle );
       brig_SetTextColor( hDC, pNode->pTree->lTextSelColor );
@@ -371,8 +382,9 @@ BRIG_TNHANDLE brig_TreeAddNode( brig_TreeNode * pNode, brig_Tree * pTree,
 
    SYMBOL_UNUSED( pPrev );
    SYMBOL_UNUSED( iPos );
-   SYMBOL_UNUSED( iImage );
-   SYMBOL_UNUSED( iSelectedImage );
+
+   pNode->iImage = iImage;
+   pNode->iSelectedImage = iSelectedImage;
 
    pNode->szTitle = (PBRIG_CHAR) malloc( iLen+1 );
    memcpy( pNode->szTitle, szTitle, iLen );
@@ -388,7 +400,5 @@ BRIG_TNHANDLE brig_TreeAddNode( brig_TreeNode * pNode, brig_Tree * pTree,
 
 void brig_TreeAddImage( brig_Tree * pTree, PBRIG_BITMAP pBitmap )
 {
-
-   SYMBOL_UNUSED( pTree );
-   SYMBOL_UNUSED( pBitmap );
+   pTree->avImages.push_back( pBitmap );
 }

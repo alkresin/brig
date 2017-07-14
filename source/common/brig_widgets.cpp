@@ -1006,6 +1006,15 @@ brig_TreeNode * brig_Tree::AddNode( PBRIG_CHAR szTitle, brig_fnc_tree_action pfA
    return pNode;
 }
 
+void brig_Tree::AddImages( PBRIG_BITMAP pBitmap1, PBRIG_BITMAP pBitmap2, PBRIG_BITMAP pBitmap3 )
+{
+   brig_TreeAddImage( this, pBitmap1 );
+   if( pBitmap2 )
+      brig_TreeAddImage( this, pBitmap2 );
+   if( pBitmap3 )
+      brig_TreeAddImage( this, pBitmap3 );
+}
+
 bool brig_Tree::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
 {
 

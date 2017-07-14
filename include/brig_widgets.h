@@ -383,6 +383,7 @@ public:
    int iLevel;
    bool bExpanded;
    PBRIG_CHAR szTitle;
+   int iImage, iSelectedImage;
 #endif
 
 };
@@ -398,6 +399,7 @@ public:
    brig_TreeNode * AddNode( PBRIG_CHAR szTitle, brig_fnc_tree_action pfAct = NULL,
       brig_TreeNode *pPrev = NULL, brig_TreeNode * pNext = NULL,
       int iImage = -1, int iSelectedImage = -1 );
+   void AddImages( PBRIG_BITMAP pBitmap1, PBRIG_BITMAP pBitmap2 = NULL, PBRIG_BITMAP pBitmap3 = NULL );
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
 
    brig_TreeNode* pSelected;
@@ -410,6 +412,7 @@ public:
    long lNodeCount;
    long int lTextSelColor, lBackSelColor;
    PBRIG_BRUSH hBrushSel;
+   vector<PBRIG_BITMAP> avImages;
 #endif
 };
 

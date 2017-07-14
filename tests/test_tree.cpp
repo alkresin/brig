@@ -104,9 +104,9 @@ int brig_Main( int argc, char *argv[] )
    oTree.Create( &oMain, 12, 12, 200, 380 );
    oTree.pfOnSize = fncTreeOnSize;
 
-   brig_TreeAddImage( &oTree, brig_OpenImage( (PBRIG_CHAR)"images/folder_closed.bmp" ) );
-   brig_TreeAddImage( &oTree, brig_OpenImage( (PBRIG_CHAR)"images/folder_open.bmp" ) );
-   brig_TreeAddImage( &oTree, brig_OpenImage( (PBRIG_CHAR)"images/book.bmp" ) );
+   oTree.AddImages( brig_OpenImage( (PBRIG_CHAR)"images/folder_closed.bmp" ), 
+                    brig_OpenImage( (PBRIG_CHAR)"images/folder_open.bmp" ), 
+                    brig_OpenImage( (PBRIG_CHAR)"images/book.bmp" ) );
 
    pXmlDoc = brigxml_GetDoc( (PBRIG_CHAR)"test_tree.xml" );
    if( !brigxml_Error() )
