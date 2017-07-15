@@ -393,6 +393,7 @@ class brig_Tree : public brig_Widget
 public:
 
    brig_Tree();
+   ~brig_Tree();
 
    BRIG_HANDLE Create( brig_Container *pParent, int x, int y, int nWidth,
          int nHeight, unsigned long ulStyle = 0 );
@@ -421,3 +422,4 @@ extern BRIG_TNHANDLE brig_TreeAddNode( brig_TreeNode * pNode, brig_Tree * pTree,
       PBRIG_CHAR szTitle, brig_TreeNode * pParent, brig_TreeNode * pPrev,
       int iPos, int iImage = -1, int iSelectedImage = -1 );
 extern void brig_TreeAddImage( brig_Tree * pTree, PBRIG_BITMAP pBitmap );
+extern void brig_TreeRelease( brig_Tree * pTree );

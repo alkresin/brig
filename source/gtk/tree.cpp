@@ -402,3 +402,20 @@ void brig_TreeAddImage( brig_Tree * pTree, PBRIG_BITMAP pBitmap )
 {
    pTree->avImages.push_back( pBitmap );
 }
+
+static void TreeNodeRelease( vector<brig_TreeNode*> * pItems )
+{
+   for( unsigned int ui = 0; ui != (*pItems).size(); ui ++ )
+   {
+      if( !( (*pItems)[ui]->avItems.empty() ) )
+         TreeNodeRelease( & ( (*pItems)[ui]->avItems ) );
+   }
+}
+
+void brig_TreeRelease( brig_Tree * pTree )
+{
+
+   TreeNodeRelease( & ( pTree->avItems ) );
+
+   brigDelBrush( pTree->hBrushSel );
+}

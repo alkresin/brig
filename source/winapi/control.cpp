@@ -655,6 +655,11 @@ void brig_TreeAddImage( brig_Tree * pTree, PBRIG_BITMAP pBitmap )
    ImageList_Add( himl, pBitmap, ( HBITMAP ) NULL );
 }
 
+void brig_TreeRelease( brig_Tree * pTree )
+{
+   SYMBOL_UNUSED( pTree );
+}
+
 /* -------- common widget's functions --------- */
 
 PBRIG_CURSOR brig_LoadCursor( int iCursorType )

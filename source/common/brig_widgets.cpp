@@ -947,6 +947,11 @@ brig_Tree::brig_Tree():brig_Widget()
    uiType = TYPE_TREE;
 }
 
+brig_Tree::~brig_Tree()
+{
+   brig_TreeRelease( this );
+}
+
 BRIG_HANDLE brig_Tree::Create( brig_Container *pParent,
           int x, int y, int nWidth, int nHeight, unsigned long ulStyle )
 {
