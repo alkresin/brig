@@ -409,6 +409,8 @@ static void TreeNodeRelease( vector<brig_TreeNode*> * pItems )
    {
       if( !( (*pItems)[ui]->avItems.empty() ) )
          TreeNodeRelease( & ( (*pItems)[ui]->avItems ) );
+      free( (*pItems)[ui]->szTitle );
+      delete (*pItems)[ui];
    }
 }
 
