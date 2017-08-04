@@ -8,10 +8,10 @@ if not exist obj md obj
 if not exist obj\vc32 md obj\vc32
 if not exist obj\vc32\uni md obj\vc32\uni
 
-@set PATH=C:\Softools\MSVS10\VC\bin;C:\Softools\MSVS10\Common7\IDE;%PATH%
-@set INCLUDE=C:\Softools\MSVS10\VC\include;C:\Softools\mssdk7\include
-@set LIB=C:\Softools\MSVS10\VC\lib
-@set LIBPATH=C:\Softools\MSVS10\VC\lib
+@set PATH=C:\softools\mssdk\VC\Bin\x64\;C:\Softools\msvc10\Common7\IDE;%PATH%
+@set INCLUDE=C:\softools\mssdk\VC\INCLUDE\;C:\Softools\mssdk\include
+rem @set PATH=C:\Softools\msvc10\VC\bin;C:\Softools\msvc10\Common7\IDE;%PATH%
+rem @set INCLUDE=C:\Softools\msvc10\VC\include;C:\Softools\mssdk\include
 
 nmake /I /Fmakefile.vc %1 %2 %3 >make_vc.log 2>make_vc_err.log
 if errorlevel 1 goto BUILD_ERR
@@ -28,8 +28,8 @@ nmake /I /Fmakefile.vc %1 %2 %3 >>make_vc.log 2>>make_vc_err.log
    goto EXIT
 
 :CLEAN
-   del lib\*.lib
-   del lib\*.bak
+   del lib\vc32\*.lib
+   del lib\vc32\*.bak
    del obj\vc32\*.obj
    del obj\vc32\uni\*.obj
 

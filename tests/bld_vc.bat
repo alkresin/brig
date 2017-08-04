@@ -1,9 +1,9 @@
 @echo off
 
-@set PATH=C:\Softools\MSVS10\VC\bin;C:\Softools\MSVS10\Common7\IDE;C:\Softools\mssdk7\bin;%PATH%
-@set INCLUDE=C:\Softools\MSVS10\VC\include;C:\Softools\mssdk7\include
-@set LIB=..\lib\vc32;C:\Softools\MSVS10\VC\lib;C:\Softools\mssdk7\lib
-@set LIBPATH=..\lib\vc32;C:\Softools\MSVS10\VC\lib;C:\Softools\mssdk7\lib
+@set PATH=C:\Softools\msvc10\VC\bin;C:\Softools\msvc10\Common7\IDE;C:\Softools\mssdk\bin;%PATH%
+@set INCLUDE=C:\Softools\msvc10\VC\include;C:\Softools\mssdk\include
+@set LIB=..\lib\vc32;C:\Softools\msvc10\VC\lib;C:\Softools\mssdk\lib
+@set LIBPATH=..\lib\vc32;C:\Softools\msvc10\VC\lib;C:\Softools\mssdk\lib
 
 set BRIG_DIR=\papps\brig
 set BRIG_LIBS=brig_ansi.lib

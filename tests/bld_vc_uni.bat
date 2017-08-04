@@ -1,9 +1,13 @@
 @echo off
 
-@set PATH=C:\Softools\MSVS10\VC\bin;C:\Softools\MSVS10\Common7\IDE;C:\Softools\mssdk7\bin;%PATH%
-@set INCLUDE=C:\Softools\MSVS10\VC\include;C:\Softools\mssdk7\include
-@set LIB=..\lib\vc32;C:\Softools\MSVS10\VC\lib;C:\Softools\mssdk7\lib
-@set LIBPATH=..\lib\vc32;C:\Softools\MSVS10\VC\lib;C:\Softools\mssdk7\lib
+@set PATH=C:\softools\mssdk\VC\Bin\x64\;C:\Softools\msvc10\Common7\IDE;%PATH%
+@set INCLUDE=C:\softools\mssdk\VC\INCLUDE\;C:\Softools\mssdk\include
+@set LIB=..\lib\vc32;C:\Softools\mssdk\VC\lib\x64;C:\Softools\mssdk\lib\x64
+@set LIBPATH=..\lib\vc32;C:\Softools\mssdk\VC\lib\x64;C:\Softools\mssdk\lib\x64
+rem @set PATH=C:\Softools\msvc10\VC\bin;C:\Softools\msvc10\Common7\IDE;C:\Softools\mssdk\bin;%PATH%
+rem @set INCLUDE=C:\Softools\msvc10\VC\include;C:\Softools\mssdk\include
+rem @set LIB=..\lib\vc32;C:\Softools\msvc10\VC\lib;C:\Softools\mssdk\lib\x64
+rem @set LIBPATH=..\lib\vc32;C:\Softools\msvc10\VC\lib;C:\Softools\mssdk\lib\x64
 
 set BRIG_DIR=\papps\brig
 set BRIG_LIBS=brig.lib

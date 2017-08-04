@@ -700,7 +700,7 @@ static void CALLBACK s_timerProc( HWND hWnd, UINT message, UINT idTimer, DWORD d
 unsigned int brig_SetTimer( unsigned int uiId, unsigned int uiValue )
 {
 
-   return SetTimer( NULL, uiId, uiValue, s_timerProc );
+   return SetTimer( NULL, uiId, uiValue, (TIMERPROC) s_timerProc );
 
 }
 
