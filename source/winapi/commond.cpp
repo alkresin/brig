@@ -80,33 +80,24 @@ PBRIG_FONT brig_ChooseFont( PBRIG_FONT hFontPrev, BRIGAPP_FONT *pbf )
 
 }
 
-/*
-BRIG_STR brig_ChooseFile( long int lDefColor )
+PBRIG_CHAR brig_ChooseFile( PBRIG_CHAR sLabel, PBRIG_CHAR sMask )
 {
-   OPENFILENAME ofn;
-   TCHAR buffer[1024];
-   LPTSTR lpFilter;
-   void *hTitle, *hInitDir;
+   PBRIG_CHAR lpFilter;
 
-   if( HB_ISCHAR( 1 ) && HB_ISCHAR( 2 ) )
+   //if( HB_ISCHAR( 1 ) && HB_ISCHAR( 2 ) )
    {
-      void *hStr1, *hStr2;
-      LPCTSTR lpStr1, lpStr2;
-      HB_SIZE nLen1, nLen2;
+      int nLen1, nLen2;
 
-      lpStr1 = HB_PARSTRDEF( 1, &hStr1, &nLen1 );
-      lpStr2 = HB_PARSTRDEF( 2, &hStr2, &nLen2 );
-
+      nLen1 = strlen( sLabel );
+      nLen2 = strlen( sMask );
       lpFilter =
-            ( LPTSTR ) hb_xgrab( ( nLen1 + nLen2 + 4 ) * sizeof( TCHAR ) );
-      memset( lpFilter, 0, ( nLen1 + nLen2 + 4 ) * sizeof( TCHAR ) );
-      memcpy( lpFilter, lpStr1, nLen1 * sizeof( TCHAR ) );
-      memcpy( lpFilter + nLen1 + 1, lpStr2, nLen2 * sizeof( TCHAR ) );
+            ( PBRIG_CHAR ) malloc( ( nLen1 + nLen2 + 4 ) * sizeof( BRIG_CHAR ) );
+      memset( lpFilter, 0, ( nLen1 + nLen2 + 4 ) * sizeof( BRIG_CHAR ) );
+      memcpy( lpFilter, sLabel, nLen1 * sizeof( BRIG_CHAR ) );
+      memcpy( lpFilter + nLen1 + 1, sMask, nLen2 * sizeof( BRIG_CHAR ) );
 
-      hb_strfree( hStr1 );
-      hb_strfree( hStr2 );
    }
-   else if( HB_ISARRAY( 1 ) && HB_ISARRAY( 2 ) )
+   /*else if( HB_ISARRAY( 1 ) && HB_ISARRAY( 2 ) )
    {
       struct _hb_arrStr
       {
@@ -155,28 +146,43 @@ BRIG_STR brig_ChooseFile( long int lDefColor )
       hb_retc( NULL );
       return;
    }
+   */
+
+   OPENFILENAME ofn;
+   BRIG_WCHAR buffer[1024];
+   PBRIG_WCHAR wcText = brig_str2WC( lpFilter );
+   bool bOk;
 
    memset( ( void * ) &ofn, 0, sizeof( OPENFILENAME ) );
    ofn.lStructSize = sizeof( ofn );
    ofn.hwndOwner = GetActiveWindow(  );
-   ofn.lpstrFilter = lpFilter;
+   ofn.lpstrFilter = wcText;
    ofn.lpstrFile = buffer;
    buffer[0] = 0;
    ofn.nMaxFile = 1024;
-   ofn.lpstrInitialDir = HB_PARSTR( 3, &hInitDir, NULL );
-   ofn.lpstrTitle = HB_PARSTR( 4, &hTitle, NULL );
+   ofn.lpstrInitialDir = NULL;
+   ofn.lpstrTitle = NULL;
    ofn.Flags = OFN_FILEMUSTEXIST | OFN_EXPLORER;
 
-   if( GetOpenFileName( &ofn ) )
-      HB_RETSTR( ofn.lpstrFile );
-   else
-      hb_retc( NULL );
-   hb_xfree( lpFilter );
+   bOk = GetOpenFileName( &ofn );
 
-   hb_strfree( hInitDir );
-   hb_strfree( hTitle );
+   brig_free( wcText );
+   free( lpFilter );
+   if( bOk )
+   {
+      #if defined(UNICODE)
+      int iLen = wcslen( ofn.lpstrFile );
+      return brig_WCTostr( CP_UTF8, ofn.lpstrFile, iLen );
+      #else
+      return ofn.lpstrFile;
+      #endif
+   }
+   else
+      return NULL;
+
 }
 
+/*
 HB_FUNC( HWG_SAVEFILE )
 {
    OPENFILENAME ofn;
