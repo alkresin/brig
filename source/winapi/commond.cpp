@@ -83,74 +83,19 @@ PBRIG_FONT brig_ChooseFont( PBRIG_FONT hFontPrev, BRIGAPP_FONT *pbf )
 PBRIG_CHAR brig_ChooseFile( PBRIG_CHAR sLabel, PBRIG_CHAR sMask )
 {
    PBRIG_CHAR lpFilter;
+   int nLen1, nLen2;
 
-   //if( HB_ISCHAR( 1 ) && HB_ISCHAR( 2 ) )
-   {
-      int nLen1, nLen2;
-
-      nLen1 = strlen( sLabel );
-      nLen2 = strlen( sMask );
-      lpFilter =
-            ( PBRIG_CHAR ) malloc( ( nLen1 + nLen2 + 4 ) * sizeof( BRIG_CHAR ) );
-      memset( lpFilter, 0, ( nLen1 + nLen2 + 4 ) * sizeof( BRIG_CHAR ) );
-      memcpy( lpFilter, sLabel, nLen1 * sizeof( BRIG_CHAR ) );
-      memcpy( lpFilter + nLen1 + 1, sMask, nLen2 * sizeof( BRIG_CHAR ) );
-
-   }
-   /*else if( HB_ISARRAY( 1 ) && HB_ISARRAY( 2 ) )
-   {
-      struct _hb_arrStr
-      {
-         void *hStr1;
-         LPCTSTR lpStr1;
-         HB_SIZE nLen1;
-         void *hStr2;
-         LPCTSTR lpStr2;
-         HB_SIZE nLen2;
-      } *pArrStr;
-      PHB_ITEM pArr1 = hb_param( 1, HB_IT_ARRAY );
-      PHB_ITEM pArr2 = hb_param( 2, HB_IT_ARRAY );
-      HB_SIZE n, nArrLen = hb_arrayLen( pArr1 ), nSize;
-      LPTSTR ptr;
-
-      pArrStr = ( struct _hb_arrStr * )
-            hb_xgrab( nArrLen * sizeof( struct _hb_arrStr ) );
-      nSize = 4;
-      for( n = 0; n < nArrLen; n++ )
-      {
-         pArrStr[n].lpStr1 = HB_ARRAYGETSTR( pArr1, n + 1,
-               &pArrStr[n].hStr1, &pArrStr[n].nLen1 );
-         pArrStr[n].lpStr2 = HB_ARRAYGETSTR( pArr2, n + 1,
-               &pArrStr[n].hStr2, &pArrStr[n].nLen2 );
-         nSize += pArrStr[n].nLen1 + pArrStr[n].nLen2 + 2;
-      }
-      lpFilter = ( LPTSTR ) hb_xgrab( nSize * sizeof( TCHAR ) );
-      ptr = lpFilter;
-      for( n = 0; n < nArrLen; n++ )
-      {
-         memcpy( ptr, pArrStr[n].lpStr1, pArrStr[n].nLen1 * sizeof( TCHAR ) );
-         ptr += pArrStr[n].nLen1;
-         *ptr++ = 0;
-         memcpy( ptr, pArrStr[n].lpStr2, pArrStr[n].nLen2 * sizeof( TCHAR ) );
-         ptr += pArrStr[n].nLen2;
-         *ptr++ = 0;
-         hb_strfree( pArrStr[n].hStr1 );
-         hb_strfree( pArrStr[n].hStr2 );
-      }
-      *ptr++ = 0;
-      *ptr = 0;
-      hb_xfree( pArrStr );
-   }
-   else
-   {
-      hb_retc( NULL );
-      return;
-   }
-   */
+   nLen1 = strlen( sLabel );
+   nLen2 = strlen( sMask );
+   lpFilter =
+         ( PBRIG_CHAR ) malloc( ( nLen1 + nLen2 + 4 ) * sizeof( BRIG_CHAR ) );
+   memset( lpFilter, 0, ( nLen1 + nLen2 + 4 ) * sizeof( BRIG_CHAR ) );
+   memcpy( lpFilter, sLabel, nLen1 * sizeof( BRIG_CHAR ) );
+   memcpy( lpFilter + nLen1 + 1, sMask, nLen2 * sizeof( BRIG_CHAR ) );
 
    OPENFILENAME ofn;
    BRIG_WCHAR buffer[1024];
-   PBRIG_WCHAR wcText = brig_str2WC( lpFilter );
+   PBRIG_WCHAR wcText = brig_str2WC( lpFilter, nLen1 + nLen2 + 2 );
    bool bOk;
 
    memset( ( void * ) &ofn, 0, sizeof( OPENFILENAME ) );
@@ -168,14 +113,22 @@ PBRIG_CHAR brig_ChooseFile( PBRIG_CHAR sLabel, PBRIG_CHAR sMask )
 
    brig_free( wcText );
    free( lpFilter );
+
    if( bOk )
    {
-      #if defined(UNICODE)
-      int iLen = wcslen( ofn.lpstrFile );
+      int iLen;
+
+   #if defined(UNICODE)
+      iLen = wcslen( ofn.lpstrFile );
       return brig_WCTostr( CP_UTF8, ofn.lpstrFile, iLen );
-      #else
-      return ofn.lpstrFile;
-      #endif
+   #else
+      PBRIG_CHAR sRet;
+      iLen = strlen( ofn.lpstrFile );
+      sRet = ( PBRIG_CHAR ) malloc( iLen * sizeof( BRIG_CHAR ) + 1 );
+      memcpy( sRet, ofn.lpstrFile, iLen * sizeof( BRIG_CHAR ) );
+      sRet[iLen] = '\0';
+      return sRet;
+   #endif
    }
    else
       return NULL;

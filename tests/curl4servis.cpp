@@ -2,7 +2,7 @@
 #include "brig.h"
 #include <stdio.h>
 
-bool fncOnSize( brig_Widget *pPanel, WPARAM wParam, LPARAM lParam )
+bool fnc_paneOnSize( brig_Widget *pPanel, WPARAM wParam, LPARAM lParam )
 {
    unsigned long iWidth = ((unsigned long)lParam) & 0xFFFF;
 
@@ -13,13 +13,42 @@ bool fncOnSize( brig_Widget *pPanel, WPARAM wParam, LPARAM lParam )
 
 }
 
+bool fnc_editOnSize( brig_Widget *pEdit, WPARAM wParam, LPARAM lParam )
+{
+   unsigned long iWidth = ((unsigned long)lParam) & 0xFFFF;
+   unsigned long iHeight = ( ((unsigned long)lParam) >> 16 ) & 0xFFFF;
+
+   SYMBOL_UNUSED( wParam );
+
+   pEdit->Move( -1, -1, iWidth-12, iHeight-60 );
+   return 0;
+
+}
+
 bool fncOpen( brig_Widget *pBtn, unsigned int i, long l )
 {
+
+   PBRIG_CHAR pFileName;
+   PBRIG_CHAR pBuffer;
+
    SYMBOL_UNUSED( pBtn );
    SYMBOL_UNUSED( i );
    SYMBOL_UNUSED( l );
 
-   brig_ChooseFile( "xBase files( *.dbf )", "*.dbf" );
+   pFileName = brig_ChooseFile( "All files( *.* )", "*.*" );
+
+   if( pFileName )
+   {
+      pBuffer = brig_ReadFile( pFileName );
+      if( pBuffer )
+      {
+         brig_Edit * pEdit = (brig_Edit *) brigApp.pMainWindow->FindWidget( TYPE_EDIT );
+         pEdit->SetText( pBuffer );
+         free( pBuffer );
+      }
+      free( pFileName );
+   }
+
    return 0;
 }
 
@@ -40,7 +69,7 @@ int brig_Main( int argc, char *argv[] )
    pMain->hFont = brigAddFont( (PBRIG_CHAR)"Georgia", 20 );
    
    oPanel.Create( pMain, 0, 0, 500, 40, brigAddStyle( 2, pColors1 ) );
-   oPanel.pfOnSize = fncOnSize;
+   oPanel.pfOnSize = fnc_paneOnSize;
 
    oQBtn1.Create( &oPanel, 0, 0, 48, 40, (PBRIG_CHAR)"Run" );
    oQBtn1.lBackColor = oQBtn1.lBackClr1 = 0xcccccc;
@@ -51,7 +80,8 @@ int brig_Main( int argc, char *argv[] )
    oQBtn2.SetFont( brigAddFont( (PBRIG_CHAR)"Georgia", 18, 400, 0, 1 ) );
    oQBtn2.pfOnClick = fncOpen;
 
-   oEdit.Create( pMain, 4, 40, 480, 280, (PBRIG_CHAR)"", ES_MULTILINE | WS_BORDER );
+   oEdit.Create( pMain, 4, 44, 480, 280, (PBRIG_CHAR)"", ES_MULTILINE | WS_BORDER );
+   oEdit.pfOnSize = fnc_editOnSize;
 
    pMain->Activate();
 

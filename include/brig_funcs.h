@@ -46,6 +46,8 @@ extern PBRIG_FONT brig_CreateFont( PBRIG_CHAR fontName, int fnHeight, int fnWeig
 extern long int brig_ChooseColor( long int lDefColor = -1 );
 extern PBRIG_CHAR brig_ChooseFile( PBRIG_CHAR sLabel, PBRIG_CHAR sMask );
 
+extern PBRIG_CHAR brig_ReadFile( PBRIG_CHAR szName, unsigned long * pDataLen = NULL );
+
 extern void brig_FillRect( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom, PBRIG_BRUSH hBrush );
 extern void brig_DrawRect( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom );
 extern void brig_moveto( PBRIG_DC hDC, int iLeft, int iTop );
@@ -77,11 +79,11 @@ extern wchar_t * brig_strToWC( UINT cp, char * szText );
 extern char * brig_WCTostr( UINT cp, wchar_t * wcText, int uilen );
 #endif
 
+extern PBRIG_WCHAR brig_str2WC( PBRIG_CHAR szText, int uilen = 0 );
+
 #if defined( UNICODE )
-#define brig_str2WC( szText )             brig_strToWC( CP_UTF8, szText )
 #define brig_WC2str( szText, uiLen )      brig_WCTostr( CP_UTF8, szText, uiLen )
 #else
-extern PBRIG_WCHAR brig_str2WC( PBRIG_CHAR szText );
 extern PBRIG_CHAR brig_WC2str( PBRIG_WCHAR wcText, int uilen );
 #endif
 extern void brig_free( PBRIG_WCHAR wcString );

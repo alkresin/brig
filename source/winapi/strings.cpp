@@ -76,15 +76,16 @@ unsigned long brig_utf8StringLength( const char * pSrc, unsigned long nLen )
    return nDst;
 }
 
-wchar_t * brig_strToWC( UINT cp, char * szText )
+wchar_t * brig_strToWC( UINT cp, char * szText, int uiLen = 0 )
 {
-   unsigned int uiLen;
+   //unsigned int uiLen;
    unsigned int uiDest;
    wchar_t * pResult = NULL;
 
    if( szText )
    {
-      uiLen = strlen( szText );
+      if( !uiLen )
+         uiLen = strlen( szText );
       uiDest = MultiByteToWideChar( cp, 0, szText, uiLen, NULL, 0 );
       pResult = ( wchar_t * ) malloc( ( uiDest + 1 ) * sizeof( wchar_t ) );
 
@@ -113,6 +114,11 @@ PBRIG_CHAR brig_WCTostr( UINT cp, wchar_t * wcText, int uiLen )
 
 #if defined(UNICODE)
 
+PBRIG_WCHAR brig_str2WC( PBRIG_CHAR szText, int uiLen )
+{
+   return brig_strToWC( CP_UTF8, szText, uiLen );
+}
+
 void brig_free( PBRIG_WCHAR wcString )
 {
    if( wcString )
@@ -121,8 +127,9 @@ void brig_free( PBRIG_WCHAR wcString )
 
 #else
 
-PBRIG_CHAR brig_str2WC( PBRIG_CHAR szText )
+PBRIG_WCHAR brig_str2WC( PBRIG_CHAR szText, int uiLen )
 {
+   SYMBOL_UNUSED( uiLen );
    return szText;
 }
 

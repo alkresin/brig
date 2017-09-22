@@ -132,6 +132,32 @@ int brigChoice( std::vector<char*> &pList, PBRIG_CHAR lpTitle, unsigned int iLef
    return (int) oDlg.pResult;
 }
 
+PBRIG_CHAR brig_ReadFile( PBRIG_CHAR szName, unsigned long * pDataLen )
+{
+   unsigned char * pBuffer = NULL;
+   FILE *f = fopen( szName, "rb" );
+   unsigned long lSize;
+
+   if( f )
+   {
+      fseek( f, 0, SEEK_END );
+      lSize = ftell( f );
+      fseek(f, 0, SEEK_SET);
+
+      if( lSize )
+      {
+         pBuffer = (unsigned char *) malloc( lSize + 1 );
+         fread( pBuffer, lSize, 1, f );
+         fclose( f );
+
+         pBuffer[lSize] = 0;
+         if( pDataLen )
+            *pDataLen = lSize;
+      }
+   }
+   return pBuffer;
+}
+
 PBRIG_CHAR brig_Version( void )
 {
    sprintf( szVersion, "Brig %d.%d Build %d", BRIG_VER_MAJOR, BRIG_VER_MINOR, BRIG_VER_BUILD );
