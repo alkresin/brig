@@ -508,6 +508,45 @@ void brigxml_Release( PBRIG_XMLITEM pItem )
    delete pItem;
 }
 
+PBRIG_CHAR brig_ReadFile( PBRIG_CHAR szName, unsigned long * pLen )
+{
+   unsigned char * pBuffer = NULL;
+   FILE *f = fopen( szName, "rb" );
+   unsigned long lSize;
+
+   if( f )
+   {
+      fseek( f, 0, SEEK_END );
+      lSize = ftell( f );
+      fseek(f, 0, SEEK_SET);
+
+      if( lSize )
+      {
+         pBuffer = (unsigned char *) malloc( lSize + 1 );
+         fread( pBuffer, lSize, 1, f );
+         fclose( f );
+
+         pBuffer[lSize] = 0;
+         if( pLen )
+            *pLen = lSize;
+      }
+   }
+   return (PBRIG_CHAR) pBuffer;
+}
+
+void brig_WriteFile( PBRIG_CHAR szName, PBRIG_CHAR szData, unsigned long ulLen )
+{
+   FILE *f;
+
+   if( !ulLen )
+      ulLen = strlen( szData );
+
+   f = fopen( szName, "wb" );
+   fwrite( szData, 1, ulLen, f );
+   fclose( f );
+
+}
+
 PBRIG_XMLITEM brigxml_GetDoc( PBRIG_CHAR szSource, unsigned long ulLen )
 {
    PBRIG_XMLITEM pDoc = new BRIG_XMLITEM;

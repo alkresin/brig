@@ -45,8 +45,10 @@ extern PBRIG_FONT brig_CreateFont( PBRIG_CHAR fontName, int fnHeight, int fnWeig
                DWORD fdwCharSet, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut  );
 extern long int brig_ChooseColor( long int lDefColor = -1 );
 extern PBRIG_CHAR brig_ChooseFile( PBRIG_CHAR sLabel, PBRIG_CHAR sMask );
+extern PBRIG_CHAR brig_SaveFile( PBRIG_CHAR sLabel, PBRIG_CHAR sMask, PBRIG_CHAR sInit );
 
-extern PBRIG_CHAR brig_ReadFile( PBRIG_CHAR szName, unsigned long * pDataLen = NULL );
+extern PBRIG_CHAR brig_ReadFile( PBRIG_CHAR szName, unsigned long * pLen = NULL );
+extern void brig_WriteFile( PBRIG_CHAR szName, PBRIG_CHAR szData, unsigned long ulLen = 0 );
 
 extern void brig_FillRect( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom, PBRIG_BRUSH hBrush );
 extern void brig_DrawRect( PBRIG_DC hDC, int iLeft, int iTop, int iRight, int iBottom );

@@ -52,6 +52,36 @@ bool fncOpen( brig_Widget *pBtn, unsigned int i, long l )
    return 0;
 }
 
+void RunCode( PBRIG_CHAR pCode )
+{
+   BRIG_CHAR pData[1024];
+   PBRIG_CHAR ptr = pData;
+
+   sprintf( ptr, "url = \r\n" );
+}
+
+bool fncRun( brig_Widget *pBtn, unsigned int i, long l )
+{
+
+   PBRIG_CHAR pBuffer;
+   brig_Edit * pEdit;
+
+   SYMBOL_UNUSED( pBtn );
+   SYMBOL_UNUSED( i );
+   SYMBOL_UNUSED( l );
+
+   pEdit = (brig_Edit *) brigApp.pMainWindow->FindWidget( TYPE_EDIT );
+   pBuffer = pEdit->GetText();
+   if( strlen( pBuffer ) > 8 )
+   {
+      RunCode( pBuffer );
+   }
+
+   free( pBuffer );
+   return 0;
+}
+
+
 int brig_Main( int argc, char *argv[] )
 {
 
@@ -74,6 +104,7 @@ int brig_Main( int argc, char *argv[] )
    oQBtn1.Create( &oPanel, 0, 0, 48, 40, (PBRIG_CHAR)"Run" );
    oQBtn1.lBackColor = oQBtn1.lBackClr1 = 0xcccccc;
    oQBtn1.SetFont( brigAddFont( (PBRIG_CHAR)"Georgia", 18, 400, 0, 1 ) );
+   oQBtn2.pfOnClick = fncRun;
 
    oQBtn2.Create( &oPanel, 48, 0, 48, 40, (PBRIG_CHAR)"Open" );
    oQBtn2.lBackColor = oQBtn2.lBackClr1 = 0xcccccc;

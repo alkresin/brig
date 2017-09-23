@@ -135,16 +135,23 @@ PBRIG_CHAR brig_ChooseFile( PBRIG_CHAR sLabel, PBRIG_CHAR sMask )
 
 }
 
-/*
-HB_FUNC( HWG_SAVEFILE )
-{
-   OPENFILENAME ofn;
-   TCHAR buffer[1024];
-   void *hFileName, *hStr1, *hStr2, *hTitle, *hInitDir;
-   LPCTSTR lpFileName, lpStr1, lpStr2;
-   HB_SIZE nSize, nLen1, nLen2;
-   LPTSTR lpFilter, lpFileBuff;
 
+PBRIG_CHAR brig_SaveFile( PBRIG_CHAR sLabel, PBRIG_CHAR sMask, PBRIG_CHAR sInit )
+{
+   PBRIG_CHAR lpFilter;
+   int nLen1, nLen2;
+
+   SYMBOL_UNUSED( sInit );
+
+   nLen1 = strlen( sLabel );
+   nLen2 = strlen( sMask );
+   lpFilter =
+         ( PBRIG_CHAR ) malloc( ( nLen1 + nLen2 + 4 ) * sizeof( BRIG_CHAR ) );
+   memset( lpFilter, 0, ( nLen1 + nLen2 + 4 ) * sizeof( BRIG_CHAR ) );
+   memcpy( lpFilter, sLabel, nLen1 * sizeof( BRIG_CHAR ) );
+   memcpy( lpFilter + nLen1 + 1, sMask, nLen2 * sizeof( BRIG_CHAR ) );
+
+/*
    lpFileName = HB_PARSTR( 1, &hFileName, &nSize );
    if( nSize < 1024 )
    {
@@ -155,39 +162,46 @@ HB_FUNC( HWG_SAVEFILE )
    }
    else
       lpFileBuff = HB_STRUNSHARE( &hFileName, lpFileName, nSize );
+*/
 
+   OPENFILENAME ofn;
+   BRIG_WCHAR buffer[1024];
+   PBRIG_WCHAR wcText = brig_str2WC( lpFilter, nLen1 + nLen2 + 2 );
+   bool bOk;
 
-   lpStr1 = HB_PARSTRDEF( 2, &hStr1, &nLen1 );
-   lpStr2 = HB_PARSTRDEF( 3, &hStr2, &nLen2 );
-
-   lpFilter = ( LPTSTR ) hb_xgrab( ( nLen1 + nLen2 + 4 ) * sizeof( TCHAR ) );
-   memset( lpFilter, 0, ( nLen1 + nLen2 + 4 ) * sizeof( TCHAR ) );
-   memcpy( lpFilter, lpStr1, nLen1 * sizeof( TCHAR ) );
-   memcpy( lpFilter + nLen1 + 1, lpStr2, nLen2 * sizeof( TCHAR ) );
-
-   hb_strfree( hStr1 );
-   hb_strfree( hStr2 );
-
+   sprintf( (PBRIG_CHAR)buffer, (PBRIG_CHAR) "*.*" );
    memset( ( void * ) &ofn, 0, sizeof( OPENFILENAME ) );
    ofn.lStructSize = sizeof( ofn );
    ofn.hwndOwner = GetActiveWindow(  );
-   ofn.lpstrFilter = lpFilter;
-   ofn.lpstrFile = lpFileBuff;
-   ofn.nMaxFile = nSize;
-   ofn.lpstrInitialDir = HB_PARSTR( 4, &hInitDir, NULL );
-   ofn.lpstrTitle = HB_PARSTR( 5, &hTitle, NULL );
+   ofn.lpstrFilter = wcText;
+   ofn.lpstrFile = buffer;
+   ofn.nMaxFile = 1024;
+   ofn.lpstrInitialDir = NULL;
+   ofn.lpstrTitle = NULL;
    ofn.Flags = OFN_FILEMUSTEXIST | OFN_EXPLORER;
-   if( HB_ISLOG( 6 ) && hb_parl( 6 ) )
-      ofn.Flags = ofn.Flags | OFN_OVERWRITEPROMPT;
 
-   if( GetSaveFileName( &ofn ) )
-      HB_RETSTR( ofn.lpstrFile );
+   bOk = GetSaveFileName( &ofn );
+
+   brig_free( wcText );
+   free( lpFilter );
+
+   if( bOk )
+   {
+      int iLen;
+
+   #if defined(UNICODE)
+      iLen = wcslen( ofn.lpstrFile );
+      return brig_WCTostr( CP_UTF8, ofn.lpstrFile, iLen );
+   #else
+      PBRIG_CHAR sRet;
+      iLen = strlen( ofn.lpstrFile );
+      sRet = ( PBRIG_CHAR ) malloc( iLen * sizeof( BRIG_CHAR ) + 1 );
+      memcpy( sRet, ofn.lpstrFile, iLen * sizeof( BRIG_CHAR ) );
+      sRet[iLen] = '\0';
+      return sRet;
+   #endif
+   }
    else
-      hb_retc( NULL );
-   hb_xfree( lpFilter );
-
-   hb_strfree( hFileName );
-   hb_strfree( hInitDir );
-   hb_strfree( hTitle );
+      return NULL;
 }
-*/
+
