@@ -170,3 +170,75 @@ PBRIG_FONT brig_ChooseFont( PBRIG_FONT hFontPrev, BRIGAPP_FONT *pbf )
 
    return NULL;
 }
+
+static void fncPreview( GtkFileChooser *file_chooser, gpointer data )
+{
+  GtkWidget *preview;
+  char *filename;
+  GdkPixbuf *pixbuf;
+  gboolean have_preview;
+
+  preview = GTK_WIDGET (data);
+  filename = gtk_file_chooser_get_preview_filename (file_chooser);
+
+  pixbuf = gdk_pixbuf_new_from_file_at_size (filename, 128, 128, NULL);
+  have_preview = (pixbuf != NULL);
+  g_free (filename);
+
+  gtk_image_set_from_pixbuf (GTK_IMAGE (preview), pixbuf);
+  if (pixbuf)
+    g_object_unref (pixbuf);
+
+  gtk_file_chooser_set_preview_widget_active (file_chooser, have_preview);
+}
+
+PBRIG_CHAR brig_ChooseFile( PBRIG_CHAR sLabel, PBRIG_CHAR sMask )
+{
+
+   GtkWidget * pSelector;
+   GtkFileFilter *pFilter;
+   gint resultado;
+   PBRIG_CHAR cTitle = (PBRIG_CHAR ) "Select a file";
+   PBRIG_CHAR  cDir = (PBRIG_CHAR) "";
+   GtkImage *pImage;
+   PBRIG_CHAR sFileName;
+   bool bOk;
+
+   pSelector = gtk_file_chooser_dialog_new ( cTitle, (GtkWindow *) brig_GetActiveWindow(),
+         GTK_FILE_CHOOSER_ACTION_OPEN,
+         GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+         GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL );
+
+   pFilter = gtk_file_filter_new();
+
+   gtk_file_filter_set_name( pFilter, sLabel );
+   gtk_file_filter_add_pattern  ( pFilter, sMask );
+
+   gtk_file_chooser_add_filter( (GtkFileChooser*)pSelector, pFilter );
+
+   gtk_file_chooser_set_current_folder ( (GtkFileChooser*)pSelector, cDir );
+
+   pImage = (GtkImage *)gtk_image_new();
+   gtk_file_chooser_set_pImage_widget( (GtkFileChooser*)pSelector, (GtkWidget*)pImage );
+   g_signal_connect( pSelector, "update-pImage", G_CALLBACK( fncPreview ), pImage );
+
+   resultado = gtk_dialog_run (GTK_DIALOG (pSelector));
+   if( resultado == GTK_RESPONSE_ACCEPT )
+   {
+      sFileName = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER(pSelector) );
+      g_free( sFileName );
+      bOk = 1;
+   }
+   else
+      bOk = 0;
+
+   gtk_widget_destroy( pSelector );
+
+   return (bOk)? sFileName : NULL;
+
+}
+
+PBRIG_CHAR brig_SaveFile( PBRIG_CHAR sLabel, PBRIG_CHAR sMask )
+{
+   return brig_ChooseFile( sLabel, sMask );
+}
