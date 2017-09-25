@@ -169,7 +169,7 @@ PBRIG_CHAR brig_SaveFile( PBRIG_CHAR sLabel, PBRIG_CHAR sMask, PBRIG_CHAR sInit 
    PBRIG_WCHAR wcText = brig_str2WC( lpFilter, nLen1 + nLen2 + 2 );
    bool bOk;
 
-   sprintf( (PBRIG_CHAR)buffer, (PBRIG_CHAR) "*.*" );
+   memset( ( void * ) buffer, 0, 10 );
    memset( ( void * ) &ofn, 0, sizeof( OPENFILENAME ) );
    ofn.lStructSize = sizeof( ofn );
    ofn.hwndOwner = GetActiveWindow(  );

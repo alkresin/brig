@@ -52,6 +52,33 @@ bool fncOpen( brig_Widget *pBtn, unsigned int i, long l )
    return 0;
 }
 
+bool fncSave( brig_Widget *pBtn, unsigned int i, long l )
+{
+
+   PBRIG_CHAR pFileName;
+
+   SYMBOL_UNUSED( pBtn );
+   SYMBOL_UNUSED( i );
+   SYMBOL_UNUSED( l );
+
+   pFileName = brig_SaveFile( "All files( *.* )", "*.*" );
+
+   if( pFileName )
+   {
+      brig_Edit * pEdit = (brig_Edit *) brigApp.pMainWindow->FindWidget( TYPE_EDIT );
+      PBRIG_CHAR pBuffer = pEdit->GetText();
+
+      if( pBuffer )
+      {
+         brig_WriteFile( pFileName, pBuffer );
+         free( pBuffer );
+      }
+      free( pFileName );
+   }
+
+   return 0;
+}
+
 void RunCode( PBRIG_CHAR pCode )
 {
    BRIG_CHAR pData[1024];
@@ -87,13 +114,29 @@ int brig_Main( int argc, char *argv[] )
 
    brig_MainWindow * pMain = new brig_MainWindow;   
    brig_Panel oPanel;
-   brig_QButton oQBtn1, oQBtn2;
+   brig_QButton oQBtn1, oQBtn2, oQBtn3;
    brig_Edit oEdit;
+   PBRIG_XMLITEM pXmlDoc;
 
    long pColors1[2] = {0x333333, 0xcccccc};
 
    if( argc > 1 ) 
       brig_writelog( NULL, "%s\r\n", argv[1] );
+
+   pXmlDoc = brigxml_GetDoc( (PBRIG_CHAR)"curl4servis.xml" );
+   if( !brigxml_Error() )
+   {
+      int iNum = 0;
+      PBRIG_XMLITEM pParent, pItem;
+      if( (pParent = brigxml_First( pXmlDoc )) != NULL )
+      {
+         pNode = oTree.AddNode( pParent->szTitle, fncTree, NULL, NULL, 0, 1 );
+         pNode->pData = (void*) pParent;
+         while( ( pItem = brigxml_Next( pParent, &iNum ) ) != NULL )
+            AddBranch( pNode, pItem );
+      }
+   }
+
    
    pMain->Create( 100, 100, 500, 340, (PBRIG_CHAR) "First Brig Window" );
    pMain->hFont = brigAddFont( (PBRIG_CHAR)"Georgia", 20 );
@@ -110,6 +153,11 @@ int brig_Main( int argc, char *argv[] )
    oQBtn2.lBackColor = oQBtn2.lBackClr1 = 0xcccccc;
    oQBtn2.SetFont( brigAddFont( (PBRIG_CHAR)"Georgia", 18, 400, 0, 1 ) );
    oQBtn2.pfOnClick = fncOpen;
+
+   oQBtn3.Create( &oPanel, 96, 0, 48, 40, (PBRIG_CHAR)"Save" );
+   oQBtn3.lBackColor = oQBtn3.lBackClr1 = 0xcccccc;
+   oQBtn3.SetFont( brigAddFont( (PBRIG_CHAR)"Georgia", 18, 400, 0, 1 ) );
+   oQBtn3.pfOnClick = fncSave;
 
    oEdit.Create( pMain, 4, 44, 480, 280, (PBRIG_CHAR)"", ES_MULTILINE | WS_BORDER );
    oEdit.pfOnSize = fnc_editOnSize;

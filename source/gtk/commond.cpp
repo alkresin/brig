@@ -225,8 +225,14 @@ PBRIG_CHAR brig_ChooseFile( PBRIG_CHAR sLabel, PBRIG_CHAR sMask )
    resultado = gtk_dialog_run (GTK_DIALOG (pSelector));
    if( resultado == GTK_RESPONSE_ACCEPT )
    {
-      sFileName = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER(pSelector) );
-      g_free( sFileName );
+      PBRIG_CHAR sTemp;
+      int iLen;
+      sTemp = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER(pSelector) );
+      iLen = strlen( sTemp );
+      sFileName = (PBRIG_CHAR) malloc( iLen + 1 );
+      memcpy( sFileName, sTemp, iLen );
+      sFileName[iLen] = '\0';
+      g_free( sTemp );
       bOk = 1;
    }
    else
@@ -238,7 +244,9 @@ PBRIG_CHAR brig_ChooseFile( PBRIG_CHAR sLabel, PBRIG_CHAR sMask )
 
 }
 
-PBRIG_CHAR brig_SaveFile( PBRIG_CHAR sLabel, PBRIG_CHAR sMask )
+PBRIG_CHAR brig_SaveFile( PBRIG_CHAR sLabel, PBRIG_CHAR sMask, PBRIG_CHAR sInit )
 {
+   SYMBOL_UNUSED( sInit );
+
    return brig_ChooseFile( sLabel, sMask );
 }
