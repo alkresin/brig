@@ -31,6 +31,7 @@ $(LIB_DIR)/libbrig_ansi.a : \
    $(OBJ_DIR)/draw.o \
    $(OBJ_DIR)/menu.o \
    $(OBJ_DIR)/message.o \
+   $(OBJ_DIR)/misc.o \
    $(OBJ_DIR)/strings.o \
    $(OBJ_DIR)/table.o \
    $(OBJ_DIR)/window.o
@@ -54,6 +55,7 @@ $(LIB_DIR)/libbrig.a : \
    $(OBJ_DIR)/draw.o \
    $(OBJ_DIR)/menu.o \
    $(OBJ_DIR)/message.o \
+   $(OBJ_DIR)/misc.o \
    $(OBJ_DIR)/strings.o \
    $(OBJ_DIR)/table.o \
    $(OBJ_DIR)/window.o

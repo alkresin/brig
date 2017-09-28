@@ -2,6 +2,13 @@
 #include "brig.h"
 #include <stdio.h>
 
+static PBRIG_CHAR pCmdFile = "curl.ccc";
+static PBRIG_CHAR pUrl = NULL;
+static PBRIG_CHAR pLogin = NULL;
+static PBRIG_CHAR pTns = NULL;
+static PBRIG_CHAR pFunc = NULL;
+static PBRIG_CHAR pParam = NULL;
+
 bool fnc_paneOnSize( brig_Widget *pPanel, WPARAM wParam, LPARAM lParam )
 {
    unsigned long iWidth = ((unsigned long)lParam) & 0xFFFF;
@@ -81,10 +88,35 @@ bool fncSave( brig_Widget *pBtn, unsigned int i, long l )
 
 void RunCode( PBRIG_CHAR pCode )
 {
-   BRIG_CHAR pData[1024];
+   BRIG_CHAR pData = (PBRIG_CHAR) malloc( sizeof(PBRIG_CHAR) * ( strlen(pCode)+512 ) );
    PBRIG_CHAR ptr = pData;
 
-   sprintf( ptr, "url = \r\n" );
+   if( !pUrl )
+      return;
+
+   sprintf( ptr, "url = %s\r\n", pUrl );
+   ptr += strlen( ptr );
+   sprintf( ptr, "request = POST\r\ndata = @curl.data\r\n-S\r\n-s\r\noutput = \"curl.out\"\r\n-L\r\n-k\r\nstderr = err.out\r\n" );
+   ptr += strlen( ptr );
+   if( pLogin )
+      sprintf( ptr, "-u %s\r\n", pLogin );
+
+   brig_WriteFile( pCmdFile, pData );
+
+   ptr = pData;
+   sprintf( ptr, "<soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:tns=\"%s\">\r\n", pTns );
+   ptr += strlen( ptr );
+   sprintf( ptr, "<soap:Header/><soap:Body><tns:%s>\r\n", pFunc );
+   ptr += strlen( ptr );
+   sprintf( ptr, "<tns:%s><![CDATA[%s]]></tns:%s>\r\n", pParam, pCode, pParam );
+   ptr += strlen( ptr );
+   sprintf( ptr, "</tns:%s>\r\n", pFunc );
+   ptr += strlen( ptr );
+   sprintf( ptr, "</soap:Body></soap:Envelope>\r\n" );
+
+   brig_WriteFile( "curl.data", pData );
+
+   free( pData );
 }
 
 bool fncRun( brig_Widget *pBtn, unsigned int i, long l )
@@ -130,10 +162,33 @@ int brig_Main( int argc, char *argv[] )
       PBRIG_XMLITEM pParent, pItem;
       if( (pParent = brigxml_First( pXmlDoc )) != NULL )
       {
-         pNode = oTree.AddNode( pParent->szTitle, fncTree, NULL, NULL, 0, 1 );
-         pNode->pData = (void*) pParent;
+         PBRIG_CHAR pAttrName;
          while( ( pItem = brigxml_Next( pParent, &iNum ) ) != NULL )
-            AddBranch( pNode, pItem );
+         {
+             if( !strcmp( pItem->szTitle, "service" ) && !( pItem->amAttr.empty() ) )
+             {
+                for( std::map<std::string,char*>::iterator it = pItem->amAttr.begin(); it != pItem->amAttr.end(); it++ )
+                {
+                   pAttrName = (PBRIG_CHAR) ( (*it).first.c_str() );
+                   if( !strcmp( pAttrName, "url" ) )
+                      pUrl = (*it).second;
+                   else if( !strcmp( pAttrName, "login" ) )
+                      pLogin = (*it).second;
+                   else if( !strcmp( pAttrName, "tns" ) )
+                      pTns = (*it).second;
+                   else if( !strcmp( pAttrName, "func" ) )
+                      pFunc = (*it).second;
+                   else if( !strcmp( pAttrName, "param" ) )
+                      pParam = (*it).second;
+                }
+                if( !pTns )
+                   pTns = (PBRIG_CHAR) "wstest";
+                if( !pFunc )
+                   pFunc = (PBRIG_CHAR) "wst_exec";
+                if( !pParam )
+                   pParam = (PBRIG_CHAR) "cCode";
+             }
+         }
       }
    }
 
@@ -147,7 +202,7 @@ int brig_Main( int argc, char *argv[] )
    oQBtn1.Create( &oPanel, 0, 0, 48, 40, (PBRIG_CHAR)"Run" );
    oQBtn1.lBackColor = oQBtn1.lBackClr1 = 0xcccccc;
    oQBtn1.SetFont( brigAddFont( (PBRIG_CHAR)"Georgia", 18, 400, 0, 1 ) );
-   oQBtn2.pfOnClick = fncRun;
+   oQBtn1.pfOnClick = fncRun;
 
    oQBtn2.Create( &oPanel, 48, 0, 48, 40, (PBRIG_CHAR)"Open" );
    oQBtn2.lBackColor = oQBtn2.lBackClr1 = 0xcccccc;

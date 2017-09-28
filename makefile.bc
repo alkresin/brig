@@ -80,6 +80,7 @@ BRIG_LIB_OBJS = \
    $(OBJ_DIR)\draw.obj \
    $(OBJ_DIR)\menu.obj \
    $(OBJ_DIR)\message.obj \
+   $(OBJ_DIR)\misc.obj \
    $(OBJ_DIR)\strings.obj \
    $(OBJ_DIR)\table.obj \
    $(OBJ_DIR)\window.obj
