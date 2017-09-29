@@ -8,6 +8,7 @@ static PBRIG_CHAR pLogin = NULL;
 static PBRIG_CHAR pTns = NULL;
 static PBRIG_CHAR pFunc = NULL;
 static PBRIG_CHAR pParam = NULL;
+static long pColors1[2] = {0x333333, 0xcccccc};
 
 bool fnc_paneOnSize( brig_Widget *pPanel, WPARAM wParam, LPARAM lParam )
 {
@@ -72,7 +73,8 @@ bool fncSave( brig_Widget *pBtn, unsigned int i, long l )
 
    if( pFileName )
    {
-      brig_Edit * pEdit = (brig_Edit *) brigApp.pMainWindow->FindWidget( TYPE_EDIT );
+      brig_Container *pParent = ((brig_Container*)(pBtn->pParent->pParent));
+      brig_Edit * pEdit = (brig_Edit *) pParent->FindWidget( TYPE_EDIT );
       PBRIG_CHAR pBuffer = pEdit->GetText();
 
       if( pBuffer )
@@ -86,10 +88,76 @@ bool fncSave( brig_Widget *pBtn, unsigned int i, long l )
    return 0;
 }
 
-void RunCode( PBRIG_CHAR pCode )
+bool fncCloseDlg( brig_Widget *pBtn, unsigned int i, long l )
 {
-   BRIG_CHAR pData = (PBRIG_CHAR) malloc( sizeof(PBRIG_CHAR) * ( strlen(pCode)+512 ) );
+   SYMBOL_UNUSED( i );
+   SYMBOL_UNUSED( l );
+
+   brig_Dialog *pDlg = ((brig_Dialog*)(pBtn->pParent->pParent));
+
+   pDlg->pResult = (void*) pDlg->avWidgets[0]->GetText();
+   pDlg->Close();
+   return 1;
+}
+
+static void showResult( void )
+{
+
+   PBRIG_CHAR pBuffer = brig_ReadFile( (PBRIG_CHAR) "curl.out" );
+
+   if( !pBuffer )
+      return;
+
+   brig_Dialog oDlg;
+   brig_Panel oPanel;
+   brig_QButton oQBtn1, oQBtn2;
+   brig_Edit oEdit;
+   PBRIG_CHAR ptr;
+   PBRIG_CHAR ptr2 = NULL;
+
+   ptr = strstr( pBuffer, "<m:return" );
+   if( ptr )
+   {
+      ptr = strchr( ptr, '>' );
+      if( ptr )
+      {
+         ptr ++;
+         ptr2 = strstr( ptr, "</m:return" );
+         *ptr2 = '\0';
+      }
+   }
+   if( !ptr || !ptr2 )
+      ptr = pBuffer;
+
+   oDlg.Create( brigApp.pMainWindow, 200, 200, 400, 250, (PBRIG_CHAR) "Result" );
+   oDlg.hFont = brigAddFont( brigApp.pMainWindow->hFont );
+
+   oPanel.Create( &oDlg, 0, 0, 400, 40, brigAddStyle( 2, pColors1 ) );
+   oPanel.pfOnSize = fnc_paneOnSize;
+
+   oQBtn1.Create( &oPanel, 0, 0, 48, 40, (PBRIG_CHAR)"Close" );
+   oQBtn1.lBackColor = oQBtn1.lBackClr1 = 0xcccccc;
+   oQBtn1.SetFont( brigAddFont( (PBRIG_CHAR)"Georgia", 18, 400, 0, 1 ) );
+   oQBtn1.pfOnClick = fncCloseDlg;
+
+   oQBtn2.Create( &oPanel, 48, 0, 48, 40, (PBRIG_CHAR)"Save" );
+   oQBtn2.lBackColor = oQBtn2.lBackClr1 = 0xcccccc;
+   oQBtn2.SetFont( brigAddFont( (PBRIG_CHAR)"Georgia", 18, 400, 0, 1 ) );
+   oQBtn2.pfOnClick = fncSave;
+
+   oEdit.Create( &oDlg, 4, 44, 390, 200, ptr, ES_MULTILINE );
+   oEdit.pfOnSize = fnc_editOnSize;
+   free( pBuffer );
+
+   oDlg.Activate();
+
+}
+
+static void RunCode( PBRIG_CHAR pCode )
+{
+   PBRIG_CHAR pData = (PBRIG_CHAR) malloc( sizeof(PBRIG_CHAR) * ( strlen(pCode)+512 ) );
    PBRIG_CHAR ptr = pData;
+   BRIG_CHAR szCmd[64];
 
    if( !pUrl )
       return;
@@ -117,6 +185,12 @@ void RunCode( PBRIG_CHAR pCode )
    brig_WriteFile( "curl.data", pData );
 
    free( pData );
+
+   sprintf( szCmd, "curl -K %s", pCmdFile );
+   brig_RunConsoleApp( szCmd );
+
+   showResult();
+
 }
 
 bool fncRun( brig_Widget *pBtn, unsigned int i, long l )
@@ -149,11 +223,6 @@ int brig_Main( int argc, char *argv[] )
    brig_QButton oQBtn1, oQBtn2, oQBtn3;
    brig_Edit oEdit;
    PBRIG_XMLITEM pXmlDoc;
-
-   long pColors1[2] = {0x333333, 0xcccccc};
-
-   if( argc > 1 ) 
-      brig_writelog( NULL, "%s\r\n", argv[1] );
 
    pXmlDoc = brigxml_GetDoc( (PBRIG_CHAR)"curl4servis.xml" );
    if( !brigxml_Error() )
@@ -193,7 +262,7 @@ int brig_Main( int argc, char *argv[] )
    }
 
    
-   pMain->Create( 100, 100, 500, 340, (PBRIG_CHAR) "First Brig Window" );
+   pMain->Create( 100, 100, 500, 340, (PBRIG_CHAR) "Curl For WebService" );
    pMain->hFont = brigAddFont( (PBRIG_CHAR)"Georgia", 20 );
    
    oPanel.Create( pMain, 0, 0, 500, 40, brigAddStyle( 2, pColors1 ) );
@@ -206,16 +275,25 @@ int brig_Main( int argc, char *argv[] )
 
    oQBtn2.Create( &oPanel, 48, 0, 48, 40, (PBRIG_CHAR)"Open" );
    oQBtn2.lBackColor = oQBtn2.lBackClr1 = 0xcccccc;
-   oQBtn2.SetFont( brigAddFont( (PBRIG_CHAR)"Georgia", 18, 400, 0, 1 ) );
+   oQBtn2.SetFont( brigAddFont( oQBtn1.hFont ) );
    oQBtn2.pfOnClick = fncOpen;
 
    oQBtn3.Create( &oPanel, 96, 0, 48, 40, (PBRIG_CHAR)"Save" );
    oQBtn3.lBackColor = oQBtn3.lBackClr1 = 0xcccccc;
-   oQBtn3.SetFont( brigAddFont( (PBRIG_CHAR)"Georgia", 18, 400, 0, 1 ) );
+   oQBtn3.SetFont( brigAddFont( oQBtn1.hFont ) );
    oQBtn3.pfOnClick = fncSave;
 
    oEdit.Create( pMain, 4, 44, 480, 280, (PBRIG_CHAR)"", ES_MULTILINE | WS_BORDER );
    oEdit.pfOnSize = fnc_editOnSize;
+   if( argc > 1 ) 
+   {
+      PBRIG_CHAR pBuffer = brig_ReadFile( argv[1] );
+      if( pBuffer )
+      {
+         oEdit.SetText( pBuffer );
+         free( pBuffer );
+      }
+   }
 
    pMain->Activate();
 

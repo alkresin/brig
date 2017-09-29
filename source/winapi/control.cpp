@@ -420,6 +420,11 @@ static LRESULT CALLBACK s_QButtonProc( BRIG_HANDLE handle, UINT message,
             InvalidateRect( handle, NULL, 1 );
          }
          return 0;
+
+      case WM_LBUTTONUP:
+         if( pObject->iState == 2 )
+            ReleaseCapture();
+         break;
    }
 
    if( !( pObject->onEvent( message, wParam, lParam ) ) )

@@ -677,10 +677,10 @@ bool brig_QButton::onEvent( UINT message, WPARAM wParam, LPARAM lParam )
       case WM_LBUTTONUP:
          if( iState == 2 )
          {
-            iState = 1;
-            brig_RedrawWindow( this );
+            iState = 0;
             if( pfOnClick )
                pfOnClick( this, wParam, lParam );
+            brig_RedrawWindow( this );
          }
          break;
    }

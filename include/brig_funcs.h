@@ -47,7 +47,7 @@ extern long int brig_ChooseColor( long int lDefColor = -1 );
 extern PBRIG_CHAR brig_ChooseFile( PBRIG_CHAR sLabel, PBRIG_CHAR sMask );
 extern PBRIG_CHAR brig_SaveFile( PBRIG_CHAR sLabel, PBRIG_CHAR sMask, PBRIG_CHAR sInit = NULL );
 
-extern int brig_RunConsoleApp( PBRIG_CHAR sCommand, PBRIG_CHAR sOutFileName );
+extern int brig_RunConsoleApp( PBRIG_CHAR sCommand, PBRIG_CHAR sOutFileName = NULL );
 
 extern PBRIG_CHAR brig_ReadFile( PBRIG_CHAR szName, unsigned long * pLen = NULL );
 extern void brig_WriteFile( PBRIG_CHAR szName, PBRIG_CHAR szData, unsigned long ulLen = 0 );
