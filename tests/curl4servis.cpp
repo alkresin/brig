@@ -10,7 +10,7 @@ static PBRIG_CHAR pFunc = NULL;
 static PBRIG_CHAR pParam = NULL;
 static long pColors1[2] = {0x333333, 0xcccccc};
 
-bool fnc_paneOnSize( brig_Widget *pPanel, WPARAM wParam, LPARAM lParam )
+static bool fnc_paneOnSize( brig_Widget *pPanel, WPARAM wParam, LPARAM lParam )
 {
    unsigned long iWidth = ((unsigned long)lParam) & 0xFFFF;
 
@@ -21,7 +21,7 @@ bool fnc_paneOnSize( brig_Widget *pPanel, WPARAM wParam, LPARAM lParam )
 
 }
 
-bool fnc_editOnSize( brig_Widget *pEdit, WPARAM wParam, LPARAM lParam )
+static bool fnc_editOnSize( brig_Widget *pEdit, WPARAM wParam, LPARAM lParam )
 {
    unsigned long iWidth = ((unsigned long)lParam) & 0xFFFF;
    unsigned long iHeight = ( ((unsigned long)lParam) >> 16 ) & 0xFFFF;
@@ -33,7 +33,7 @@ bool fnc_editOnSize( brig_Widget *pEdit, WPARAM wParam, LPARAM lParam )
 
 }
 
-bool fncOpen( brig_Widget *pBtn, unsigned int i, long l )
+static bool fncOpen( brig_Widget *pBtn, unsigned int i, long l )
 {
 
    PBRIG_CHAR pFileName;
@@ -60,7 +60,7 @@ bool fncOpen( brig_Widget *pBtn, unsigned int i, long l )
    return 0;
 }
 
-bool fncSave( brig_Widget *pBtn, unsigned int i, long l )
+static bool fncSave( brig_Widget *pBtn, unsigned int i, long l )
 {
 
    PBRIG_CHAR pFileName;
@@ -88,7 +88,7 @@ bool fncSave( brig_Widget *pBtn, unsigned int i, long l )
    return 0;
 }
 
-bool fncCloseDlg( brig_Widget *pBtn, unsigned int i, long l )
+static bool fncCloseDlg( brig_Widget *pBtn, unsigned int i, long l )
 {
    SYMBOL_UNUSED( i );
    SYMBOL_UNUSED( l );
@@ -99,6 +99,37 @@ bool fncCloseDlg( brig_Widget *pBtn, unsigned int i, long l )
    pDlg->Close();
    return 1;
 }
+
+static PBRIG_FONT fontFromXML( PBRIG_XMLITEM pItem )
+{
+   PBRIG_CHAR pAttrName;
+   PBRIG_CHAR pName = NULL;
+   int height = 0;
+   int weight = 400;
+   int italic = 0;
+   int charset = 204;
+
+   for( std::map<std::string,char*>::iterator it = pItem->amAttr.begin(); it != pItem->amAttr.end(); it++ )
+   {
+      pAttrName = (PBRIG_CHAR) ( (*it).first.c_str() );
+      if( !strcmp( pAttrName, "name" ) )
+         pName = (*it).second;
+      else if( !strcmp( pAttrName, "height" ) )
+         height = atoi( (*it).second );
+      else if( !strcmp( pAttrName, "weight" ) )
+         weight = atoi( (*it).second );
+      else if( !strcmp( pAttrName, "italic" ) )
+         italic = atoi( (*it).second );
+      else if( !strcmp( pAttrName, "charset" ) )
+         charset = atoi( (*it).second );
+   }
+   if( pName )
+      return brig_CreateFont( pName, height, weight, charset, italic );
+   else
+      return NULL;
+
+}
+
 
 static void showResult( void )
 {
@@ -193,7 +224,7 @@ static void RunCode( PBRIG_CHAR pCode )
 
 }
 
-bool fncRun( brig_Widget *pBtn, unsigned int i, long l )
+static bool fncRun( brig_Widget *pBtn, unsigned int i, long l )
 {
 
    PBRIG_CHAR pBuffer;
@@ -223,6 +254,7 @@ int brig_Main( int argc, char *argv[] )
    brig_QButton oQBtn1, oQBtn2, oQBtn3;
    brig_Edit oEdit;
    PBRIG_XMLITEM pXmlDoc;
+   PBRIG_FONT pMainFont = NULL;
 
    pXmlDoc = brigxml_GetDoc( (PBRIG_CHAR)"curl4servis.xml" );
    if( !brigxml_Error() )
@@ -257,30 +289,34 @@ int brig_Main( int argc, char *argv[] )
                 if( !pParam )
                    pParam = (PBRIG_CHAR) "cCode";
              }
+             else if( !strcmp( pItem->szTitle, "font" ) && !( pItem->amAttr.empty() ) )
+                pMainFont = fontFromXML( pItem );
          }
       }
    }
 
+   if( !pMainFont )
+      pMainFont = brig_CreateFont( (PBRIG_CHAR)"Georgia", 20 );
    
    pMain->Create( 100, 100, 500, 340, (PBRIG_CHAR) "Curl For WebService" );
-   pMain->hFont = brigAddFont( (PBRIG_CHAR)"Georgia", 20 );
+   pMain->hFont = pMainFont;
    
    oPanel.Create( pMain, 0, 0, 500, 40, brigAddStyle( 2, pColors1 ) );
    oPanel.pfOnSize = fnc_paneOnSize;
 
    oQBtn1.Create( &oPanel, 0, 0, 48, 40, (PBRIG_CHAR)"Run" );
    oQBtn1.lBackColor = oQBtn1.lBackClr1 = 0xcccccc;
-   oQBtn1.SetFont( brigAddFont( (PBRIG_CHAR)"Georgia", 18, 400, 0, 1 ) );
+   oQBtn1.SetFont( brig_CreateFont( (PBRIG_CHAR)"Georgia", 18, 400, 0, 1 ) );
    oQBtn1.pfOnClick = fncRun;
 
    oQBtn2.Create( &oPanel, 48, 0, 48, 40, (PBRIG_CHAR)"Open" );
    oQBtn2.lBackColor = oQBtn2.lBackClr1 = 0xcccccc;
-   oQBtn2.SetFont( brigAddFont( oQBtn1.hFont ) );
+   oQBtn2.SetFont( oQBtn1.hFont );
    oQBtn2.pfOnClick = fncOpen;
 
    oQBtn3.Create( &oPanel, 96, 0, 48, 40, (PBRIG_CHAR)"Save" );
    oQBtn3.lBackColor = oQBtn3.lBackClr1 = 0xcccccc;
-   oQBtn3.SetFont( brigAddFont( oQBtn1.hFont ) );
+   oQBtn3.SetFont( oQBtn1.hFont );
    oQBtn3.pfOnClick = fncSave;
 
    oEdit.Create( pMain, 4, 44, 480, 280, (PBRIG_CHAR)"", ES_MULTILINE | WS_BORDER );

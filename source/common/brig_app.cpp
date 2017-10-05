@@ -81,16 +81,11 @@ PBRIG_FONT brigAddFont( PBRIG_CHAR fontName, int fnHeight, int fnWeight,
    }
 }
 
-PBRIG_FONT brigAddFont( PBRIG_FONT pFontBase, bool bAsBase )
+PBRIG_FONT brigAddFont( PBRIG_FONT pFontBase )
 {
    unsigned int i, iFirst = 0;
    BRIGAPP_FONT bf = { 0 };
-   PBRIG_FONT pFont;
-
-   if( bAsBase )
-      pFont = brig_ChooseFont( pFontBase, &bf );
-   else
-      pFont = pFontBase;
+   PBRIG_FONT pFont = brig_ChooseFont( pFontBase, &bf );
 
    if( pFont )
    {
@@ -106,7 +101,7 @@ PBRIG_FONT brigAddFont( PBRIG_FONT pFontBase, bool bAsBase )
          if( brigApp.avFonts[i].iCount == 0 && !iFirst )
             iFirst = i;
       }
-      if( i >= brigApp.avFonts.size() )
+      if( i > brigApp.avFonts.size() )
       {
          bf.pFont = pFont;
          bf.iCount = 1;

@@ -41,8 +41,8 @@ extern PBRIG_BRUSH brig_CreateBrush( long int lColor );
 extern bool brig_CompareBrush( PBRIG_BRUSH pBrush, long int lColor );
 extern PBRIG_PEN brig_CreatePen( int iWidth = 1, long int lColor = 0, int iStyle = 0 );
 extern bool brig_ComparePen( PBRIG_PEN pPen, int iWidth, long int lColor, int iStyle );
-extern PBRIG_FONT brig_CreateFont( PBRIG_CHAR fontName, int fnHeight, int fnWeight,
-               DWORD fdwCharSet, DWORD fdwItalic, DWORD fdwUnderline, DWORD fdwStrikeOut  );
+extern PBRIG_FONT brig_CreateFont( PBRIG_CHAR fontName, int fnHeight, int fnWeight = 400,
+               DWORD fdwCharSet = 0, DWORD fdwItalic = 0, DWORD fdwUnderline = 0, DWORD fdwStrikeOut = 0 );
 extern long int brig_ChooseColor( long int lDefColor = -1 );
 extern PBRIG_CHAR brig_ChooseFile( PBRIG_CHAR sLabel, PBRIG_CHAR sMask );
 extern PBRIG_CHAR brig_SaveFile( PBRIG_CHAR sLabel, PBRIG_CHAR sMask, PBRIG_CHAR sInit = NULL );

@@ -74,7 +74,7 @@ public:
 
 extern PBRIG_FONT brigAddFont( PBRIG_CHAR fontName, int fnHeight, int fnWeight = 400,
                DWORD fdwCharSet = 0, DWORD fdwItalic = 0, DWORD fdwUnderline = 0, DWORD fdwStrikeOut = 0);
-extern PBRIG_FONT brigAddFont( PBRIG_FONT pFontBase, bool bAsBase = 0 );
+extern PBRIG_FONT brigAddFont( PBRIG_FONT pFontBase );
 extern PBRIG_PEN brigAddPen( int iWidth = 1, long int lColor = 0, int iStyle = 0 );
 extern void brigDelPen( PBRIG_PEN pPen );
 extern PBRIG_BRUSH brigAddBrush( long int lColor );
