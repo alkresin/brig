@@ -155,9 +155,9 @@ void fncMenu2( void )
 
    oDlg.Create( &oMain, 200, 200, 200, 250, (PBRIG_CHAR) "A test dialog" );
 
-   oEdit1.Create( &oDlg, 20, 20, 100, 28, NULL, WS_TABSTOP );
-   oEdit2.Create( &oDlg, 20, 50, 100, 28, NULL, WS_TABSTOP );
-   oEdit3.Create( &oDlg, 20, 80, 100, 28, NULL, WS_TABSTOP );
+   oEdit1.Create( &oDlg, 20, 20, 100, 28, (PBRIG_CHAR) "1", (PBRIG_CHAR) "First", WS_TABSTOP );
+   oEdit2.Create( &oDlg, 20, 50, 100, 28, (PBRIG_CHAR) "2", (PBRIG_CHAR) "Second", WS_TABSTOP );
+   oEdit3.Create( &oDlg, 20, 80, 100, 28, (PBRIG_CHAR) "3", (PBRIG_CHAR) "Third", WS_TABSTOP );
 
    oBtnD.Create( &oDlg, 50, 170, 100, 32, (PBRIG_CHAR) "Ok" );
    oBtnD.pfOnClick = fncCloseDlg;
