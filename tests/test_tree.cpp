@@ -128,7 +128,7 @@ int brig_Main( int argc, char *argv[] )
       oTree.AddNode( (PBRIG_CHAR)"Second", fncTree, NULL, NULL, 2 );
    }
 
-   oEdit.Create( &oMain, 220, 12, 300, 220, NULL, ES_MULTILINE );
+   oEdit.Create( &oMain, 220, 12, 300, 220, NULL, NULL, ES_MULTILINE );
    oEdit.pfOnSize = fncEditOnSize;
 
    oPict.Create( &oMain, 220, 240, 300, 225, hBitmap );

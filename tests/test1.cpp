@@ -7,6 +7,30 @@ brig_Edit oEdit;
 brig_Label oLabel;
 unsigned int idTimer = 0, idCount;
 
+bool Melody( brig_Widget *pBtn, unsigned int i, long l )
+{
+float B = 493.88, D = 587.32, A = 440.00, G = 392.00;
+
+    SYMBOL_UNUSED( pBtn );
+    SYMBOL_UNUSED( i );
+    SYMBOL_UNUSED( l );
+	Beep(B, 300);
+	Beep(D, 300);
+	Beep(B, 300);
+	Beep(D, 600);
+
+	Beep(B, 300);
+	Beep(A, 300);
+	Beep(B, 600);
+
+	Beep(A, 300);
+	Beep(G, 300);
+	Beep(A, 600);
+	Beep(G, 600);
+
+	return 0;
+}
+
 bool fncOnClose( brig_Widget *pDlg )
 {
    SYMBOL_UNUSED( pDlg );
@@ -204,6 +228,7 @@ int brig_Main( int argc, char *argv[] )
    oQBtn.Create( &oPanel, 0, 0, 48, 40, (PBRIG_CHAR)"Ok" );
    oQBtn.lBackColor = oQBtn.lBackClr1 = 0xcccccc;
    oQBtn.SetFont( brigAddFont( (PBRIG_CHAR)"Georgia", 18, 400, 0, 1 ) );
+   oQBtn.pfOnClick = Melody;
 
    oEdit.Create( &oMain, 20, 60, 120, 28 );
    oEdit.pfOnFocusIn  = fncFocusIn1;

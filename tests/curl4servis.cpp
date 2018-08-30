@@ -176,7 +176,7 @@ static void showResult( void )
    oQBtn2.SetFont( brigAddFont( (PBRIG_CHAR)"Georgia", 18, 400, 0, 1 ) );
    oQBtn2.pfOnClick = fncSave;
 
-   oEdit.Create( &oDlg, 4, 44, 390, 200, ptr, ES_MULTILINE );
+   oEdit.Create( &oDlg, 4, 44, 390, 200, ptr, NULL, ES_MULTILINE );
    oEdit.pfOnSize = fnc_editOnSize;
    free( pBuffer );
 
@@ -319,7 +319,7 @@ int brig_Main( int argc, char *argv[] )
    oQBtn3.SetFont( oQBtn1.hFont );
    oQBtn3.pfOnClick = fncSave;
 
-   oEdit.Create( pMain, 4, 44, 480, 280, (PBRIG_CHAR)"", ES_MULTILINE | WS_BORDER );
+   oEdit.Create( pMain, 4, 44, 480, 280, (PBRIG_CHAR)"", NULL, ES_MULTILINE | WS_BORDER );
    oEdit.pfOnSize = fnc_editOnSize;
    if( argc > 1 ) 
    {

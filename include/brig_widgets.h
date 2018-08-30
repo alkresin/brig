@@ -57,7 +57,9 @@ extern int brig_GetScrollRange( brig_Widget *pWidget, bool bVertical, int *pMinP
 extern void brig_SetScrollRange( brig_Widget *pWidget, bool bVertical, int iMinPos, int iMaxPos );
 extern int brig_GetScrollPage( brig_Widget *pWidget, bool bVertical );
 extern void brig_SetScrollPage( brig_Widget *pWidget, bool bVertical, int iPage );
-
+extern bool brig_AddToolTip( brig_Widget *pWidget, PBRIG_CHAR lpText );
+extern void brig_DelToolTip( brig_Widget *pWidget );
+extern void brig_SetToolTipText( brig_Widget *pWidget, PBRIG_CHAR lpText );
 
 class brig_Label : public brig_Widget
 {
@@ -72,10 +74,14 @@ class brig_Edit : public brig_Widget
 public:
 
    brig_Edit();
+   ~brig_Edit();
+
    BRIG_HANDLE Create( brig_Container *pParent,
-          int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption = NULL, unsigned long ulStyle = WS_BORDER, unsigned long ulExStyle = 0 );
+          int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption = NULL, PBRIG_CHAR lpTooltip = NULL, unsigned long ulStyle = WS_BORDER, unsigned long ulExStyle = 0 );
 
    bool onEvent( UINT message, WPARAM wParam, LPARAM lParam );
+
+   bool bTooltip;
 };
 
 class brig_GroupBox : public brig_Widget

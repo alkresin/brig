@@ -617,3 +617,25 @@ void brig_SetScrollRange( brig_Widget *pWidget, bool bVertical, int iMinPos, int
       gtk_adjustment_changed( adj );
    }
 }
+
+bool brig_AddToolTip( brig_Widget *pWidget, PBRIG_CHAR lpText )
+{
+
+   gtk_widget_set_tooltip_text( ( GtkWidget * ) pWidget->Handle(), lpText );
+   return 1;
+
+}
+
+void brig_DelToolTip( brig_Widget *pWidget )
+{
+
+   gtk_widget_set_tooltip_text( ( GtkWidget * ) pWidget->Handle(), NULL );
+
+}
+
+void brig_SetToolTipText( brig_Widget *pWidget, PBRIG_CHAR lpText )
+{
+
+   gtk_widget_set_tooltip_text( ( GtkWidget * ) pWidget->Handle(), lpText );
+
+}

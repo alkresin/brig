@@ -16,6 +16,9 @@ static WNDPROC wpOrigComboProc = NULL;
 static WNDPROC wpOrigTabProc = NULL;
 static WNDPROC wpOrigTreeProc = NULL;
 
+static HWND hWndTT = 0;
+static bool bToolTipBalloon = 0;
+
 /* -------- Label --------- */
 
 static LRESULT CALLBACK s_LabelProc( BRIG_HANDLE hLabel, UINT message,
@@ -766,4 +769,70 @@ void brig_SetScrollPage( brig_Widget *pWidget, bool bVertical, int iPage )
    si.nPage = iPage;
 
    SetScrollInfo( pWidget->Handle(), (bVertical)? SB_VERT : SB_HORZ, &si, 1 );
+}
+
+bool brig_AddToolTip( brig_Widget *pWidget, PBRIG_CHAR lpText )
+{
+   HWND hWnd = pWidget->Handle();
+   TOOLINFO ti;
+   int iStyle = 0;
+
+   if( bToolTipBalloon )
+      iStyle = TTS_BALLOON;
+
+   if( !hWndTT )
+      hWndTT = CreateWindow( TOOLTIPS_CLASS, NULL, WS_POPUP | TTS_ALWAYSTIP | iStyle,
+            CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+            NULL, ( HMENU ) NULL, GetModuleHandle( NULL ), NULL );
+   if( !hWndTT )
+      return 0;
+
+   memset( &ti, 0, sizeof( TOOLINFO ) );
+   ti.cbSize = sizeof( TOOLINFO );
+   ti.uFlags = TTF_SUBCLASS | TTF_IDISHWND;
+   ti.hwnd = GetParent( ( HWND ) hWnd );
+   ti.uId = ( UINT_PTR ) hWnd;
+   ti.hinst = GetModuleHandle( NULL );
+   ti.lpszText = brig_str2WC( lpText );
+
+   return SendMessage( hWndTT, TTM_ADDTOOL, 0, ( LPARAM ) ( LPTOOLINFO ) & ti );
+}
+
+void brig_DelToolTip( brig_Widget *pWidget )
+{
+   HWND hWnd = pWidget->Handle();
+   TOOLINFO ti;
+
+   if( hWndTT )
+   {
+      memset( &ti, 0, sizeof( TOOLINFO ) );
+      ti.cbSize = sizeof( TOOLINFO );
+      ti.uFlags = TTF_IDISHWND;
+      ti.hwnd = GetParent( ( HWND ) hWnd );
+      ti.uId = ( UINT_PTR ) hWnd;
+      ti.hinst = GetModuleHandle( NULL );
+
+      SendMessage( hWndTT, TTM_DELTOOL, 0, ( LPARAM ) ( LPTOOLINFO ) & ti );
+   }
+}
+
+void brig_SetToolTipText( brig_Widget *pWidget, PBRIG_CHAR lpText )
+{
+   HWND hWnd = pWidget->Handle();
+
+   if( hWndTT )
+   {
+      TOOLINFO ti;
+      void * hStr;
+
+      ti.cbSize = sizeof( TOOLINFO );
+      ti.uFlags = TTF_IDISHWND;
+      ti.hwnd = GetParent( ( HWND ) hWnd );
+      ti.uId = ( UINT_PTR ) hWnd;
+      ti.hinst = GetModuleHandle( NULL );
+      ti.lpszText = brig_str2WC( lpText );
+
+      SendMessage( hWndTT, TTM_SETTOOLINFO, 0,
+                            ( LPARAM ) ( LPTOOLINFO ) & ti );
+   }
 }

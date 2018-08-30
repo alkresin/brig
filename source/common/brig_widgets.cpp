@@ -35,10 +35,17 @@ BRIG_HANDLE brig_Label::Create( brig_Container *pParent,
 brig_Edit::brig_Edit():brig_Widget()
 {
    uiType = TYPE_EDIT;
+   bTooltip = 0;
+}
+
+brig_Edit::~brig_Edit()
+{
+   if( bTooltip )
+      brig_DelToolTip( this );
 }
 
 BRIG_HANDLE brig_Edit::Create( brig_Container * pParent,
-          int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption, unsigned long ulStyle, unsigned long ulExStyle )
+          int x, int y, int nWidth, int nHeight, PBRIG_CHAR lpCaption, PBRIG_CHAR lpTooltip, unsigned long ulStyle, unsigned long ulExStyle )
 {
 
    brig_Widget::Create( pParent, x, y, nWidth, nHeight );
@@ -48,6 +55,9 @@ BRIG_HANDLE brig_Edit::Create( brig_Container * pParent,
 
    if( !hFont && pParent->hFont )
       SetFont( pParent->hFont );
+   if( lpTooltip )
+      bTooltip = brig_AddToolTip( this, lpTooltip );
+
    brig_SetWidgetData( this );
 
    return handle;
