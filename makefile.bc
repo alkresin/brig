@@ -46,7 +46,6 @@ CLIBFLAGSDEBUG       = -v $(CLIBFLAGS)
 LDFLAGS              = $(LDFLAGS)
 
 CC_CMD = $(CC) $(CLIBFLAGS) -o$@ $**
-HB_CMD = $(HARBOUR_EXE) $(HARBOURFLAGS) $** -o$@
 
 #
 # Macros to access our library names

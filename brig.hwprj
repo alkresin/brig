@@ -1,0 +1,39 @@
+#
+# HwBuilder project file to build Brig libraries
+# Launch it with:
+#   hwbc brig.hwprj
+
+makemode=on
+objpath=obj
+outpath=lib/$COMPILER
+{unix}cflags=-O3
+
+:project brig
+target=lib
+outname=brig
+cflags=-Iinclude
+{win}cflags=-DUNICODE
+{win}objpath=obj/uni
+{win}outpath=lib
+
+srcpath=source/common
+*.cpp
+
+{win}srcpath=source/winapi
+{win}*.cpp
+
+{unix}srcpath=source/gtk
+{unix}*.cpp
+
+{win}:project brig_ansi
+{win}target=lib
+{win}outname=brig_ansi
+{win}objpath=obj/ansi
+{win}outpath=lib
+{win}cflags=-Iinclude
+
+{win}srcpath=source/common
+{win}*.cpp
+
+{win}srcpath=source/winapi
+{win}*.cpp
