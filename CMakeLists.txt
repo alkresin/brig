@@ -24,3 +24,7 @@ set(SOURCE_LIB
    ${C}/brig_xml.cpp )
 
 add_library(brig STATIC ${SOURCE_LIB})
+target_compile_definitions(brig PRIVATE UNICODE)
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+   target_compile_options(brig PRIVATE -Wall -Wextra -Wpedantic)
+endif()
